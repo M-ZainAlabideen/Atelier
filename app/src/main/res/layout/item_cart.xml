@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="15dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/cart_linearLayout_background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="start"
+            android:background="@color/colorPrimary">
+
+            <ImageView
+                android:id="@+id/delete_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:layout_marginStart="30dp"
+                android:src="@mipmap/btn_delete" />
+
+        </LinearLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/cart_constLayout_foreground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/et_bg">
+
+            <TextView
+                android:id="@+id/cart_txtView_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/droid_arabic_kufi_bold"
+                android:text="@string/test_product_title"
+                android:textColor="@color/darkGray"
+                android:textSize="13sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/cart_txtView_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/droid_arabic_kufi"
+                android:text="@string/test_product_details"
+                android:textColor="@color/darkGray"
+                android:textSize="13sp"
+                app:layout_constraintStart_toStartOf="@+id/cart_txtView_title"
+                app:layout_constraintTop_toBottomOf="@+id/cart_txtView_title" />
+
+
+            <ImageView
+                android:id="@+id/cart_imgView_plus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:padding="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:srcCompat="@mipmap/icon_plus2" />
+
+            <TextView
+                android:id="@+id/cart_txtView_quantity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/droid_arabic_kufi_bold"
+                android:text="2"
+                android:textColor="@color/darkGray"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/cart_imgView_plus"
+                app:layout_constraintStart_toEndOf="@+id/cart_imgView_plus"
+                app:layout_constraintTop_toTopOf="@+id/cart_imgView_plus" />
+
+            <ImageView
+                android:id="@+id/cart_imgView_minus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                app:layout_constraintBottom_toBottomOf="@+id/cart_imgView_plus"
+                app:layout_constraintStart_toEndOf="@+id/cart_txtView_quantity"
+                app:layout_constraintTop_toTopOf="@+id/cart_imgView_plus"
+                app:layout_constraintVertical_bias="0.0"
+                app:srcCompat="@mipmap/icon_minus2" />
+
+            <TextView
+                android:id="@+id/cart_txtView_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/lato_black"
+                android:text="@string/test_price"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/cart_imgView_minus"
+                app:layout_constraintEnd_toStartOf="@+id/cart_imgView_productImg"
+                app:layout_constraintHorizontal_bias="0.647"
+                app:layout_constraintStart_toEndOf="@+id/cart_imgView_minus"
+                app:layout_constraintTop_toTopOf="@+id/cart_imgView_minus"
+                app:layout_constraintVertical_bias="0.8" />
+
+            <ImageView
+                android:id="@+id/cart_imgView_productImg"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@mipmap/placeholder_cart_product" />
+
+        </android.support.constraint.ConstraintLayout>
+    </FrameLayout>
+</android.support.constraint.ConstraintLayout>

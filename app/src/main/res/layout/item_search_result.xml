@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/product_circleImgView_searchImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="26dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        app:civ_border_width="2dp"
+        app:civ_border_color="@color/colorPrimary"
+        android:src="@mipmap/placeholder_search_product"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/product_txtView_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="26dp"
+        android:fontFamily="@font/droid_arabic_kufi_bold"
+        android:text="@string/test_product_title"
+        android:textColor="@color/darkGray"
+        android:textSize="13sp"
+        app:layout_constraintStart_toEndOf="@+id/product_circleImgView_searchImg"
+        app:layout_constraintTop_toTopOf="@+id/product_circleImgView_searchImg" />
+
+    <TextView
+        android:id="@+id/product_txtView_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/droid_arabic_kufi"
+        android:text="@string/test_product_details"
+        android:textColor="@color/darkGray"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/product_circleImgView_searchImg"
+        app:layout_constraintStart_toStartOf="@+id/product_txtView_title"
+        app:layout_constraintTop_toBottomOf="@+id/product_txtView_title" />
+
+</android.support.constraint.ConstraintLayout>

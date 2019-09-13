@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/productSize_linearLayout_bg"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:background="@mipmap/box_unsel">
+        <TextView
+            android:id="@+id/productSize_txtView_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/test_size"
+            android:textAllCaps="true"
+            android:textSize="14sp"
+            android:textColor="@color/colorPrimary"
+            android:fontFamily="@font/lato_regular"/>
+</LinearLayout>

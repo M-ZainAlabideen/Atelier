@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@drawable/back_ground">
+
+<android.support.constraint.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ImageView
+        android:id="@+id/imageView19"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="73dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/logo" />
+
+    <EditText
+        android:id="@+id/createAccount_editText_userName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="42dp"
+        android:layout_marginEnd="40dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="@string/user_name"
+        android:textSize="12sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/droid_arabic_kufi_bold"
+        android:textColorHint="@color/lightGray2"
+        android:paddingBottom="12dp"
+        android:paddingTop="12dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:background="@drawable/tv_bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView19" />
+
+    <EditText
+        android:id="@+id/createAccount_editText_password"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/tv_bg"
+        android:ems="10"
+        android:fontFamily="@font/droid_arabic_kufi_bold"
+        android:hint="@string/password2"
+        android:inputType="textPassword"
+        android:paddingStart="20dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="12dp"
+        android:textAlignment="viewStart"
+        android:textColor="@color/black"
+        android:textColorHint="@color/lightGray2"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/createAccount_editText_mail"
+        app:layout_constraintStart_toStartOf="@+id/createAccount_editText_mail"
+        app:layout_constraintTop_toBottomOf="@+id/createAccount_editText_mail" />
+
+    <Button
+        android:id="@+id/createAccount_btn_done"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="16dp"
+        android:background="@color/colorPrimary"
+        android:fontFamily="@font/droid_arabic_kufi"
+        android:text="@string/create_account"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/createAccount_checkBox_agree"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <EditText
+        android:id="@+id/createAccount_editText_phone"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        android:textAlignment="viewStart"
+        android:inputType="phone"
+        android:hint="@string/phone2"
+        android:textSize="12sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/droid_arabic_kufi_bold"
+        android:textColorHint="@color/lightGray2"
+        android:paddingBottom="12dp"
+        android:paddingTop="12dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:background="@drawable/tv_bg"
+        app:layout_constraintEnd_toEndOf="@+id/createAccount_editText_userName"
+        app:layout_constraintStart_toStartOf="@+id/createAccount_editText_userName"
+        app:layout_constraintTop_toBottomOf="@+id/createAccount_editText_userName" />
+
+    <EditText
+        android:id="@+id/createAccount_editText_mail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        android:inputType="textEmailAddress"
+        android:hint="@string/mail_address"
+        android:textSize="12sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/droid_arabic_kufi_bold"
+        android:textColorHint="@color/lightGray2"
+        android:paddingBottom="12dp"
+        android:paddingTop="12dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:background="@drawable/tv_bg"
+        app:layout_constraintEnd_toEndOf="@+id/createAccount_editText_phone"
+        app:layout_constraintStart_toStartOf="@+id/createAccount_editText_phone"
+        app:layout_constraintTop_toBottomOf="@+id/createAccount_editText_phone" />
+
+
+    <CheckBox
+        android:id="@+id/createAccount_checkBox_agree"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimary"
+        android:textSize="14sp"
+        android:button="@mipmap/check_unsel"
+        android:paddingBottom="15dp"
+        android:paddingTop="15dp"
+        android:paddingStart="15dp"
+        android:paddingEnd="5dp"
+        android:fontFamily="@font/droid_arabic_kufi"
+        android:text="@string/agree"
+        app:layout_constraintEnd_toEndOf="@+id/createAccount_editText_password"
+        app:layout_constraintHorizontal_bias="0.223"
+        app:layout_constraintStart_toStartOf="@+id/createAccount_editText_password"
+        app:layout_constraintTop_toBottomOf="@+id/createAccount_editText_password" />
+
+
+    <TextView
+        android:id="@+id/createAccount_txtView_terms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/droid_arabic_kufi"
+        android:text="@string/terms"
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/createAccount_checkBox_agree"
+        app:layout_constraintStart_toEndOf="@+id/createAccount_checkBox_agree"
+        app:layout_constraintTop_toTopOf="@+id/createAccount_checkBox_agree" />
+
+    <ProgressBar
+        android:id="@+id/loading"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:indeterminateTint="@color/colorPrimary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+</android.support.constraint.ConstraintLayout>
+</android.support.v4.widget.NestedScrollView>

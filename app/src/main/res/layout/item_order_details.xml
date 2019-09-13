@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:id="@+id/relative_parent">
+
+    <RelativeLayout
+        android:id="@+id/orderDetails_relativeLayout_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="10dp">
+
+        <TextView
+            android:id="@+id/orderDetails_txtView_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/colorPrimary"
+            android:fontFamily="@font/droid_arabic_kufi"
+            android:text="@string/test_product_title"
+            android:maxLines="4"/>
+
+        <TextView
+            android:id="@+id/orderDetails_txtView_vendorName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/orderDetails_txtView_title"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="10dp"
+            android:maxLines="4"
+            android:text="إسم البائع"
+            android:fontFamily="@font/droid_arabic_kufi"
+            android:textColor="@color/colorPrimary" />
+
+
+        <TextView
+            android:id="@+id/orderDetails_txtView_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/orderDetails_txtView_vendorName"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:fontFamily="@font/droid_arabic_kufi"
+            android:text="الكمية"/>
+
+        <TextView
+            android:id="@+id/orderDetails_txtView_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:textColor="@color/colorPrimary"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/test_price"
+            android:fontFamily="@font/droid_arabic_kufi"
+            android:layout_below="@+id/orderDetails_txtView_quantity"/>
+
+        <TextView
+            android:id="@+id/orderDetails_txtView_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/orderDetails_txtView_price"
+            android:layout_alignParentEnd="true"
+            android:background="@color/colorPrimary"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/droid_arabic_kufi"
+            android:text="@string/total_price"
+            android:textColor="@android:color/white"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/orderDetails_relativeLayout_container"
+        android:background="#dedede"/>
+
+</RelativeLayout>
