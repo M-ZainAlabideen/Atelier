@@ -21,11 +21,14 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import app.atelier.MainActivity;
 import app.atelier.R;
 import app.atelier.adapters.PopUpAdapter;
 import app.atelier.classes.Constants;
+import app.atelier.classes.FixControl;
+import app.atelier.classes.GlobalFunctions;
 import app.atelier.classes.Navigator;
 import app.atelier.classes.RecyclerItemClickListener;
 import app.atelier.classes.SessionManager;
@@ -46,7 +49,7 @@ import retrofit.client.Response;
 public class AddNewAddressFragment extends Fragment {
     public static FragmentActivity activity;
     public static AddNewAddressFragment fragment;
-
+    public static SessionManager sessionManager;
     @BindView(R.id.addAddress_editTxt_firstName)
     EditText firstName;
     @BindView(R.id.addAddress_editTxt_lastName)
@@ -72,10 +75,16 @@ public class AddNewAddressFragment extends Fragment {
     List<StateModel> statesArrList = new ArrayList<>();
     private AlertDialog dialog;
     AddressModel myAddress;
+    public static Map<String, String> User;
 
-    public static AddNewAddressFragment newInstance(FragmentActivity activity,String comingFrom, String flag, AddressModel address) {
+    public static AddNewAddressFragment newInstance(FragmentActivity activity,
+                                                    String comingFrom,
+                                                    String flag,
+                                                    AddressModel address) {
         fragment = new AddNewAddressFragment();
         AddNewAddressFragment.activity = activity;
+        sessionManager = new SessionManager(activity);
+         User = sessionManager.getUser();
         Bundle b = new Bundle();
         b.putString("comingFrom",comingFrom);
         b.putString("flag", flag);
@@ -100,7 +109,7 @@ public class AddNewAddressFragment extends Fragment {
         MainActivity.title.setText(activity.getResources().getString(R.string.add_address));
         MainActivity.appbar.setVisibility(View.VISIBLE);
         MainActivity.bottomAppbar.setVisibility(View.VISIBLE);
-        MainActivity.setupBottomAppbar("");
+        MainActivity.setupAppbar("",true,true);
 
         if (MainActivity.isEnglish) {
             countryBg.setImageResource(R.mipmap.spinner_bg);
@@ -120,15 +129,19 @@ public class AddNewAddressFragment extends Fragment {
             state.setText(myAddress.province);
         } else {
             myAddress = new AddressModel();
+            firstName.setText(User.get("firstName"));
+            lastName.setText(User.get("lastName"));
+            phone.setText(User.get("phone"));
+            mail.setText(User.get("email"));
         }
     }
 
-    @OnClick(R.id.addAddress_txtView_country)
+    @OnClick(R.id.addAddress_view_selectCountry)
     public void countryClick() {
         createPopUp(activity, "country", countriesArrList, null);
     }
 
-    @OnClick(R.id.addAddress_txtView_state)
+    @OnClick(R.id.addAddress_view_selectCity)
     public void stateClick() {
         createPopUp(activity, "state", null, statesArrList);
     }
@@ -150,9 +163,9 @@ public class AddNewAddressFragment extends Fragment {
             Snackbar.make(loading, getString(R.string.phone_required), Snackbar.LENGTH_SHORT).show();
         } else if (mailStr == null || mailStr.matches("")) {
             Snackbar.make(loading, getString(R.string.mail_required), Snackbar.LENGTH_SHORT).show();
-        } else if (countryStr == null || countryStr.matches("")) {
+        } else if (countryStr.equals(getString(R.string.select_country))) {
             Snackbar.make(loading, getString(R.string.country_required), Snackbar.LENGTH_SHORT).show();
-        } else if (stateStr == null || stateStr.matches("")) {
+        } else if (stateStr.equals(getString(R.string.select_state))) {
             Snackbar.make(loading, getString(R.string.state_required), Snackbar.LENGTH_SHORT).show();
         } else {
             myAddress.firstName = firstNameStr;
@@ -219,7 +232,7 @@ public class AddNewAddressFragment extends Fragment {
 
     public void countriesApi() {
         AtelierApiConfig.getCallingAPIInterface().countries(Constants.AUTHORIZATION_VALUE,
-                MainActivity.language, new Callback<GetCountries>() {
+                sessionManager.getUserLanguage(), new Callback<GetCountries>() {
                     @Override
                     public void success(GetCountries getCountries, Response response) {
                         if (getCountries != null) {
@@ -231,18 +244,22 @@ public class AddNewAddressFragment extends Fragment {
 
                     @Override
                     public void failure(RetrofitError error) {
-
+                        loading.setVisibility(View.GONE);
+                        GlobalFunctions.showErrorMessage(error,loading);
                     }
                 });
     }
 
     public void stateProvincesApi(String countryId) {
+        loading.setVisibility(View.VISIBLE);
         AtelierApiConfig.getCallingAPIInterface().stateProvinces(Constants.AUTHORIZATION_VALUE,
-                MainActivity.language, countryId, new Callback<GetStates>() {
+                sessionManager.getUserLanguage(), countryId, new Callback<GetStates>() {
                     @Override
                     public void success(GetStates getStates, Response response) {
+                        loading.setVisibility(View.GONE);
                         if (getStates != null) {
                             if (getStates.states.size() > 0) {
+                                statesArrList.clear();
                                 statesArrList.addAll(getStates.states);
                             }
                         }
@@ -250,7 +267,8 @@ public class AddNewAddressFragment extends Fragment {
 
                     @Override
                     public void failure(RetrofitError error) {
-
+                        loading.setVisibility(View.GONE);
+                        GlobalFunctions.showErrorMessage(error,loading);
                     }
                 });
     }
@@ -258,16 +276,18 @@ public class AddNewAddressFragment extends Fragment {
     public void addAddressApi(GetAddresses getAddresses) {
         loading.setVisibility(View.VISIBLE);
         AtelierApiConfig.getCallingAPIInterface().addAddress(
-                Constants.AUTHORIZATION_VALUE, MainActivity.language,
+                Constants.AUTHORIZATION_VALUE, sessionManager.getUserLanguage(),
                 Constants.CONTENT_TYPE_VALUE, getAddresses,
-                SessionManager.getUserId(activity),
+                sessionManager.getUserId(),
                 new Callback<GetAddresses>() {
                     @Override
                     public void success(GetAddresses getAddresses, Response response) {
                         loading.setVisibility(View.GONE);
                         if (getAddresses != null) {
                             if (getAddresses.addresses.size() > 0) {
-                                Navigator.loadFragment(activity,AddressesFragment.newInstance(activity,getArguments().getString("comingFrom")),R.id.main_frameLayout_Container,false);
+                                FixControl.hideKeyboard(firstName,activity);
+                               Navigator.loadFragment(activity,AddressesFragment.newInstance(activity,getArguments().getString("comingFrom")),R.id.main_frameLayout_Container,false);
+
                             }
                         }
                     }
@@ -275,7 +295,7 @@ public class AddNewAddressFragment extends Fragment {
                     @Override
                     public void failure(RetrofitError error) {
                         loading.setVisibility(View.GONE);
-                        Snackbar.make(loading, getString(R.string.error), Snackbar.LENGTH_SHORT).show();
+                        GlobalFunctions.showErrorMessage(error,loading);
                     }
                 }
         );
@@ -284,14 +304,15 @@ public class AddNewAddressFragment extends Fragment {
     public void editAddressApi(GetAddresses getAddresses) {
         loading.setVisibility(View.VISIBLE);
         AtelierApiConfig.getCallingAPIInterface().editAddress(Constants.AUTHORIZATION_VALUE,
-                MainActivity.language, Constants.CONTENT_TYPE_VALUE, getAddresses,
-                SessionManager.getUserId(activity), myAddress.id,
+                sessionManager.getUserLanguage(), Constants.CONTENT_TYPE_VALUE, getAddresses,
+                sessionManager.getUserId(), myAddress.id,
                 new Callback<GetAddresses>() {
                     @Override
                     public void success(GetAddresses getAddresses, Response response) {
                         loading.setVisibility(View.GONE);
                         if (getAddresses != null) {
                             if (getAddresses.addresses.size() > 0) {
+                                FixControl.hideKeyboard(firstName,activity);
                                 getFragmentManager().popBackStack();
                             }
                         }
@@ -300,7 +321,7 @@ public class AddNewAddressFragment extends Fragment {
                     @Override
                     public void failure(RetrofitError error) {
                         loading.setVisibility(View.GONE);
-                        Snackbar.make(loading, getString(R.string.error), Snackbar.LENGTH_SHORT).show();
+                        GlobalFunctions.showErrorMessage(error,loading);
                     }
                 });
     }

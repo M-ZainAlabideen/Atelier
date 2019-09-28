@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@drawable/back_ground">
+    android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="30dp"
                 android:fontFamily="@font/droid_arabic_kufi"
-                android:inputType="phone"
+                android:inputType="textPersonName"
                 android:textColor="@color/lightGray2"
                 android:textSize="14sp"
                 app:backgroundTint="@color/lightGray"
@@ -86,6 +86,7 @@
             android:inputType="textPersonName"
             android:textColor="@color/lightGray2"
             android:textSize="14sp"
+            android:hint="@string/first_name"
             app:backgroundTint="@color/lightGray"
            />
 
@@ -99,6 +100,7 @@
             android:inputType="textPersonName"
             android:textColor="@color/lightGray2"
             android:textSize="14sp"
+            android:hint="@string/last_name"
             app:backgroundTint="@color/lightGray"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView20" />
@@ -169,7 +171,6 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:indeterminateTint="@color/colorPrimary"
-            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

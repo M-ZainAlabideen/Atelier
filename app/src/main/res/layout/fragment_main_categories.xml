@@ -1,163 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/back_ground">
+    android:background="@color/white">
 
 
     <ImageView
         android:id="@+id/imageView19"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginTop="73dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@mipmap/logo" />
 
-    <LinearLayout
-        android:id="@+id/mainCategories_linearLayout_container"
-        android:layout_width="0dp"
+    <ImageView
+        android:id="@+id/mainCategories_imgView_first"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="100dp"
-        android:layout_marginEnd="8dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView19">
+        android:layout_marginTop="120dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintRight_toLeftOf="@+id/mainCategories_imgView_second"
+        app:layout_constraintTop_toBottomOf="@+id/imageView19"
+        app:srcCompat="@mipmap/dresses_icon" />
 
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="15dp">
+    <ImageView
+        android:id="@+id/mainCategories_imgView_second"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/mainCategories_imgView_first"
+        app:layout_constraintLeft_toRightOf="@+id/mainCategories_imgView_first"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/mainCategories_imgView_first"
+        app:srcCompat="@mipmap/abaya_icon" />
 
-            <View
-                android:id="@+id/mainCategories_view_suits"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/imageView29"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@mipmap/box_main_categories" />
-
-            <ImageView
-                android:id="@+id/mainCategories_imgView_first"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/imageView29"
-                app:layout_constraintEnd_toEndOf="@+id/imageView29"
-                app:layout_constraintStart_toStartOf="@+id/imageView29"
-                app:layout_constraintTop_toTopOf="@+id/imageView29"
-                app:srcCompat="@mipmap/icon_dress1" />
-
-            <TextView
-                android:id="@+id/mainCategories_txtView_firstTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="16dp"
-                android:fontFamily="@font/droid_arabic_kufi"
-                android:text="@string/suits"
-                android:textColor="@color/darkGray"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@+id/imageView29"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/mainCategories_imgView_first" />
-        </android.support.constraint.ConstraintLayout>
-
-
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp">
-
-            <View
-                android:id="@+id/mainCategories_view_dresses"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-            <ImageView
-                android:id="@+id/imageView30"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@mipmap/box_main_categories" />
-
-            <ImageView
-                android:id="@+id/mainCategories_imgView_second"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/imageView30"
-                app:layout_constraintEnd_toEndOf="@+id/imageView30"
-                app:layout_constraintStart_toStartOf="@+id/imageView30"
-                app:layout_constraintTop_toTopOf="@+id/imageView30"
-                app:srcCompat="@mipmap/icon_dress2" />
-
-            <TextView
-                android:id="@+id/mainCategories_txtView_secondTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="16dp"
-                android:fontFamily="@font/droid_arabic_kufi"
-                android:text="@string/dresses"
-                android:textColor="@color/darkGray"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@+id/imageView30"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/mainCategories_imgView_second" />
-
-        </android.support.constraint.ConstraintLayout>
-
-    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/loading"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginBottom="8dp"
         android:indeterminateTint="@color/colorPrimary"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/mainCategories_tv_changeLang"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="28dp"
+        android:layout_marginTop="28dp"
+        android:text="@string/lang"
+        android:textColor="@color/colorPrimary"
+        android:textSize="20sp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/mainCategories_tv_firstTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/suits"
+        android:textColor="@color/darkGray"
+        android:textSize="14sp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="@+id/mainCategories_imgView_first"
+        app:layout_constraintStart_toStartOf="@+id/mainCategories_imgView_first"
+        app:layout_constraintTop_toBottomOf="@+id/mainCategories_imgView_first" />
+
+    <TextView
+        android:id="@+id/mainCategories_tv_secondTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/dresses"
+        android:textColor="@color/darkGray"
+        android:textSize="14sp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="@+id/mainCategories_imgView_second"
+        app:layout_constraintStart_toStartOf="@+id/mainCategories_imgView_second"
+        app:layout_constraintTop_toBottomOf="@+id/mainCategories_imgView_second" />
 
 </android.support.constraint.ConstraintLayout>

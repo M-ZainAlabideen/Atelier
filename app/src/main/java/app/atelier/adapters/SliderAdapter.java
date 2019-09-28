@@ -18,12 +18,13 @@ import app.atelier.R;
 import app.atelier.classes.FixControl;
 import app.atelier.classes.Navigator;
 import app.atelier.fragments.GestureImageFragment;
+import app.atelier.webservices.responses.sliders.SliderModel;
 
 public class SliderAdapter extends PagerAdapter {
     Context context;
-    ArrayList<String> sliderArrayList;
+    ArrayList<SliderModel> sliderArrayList;
 
-    public SliderAdapter(Context context, ArrayList<String> sliderArrayList) {
+    public SliderAdapter(Context context, ArrayList<SliderModel> sliderArrayList) {
         this.context = context;
         this.sliderArrayList = sliderArrayList;
     }
@@ -35,20 +36,21 @@ public class SliderAdapter extends PagerAdapter {
         assert childView != null;
         ImageView sliderImage = (ImageView) childView.findViewById(R.id.slider_imgView_sliderImg);
 
-        int Width = FixControl.getImageWidth(context, R.mipmap.placeholder_slider);
-        int Height = FixControl.getImageHeight(context, R.mipmap.placeholder_slider);
-        sliderImage.getLayoutParams().height = Height;
-        sliderImage.getLayoutParams().width = Width;
-        if (sliderArrayList.get(position) != null
-                && !sliderArrayList.get(position).matches("")
-                && !sliderArrayList.get(position).isEmpty()) {
-            Glide.with(context.getApplicationContext()).load(sliderArrayList.get(position)).apply(new RequestOptions()
-                    .placeholder(R.mipmap.placeholder_slider)).into(sliderImage);
+        if (sliderArrayList.get(position).image != null) {
+            if (sliderArrayList.get(position).image.src != null
+                    && !sliderArrayList.get(position).image.src.matches("")) {
+                Glide.with(context.getApplicationContext()).load(sliderArrayList.get(position).image.src).apply(new RequestOptions()
+                        .placeholder(R.mipmap.placeholder_slider)).into(sliderImage);
+            }
         }
         sliderImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigator.loadFragment((FragmentActivity) context, GestureImageFragment.newInstance((FragmentActivity) context, sliderArrayList, position), R.id.main_frameLayout_Container, true);
+                ArrayList<String> Srcs = new ArrayList<>();
+                for (SliderModel value : sliderArrayList) {
+                    Srcs.add(value.image.src);
+                }
+                Navigator.loadFragment((FragmentActivity) context, GestureImageFragment.newInstance((FragmentActivity) context, Srcs, position), R.id.main_frameLayout_Container, true);
             }
         });
 

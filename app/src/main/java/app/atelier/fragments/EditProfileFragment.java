@@ -16,6 +16,8 @@ import android.widget.Toast;
 import app.atelier.MainActivity;
 import app.atelier.R;
 import app.atelier.classes.Constants;
+import app.atelier.classes.FixControl;
+import app.atelier.classes.GlobalFunctions;
 import app.atelier.classes.Navigator;
 import app.atelier.classes.SessionManager;
 import app.atelier.webservices.AtelierApiConfig;
@@ -31,6 +33,7 @@ import retrofit.client.Response;
 public class EditProfileFragment extends Fragment {
     public static FragmentActivity activity;
     public static EditProfileFragment fragment;
+    public static SessionManager sessionManager;
 
     @BindView(R.id.editProfile_editText_userName)
     EditText userName;
@@ -49,6 +52,7 @@ public class EditProfileFragment extends Fragment {
     public static EditProfileFragment newInstance(FragmentActivity activity) {
         fragment = new EditProfileFragment();
         EditProfileFragment.activity = activity;
+        sessionManager = new SessionManager(activity);
         return fragment;
     }
 
@@ -66,55 +70,52 @@ public class EditProfileFragment extends Fragment {
         MainActivity.title.setText(activity.getResources().getString(R.string.edit_profile));
         MainActivity.appbar.setVisibility(View.VISIBLE);
         MainActivity.bottomAppbar.setVisibility(View.VISIBLE);
-        MainActivity.setupBottomAppbar("");
-        userName.setText(SessionManager.getUser(activity).get("userName"));
-        firstName.setText(SessionManager.getUser(activity).get("firstName"));
-        lastName.setText(SessionManager.getUser(activity).get("lastName"));
-
-        phone.setText(SessionManager.getUser(activity).get("phone"));
-        mail.setText(SessionManager.getUser(activity).get("email"));
+        MainActivity.setupAppbar("", true, true);
+        getCustomerById();
     }
 
     @OnClick(R.id.editProfile_btn_save)
-    public void saveClick(){
+    public void saveClick() {
         String userNameStr = userName.getText().toString();
         String firstNameStr = firstName.getText().toString();
         String lastNameStr = lastName.getText().toString();
         String phoneStr = phone.getText().toString();
         String mailStr = mail.getText().toString();
 
-        if(userNameStr == null || userNameStr.matches("")){
-            Snackbar.make(loading,activity.getResources().getString(R.string.user_name_required),Snackbar.LENGTH_SHORT).show();
-        }
-        else if(phoneStr == null || phoneStr.matches("")){
-            Snackbar.make(loading,activity.getResources().getString(R.string.phone_required),Snackbar.LENGTH_SHORT).show();
-        }
-        else if(mailStr == null || mailStr.matches("")){
-            Snackbar.make(loading,activity.getResources().getString(R.string.mail_required),Snackbar.LENGTH_SHORT).show();
-        }
-        else{
+        if (userNameStr == null || userNameStr.matches("")) {
+            Snackbar.make(loading, activity.getResources().getString(R.string.user_name_required), Snackbar.LENGTH_SHORT).show();
+        } else if (phoneStr == null || phoneStr.matches("")) {
+            Snackbar.make(loading, activity.getResources().getString(R.string.phone_required), Snackbar.LENGTH_SHORT).show();
+        } else if (mailStr == null || mailStr.matches("")) {
+            Snackbar.make(loading, activity.getResources().getString(R.string.mail_required), Snackbar.LENGTH_SHORT).show();
+        } else {
             CustomerModel customer = new CustomerModel();
             customer.userName = userNameStr;
-            customer.firstName  = firstNameStr;
+            customer.firstName = firstNameStr;
             customer.lastName = lastNameStr;
             customer.phone = phoneStr;
             customer.email = mailStr;
             updateCustomerApi(customer);
         }
     }
+
     public void updateCustomerApi(CustomerModel customer) {
         loading.setVisibility(View.VISIBLE);
 
         GetCustomers getCustomers = new GetCustomers();
         getCustomers.customer = customer;
-        AtelierApiConfig.getCallingAPIInterface().updateCustomer(Constants.AUTHORIZATION_VALUE,MainActivity.language,
-                SessionManager.getUserId(activity), Constants.CONTENT_TYPE_VALUE, getCustomers, new Callback<GetCustomers>() {
+        AtelierApiConfig.getCallingAPIInterface().updateCustomer(Constants.AUTHORIZATION_VALUE, 
+                sessionManager.getUserLanguage(),
+                sessionManager.getUserId(), 
+                Constants.CONTENT_TYPE_VALUE, 
+                getCustomers, 
+                new Callback<GetCustomers>() {
                     @Override
                     public void success(GetCustomers getCustomers, Response response) {
                         loading.setVisibility(View.GONE);
                         if (getCustomers.customers.size() > 0) {
                             CustomerModel customer = getCustomers.customers.get(0);
-                            SessionManager.setUser(activity,
+                            sessionManager.setUser(
                                     customer.id,
                                     customer.userName,
                                     customer.firstName,
@@ -122,25 +123,47 @@ public class EditProfileFragment extends Fragment {
                                     customer.phone,
                                     customer.email,
                                     customer.password);
-                            Snackbar.make(loading,activity.getResources().getString(R.string.successfully_updated),Snackbar.LENGTH_SHORT).show();
-                            Navigator.loadFragment(activity,MyAccountFragment.newInstance(activity),R.id.main_frameLayout_Container,false);
+                            FixControl.hideKeyboard(userName,activity);
+                            Snackbar.make(loading, activity.getResources().getString(R.string.successfully_updated), Snackbar.LENGTH_SHORT).show();
+                            Navigator.loadFragment(activity, MyAccountFragment.newInstance(activity), R.id.main_frameLayout_Container, false);
                         }
                     }
 
                     @Override
                     public void failure(RetrofitError error) {
                         loading.setVisibility(View.GONE);
-                        Snackbar.make(loading,activity.getResources().getString(R.string.error),Snackbar.LENGTH_LONG).show();
+                        GlobalFunctions.showErrorMessage(error, loading);
 
                     }
                 });
     }
-    public void ApiCall() {
-        setData();
-    }
 
-    public void setData() {
-    }
+    public void getCustomerById() {
+        AtelierApiConfig.getCallingAPIInterface().customerById(
+                sessionManager.getUserLanguage(), Constants.AUTHORIZATION_VALUE,
+                sessionManager.getUserId(), new Callback<GetCustomers>() {
+                    @Override
+                    public void success(GetCustomers getCustomers, Response response) {
+                        if (getCustomers != null) {
+                            if (getCustomers.customers != null) {
+                                if (getCustomers.customers.size() > 0) {
+                                    userName.setText(getCustomers.customers.get(0).userName);
+                                    firstName.setText(getCustomers.customers.get(0).firstName);
+                                    lastName.setText(getCustomers.customers.get(0).lastName);
+                                    phone.setText(getCustomers.customers.get(0).phone);
+                                    mail.setText(getCustomers.customers.get(0).email);
+                                    loading.setVisibility(View.GONE);
+                                }
+                            }
+                        }
+                    }
 
+                    @Override
+                    public void failure(RetrofitError error) {
+
+                    }
+                }
+        );
+    }
 
 }

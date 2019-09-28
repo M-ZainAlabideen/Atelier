@@ -3,6 +3,7 @@ package app.atelier.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
@@ -28,6 +29,7 @@ import app.atelier.MainActivity;
 import app.atelier.R;
 import app.atelier.classes.Constants;
 import app.atelier.classes.FixControl;
+import app.atelier.classes.SessionManager;
 import app.atelier.webservices.AtelierApiConfig;
 import app.atelier.webservices.responses.cart.CartItem;
 import app.atelier.webservices.responses.cart.CartItem_;
@@ -44,12 +46,14 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.viewHolder> {
     Context context;
     List<CartProductModel> cartArrayList;
     OnItemClickListener listener;
+    SessionManager sessionManager;
 
 
     public CartAdapter(Context context, List<CartProductModel> cartArrayList,CartAdapter.OnItemClickListener listener) {
         this.context = context;
         this.cartArrayList = cartArrayList;
         this.listener = listener;
+        sessionManager = new SessionManager(context);
     }
 
     public class viewHolder extends RecyclerView.ViewHolder {
@@ -61,6 +65,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.viewHolder> {
 
         @BindView(R.id.cart_imgView_productImg)
         public ImageView productImg;
+        @BindView(R.id.cart_imgView_delete2)
+        public ImageView delete2;
         @BindView(R.id.cart_txtView_title)
         public TextView title;
         @BindView(R.id.cart_txtView_description)
@@ -91,7 +97,13 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.viewHolder> {
     @Override
     public void onBindViewHolder(@NonNull final CartAdapter.viewHolder viewHolder, final int position) {
 
-
+        if (sessionManager.getUserLanguage().equals("en")) {
+            Typeface enBold = Typeface.createFromAsset(context.getAssets(), "montserrat_medium.ttf");
+            viewHolder.title.setTypeface(enBold);
+        } else {
+            Typeface arBold = Typeface.createFromAsset(context.getAssets(), "droid_arabic_kufi_bold.ttf");
+            viewHolder.title.setTypeface(arBold);
+        }
         int Width = FixControl.getImageWidth(context, R.mipmap.placeholder_cart_product);
         int Height = FixControl.getImageHeight(context, R.mipmap.placeholder_cart_product);
         viewHolder.productImg.getLayoutParams().height = Height;
@@ -134,12 +146,17 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.viewHolder> {
 
             }
         });
+
+        viewHolder.delete2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onDeleteItemClick(position);
+            }
+        });
     }
 
     public void removeItem(int position) {
         listener.onDeleteItemClick(position);
-//        cartArrayList.remove(position);
-//        notifyItemRemoved(position);
     }
 
     public interface OnItemClickListener {

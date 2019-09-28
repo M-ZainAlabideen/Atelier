@@ -11,7 +11,7 @@
         android:id="@+id/main_appbar"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:background="@color/colorPrimary"
+        android:background="@color/white"
         app:elevation="0dp"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -26,9 +26,7 @@
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                >
-
+                android:layout_height="match_parent">
 
                 <ImageView
                     android:id="@+id/main_imgView_menu"
@@ -38,7 +36,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@mipmap/icon_side_menu" />
+                    app:srcCompat="@mipmap/side_menu" />
 
                 <ImageView
                     android:id="@+id/main_imgView_back"
@@ -49,7 +47,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@mipmap/icon_back_arrow" />
+                    app:srcCompat="@mipmap/back_arrow" />
 
                 <TextView
                     android:id="@+id/main_txtView_title"
@@ -61,7 +59,7 @@
                     android:layout_marginBottom="8dp"
                     android:fontFamily="@font/droid_arabic_kufi_bold"
                     android:text="@string/test_title"
-                    android:textColor="@color/white"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="18sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
@@ -77,8 +75,8 @@
                     app:layout_constraintRight_toLeftOf="@+id/main_imgView_menu"
                     app:layout_constraintTop_toTopOf="parent"
                     app:closeIcon="@mipmap/icon_close"
-                    app:searchIcon="@mipmap/icon_search"
-                    app:queryBackground="@color/white"
+                    app:searchIcon="@mipmap/search_icon"
+                    app:queryBackground="@color/colorPrimary"
                     android:theme="@style/SearchViewTheme"/>
             </android.support.constraint.ConstraintLayout>
 
@@ -115,7 +113,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:padding="10dp"
+            android:padding="5dp"
             android:layoutDirection="ltr"
             android:gravity="center"
             >
@@ -145,14 +143,34 @@
                 android:layout_weight="0.25"
                 app:srcCompat="@mipmap/icon_fav_unsel" />
 
-
-            <ImageView
-                android:id="@+id/main_imgView_cart"
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
-                android:padding="7dp"
-                app:srcCompat="@mipmap/icon_cart_unsel" />
+                android:padding="7dp">
+
+                <ImageView
+                    android:id="@+id/main_imgView_cart"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@mipmap/icon_cart_unsel" />
+
+                <ImageView
+                    android:id="@+id/main_imgView_notification"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginBottom="4dp"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toTopOf="@+id/main_imgView_cart"
+                    app:layout_constraintStart_toStartOf="@+id/main_imgView_cart"
+                    app:srcCompat="@mipmap/icon_notifi_circle" />
+
+            </android.support.constraint.ConstraintLayout>
 
 
         </LinearLayout>

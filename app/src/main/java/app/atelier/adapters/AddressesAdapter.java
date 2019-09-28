@@ -76,6 +76,9 @@ public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.view
             if (addressesArrList.get(position).isSelected) {
                 viewHolder.title.setTextColor(Color.parseColor("#ff5b8a"));
             }
+            else{
+                viewHolder.title.setTextColor(Color.parseColor("#6A6A6A"));
+            }
         }
         viewHolder.title.setText(getFullAddress(addressesArrList.get(position)));
 

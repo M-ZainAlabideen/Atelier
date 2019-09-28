@@ -30,7 +30,7 @@ public class GestureImageAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup view, int position) {
         View imageLayout = LayoutInflater.from(context).inflate(R.layout.item_gesture_image, view, false);
         assert imageLayout != null;
-        final GestureImageView gestureImageItem = (GestureImageView) imageLayout.findViewById(R.id.gestureImageItem);
+        final GestureImageView gestureImageItem = (GestureImageView) imageLayout.findViewById(R.id.gesture_image);
         if (imagesArrayList.get(position) != null
                 && !imagesArrayList.get(position).matches("")
                 && !imagesArrayList.get(position).isEmpty()) {

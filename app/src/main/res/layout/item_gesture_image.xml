@@ -12,5 +12,5 @@
         gesture-image:min-scale="0.1"
         gesture-image:max-scale="10.0"
         gesture-image:strict="false"
-        android:id="@+id/gestureImageItem" />
+        android:id="@+id/gesture_image" />
 </RelativeLayout>

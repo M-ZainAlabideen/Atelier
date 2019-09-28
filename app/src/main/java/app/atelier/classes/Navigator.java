@@ -20,6 +20,16 @@ public class Navigator {
     }
 
 
+    public static void loadFragment2(FragmentActivity activity, Fragment baseFragment, int containerId, boolean isStacked) {
+        if (!isStacked) {
+            activity.getSupportFragmentManager().beginTransaction().add(containerId, baseFragment).commitAllowingStateLoss();
+        } else {
+            activity.getSupportFragmentManager().beginTransaction()
+                    .add(containerId, baseFragment)
+                    .addToBackStack("").commit();
+//
+        }
+    }
 
 /*
 *

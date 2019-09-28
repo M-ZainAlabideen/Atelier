@@ -18,7 +18,7 @@
             android:layout_marginEnd="10dp"
             android:layout_marginStart="0dp"
             android:layout_marginTop="5dp"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/black"
             android:fontFamily="@font/droid_arabic_kufi"
             android:text="@string/test_product_title"
             android:maxLines="4"/>
@@ -34,7 +34,7 @@
             android:maxLines="4"
             android:text="إسم البائع"
             android:fontFamily="@font/droid_arabic_kufi"
-            android:textColor="@color/colorPrimary" />
+            android:textColor="@color/black" />
 
 
         <TextView
@@ -52,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/black"
             android:paddingStart="15dp"
             android:paddingEnd="15dp"
             android:paddingTop="3dp"

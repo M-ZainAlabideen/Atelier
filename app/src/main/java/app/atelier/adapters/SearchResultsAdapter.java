@@ -1,6 +1,7 @@
 package app.atelier.adapters;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import java.util.List;
 
 import app.atelier.R;
 import app.atelier.classes.FixControl;
+import app.atelier.classes.SessionManager;
 import app.atelier.webservices.responses.products.ProductModel;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,10 +26,12 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
 
     Context context;
     List<ProductModel> searchArrList;
+    SessionManager sessionManager;
 
     public SearchResultsAdapter(Context context, List<ProductModel> searchArrList) {
         this.context = context;
         this.searchArrList = searchArrList;
+        sessionManager = new SessionManager(context);
     }
 
     public class viewHolder extends RecyclerView.ViewHolder {
@@ -54,6 +58,15 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
 
     @Override
     public void onBindViewHolder(@NonNull SearchResultsAdapter.viewHolder viewHolder, int position) {
+
+
+        if (sessionManager.getUserLanguage().equals("en")) {
+            Typeface enBold = Typeface.createFromAsset(context.getAssets(), "montserrat_medium.ttf");
+            viewHolder.title.setTypeface(enBold);
+        } else {
+            Typeface arBold = Typeface.createFromAsset(context.getAssets(), "droid_arabic_kufi_bold.ttf");
+            viewHolder.title.setTypeface(arBold);
+        }
 
         int Width = FixControl.getImageWidth(context, R.mipmap.placeholder_search_product);
         int Height = FixControl.getImageHeight(context, R.mipmap.placeholder_search_product);

@@ -2,7 +2,6 @@ package app.atelier.classes;
 
 public class Constants {
     public static final String BASE_URL = "http://atelier.hardtask.info/api/";
-    public static final String USER_PREF = "user-pref";
     public static final String SKIP_PREF = "skip-pref";
     public static final String AUTHORIZATION = "Authorization";
     public static final String ACCEPT_LANGUAGE = "Accept-Language";
@@ -26,38 +25,15 @@ public class Constants {
             "uBiGeP_OFIgvyXXLh2pBlxzNtKyZ8BJFktfAdhADDrAKQnpn1kOORUhp14VePvn" +
             "IN90N2-MnH06S-Q5mFY9IUJHXz2luPQ_2hsgWQ";
 
-
-
-
-
-
-
-    public final static String[] ShoppingCartType = {"ShoppingCart", "Wishlist"};
-
-    public final static String ContactUsId = "4";
-
-    public final static String TermsConditionId = "3";
-
     public final static int NormalUserRoleId = 3;
 
-    public final static int GuestUserRoleId = 4;
-
-    public final static int KnetId = 1;
-
-    public final static int CreditCardId = 2;
-
-
-    public final static String DOWNLOAD_INVOICE = BASE_URL + "/" + "orders/aaa/pdf";
+    public final static String DOWNLOAD_INVOICE = BASE_URL + "/" + "orders/{orderId}/pdf";
 
     public final static String ORDER_COMPLETE_STATUS = "complete";
-
-    public final static String ORDER_PENDING_STATUS = "pending";
-
     public final static String PAYMENT_STATUS_PAID = "paid";
+    public final static String FACEBOOK = "storeinformationsettings.facebooklink";
+    public final static String INSTAGRAM = "";
+    public final static String TWITTER = "storeinformationsettings.twitterlink";
+    public final static String YOUTUBE = "storeinformationsettings.youtubelink";
 
-    public final static String PAYMENT_STATUS_PENDING = "pending";
-
-    public final static String PAYMENT_METHOD_NAME = "Payments.Hesabe";
-
-    public static final String CODE="Code";
 }

@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,9 +19,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import app.atelier.MainActivity;
 import app.atelier.R;
 import app.atelier.classes.Constants;
+import app.atelier.classes.FixControl;
+import app.atelier.classes.GlobalFunctions;
 import app.atelier.classes.Navigator;
 import app.atelier.classes.SessionManager;
 import app.atelier.webservices.AtelierApiConfig;
@@ -36,6 +42,7 @@ import retrofit.client.Response;
 public class CreateAccountFragment extends Fragment {
     public static FragmentActivity activity;
     public static CreateAccountFragment fragment;
+    public static SessionManager sessionManager;
 
     @BindView(R.id.createAccount_editText_userName)
     EditText userName;
@@ -51,9 +58,13 @@ public class CreateAccountFragment extends Fragment {
     ProgressBar loading;
 
 
-    public static CreateAccountFragment newInstance(FragmentActivity activity) {
+    public static CreateAccountFragment newInstance(FragmentActivity activity, String comingFrom) {
         fragment = new CreateAccountFragment();
         CreateAccountFragment.activity = activity;
+        sessionManager = new SessionManager(activity);
+        Bundle b = new Bundle();
+        b.putString("comingFrom", comingFrom);
+        fragment.setArguments(b);
         return fragment;
     }
 
@@ -70,7 +81,6 @@ public class CreateAccountFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         MainActivity.appbar.setVisibility(View.GONE);
         MainActivity.bottomAppbar.setVisibility(View.GONE);
-        MainActivity.setupBottomAppbar("");
 
         agree.setOnCheckedChangeListener(checkedListener);
 
@@ -95,6 +105,7 @@ public class CreateAccountFragment extends Fragment {
 
     @OnClick(R.id.createAccount_txtView_terms)
     public void termsClick() {
+        Navigator.loadFragment(activity, TopicsPageFragment.newInstance(activity, "13"), R.id.main_frameLayout_Container, true);
     }
 
     @OnClick(R.id.createAccount_btn_done)
@@ -108,15 +119,17 @@ public class CreateAccountFragment extends Fragment {
                 || mailStr.isEmpty() || mailStr == null || mailStr.matches("")
                 || passwordStr.isEmpty() || passwordStr == null || passwordStr.matches("")) {
             Snackbar.make(loading, activity.getResources().getString(R.string.required_fields), Snackbar.LENGTH_LONG).show();
-        } else if (!agree.isChecked()){
+        } else if (!agree.isChecked()) {
             Snackbar.make(loading, activity.getResources().getString(R.string.agree_required), Snackbar.LENGTH_LONG).show();
-        }
-        else {
+        } else {
             CustomerModel customer = new CustomerModel();
             customer.userName = userNameStr;
             customer.phone = phoneStr;
             customer.email = mailStr;
             customer.password = passwordStr;
+            List<Integer> objectList = new ArrayList<>();
+            objectList.add(Constants.NormalUserRoleId);
+            customer.roleIds = objectList;
             updateCustomerApi(customer);
         }
     }
@@ -126,36 +139,48 @@ public class CreateAccountFragment extends Fragment {
 
         GetCustomers getCustomers = new GetCustomers();
         getCustomers.customer = customer;
-        AtelierApiConfig.getCallingAPIInterface().updateCustomer(Constants.AUTHORIZATION_VALUE,MainActivity.language,
-                SessionManager.getUserId(activity), Constants.CONTENT_TYPE_VALUE, getCustomers, new Callback<GetCustomers>() {
+        AtelierApiConfig.getCallingAPIInterface().updateCustomer(
+                Constants.AUTHORIZATION_VALUE,
+                sessionManager.getUserLanguage(),
+                sessionManager.getUserId(),
+                Constants.CONTENT_TYPE_VALUE,
+                getCustomers,
+                new Callback<GetCustomers>() {
                     @Override
                     public void success(GetCustomers getCustomers, Response response) {
                         loading.setVisibility(View.GONE);
                         if (getCustomers.customers.size() > 0) {
                             CustomerModel customer = getCustomers.customers.get(0);
-                            SessionManager.setUser(activity,customer.id,
+                            sessionManager.setUser(customer.id,
                                     customer.userName,
-                                   customer.firstName,
+                                    customer.firstName,
                                     customer.lastName,
                                     customer.phone,
                                     customer.email,
                                     customer.password);
                             MainActivity.accountOrLogin.setText(activity.getResources().getString(R.string.account));
-                            Navigator.loadFragment(activity,MainCategoriesFragment.newInstance(activity),R.id.main_frameLayout_Container,false);
+                            FixControl.hideKeyboard(userName,activity);
+                            if (getArguments().getString("comingFrom").equals("cart")) {
+                                backToCart();
+                            } else {
+                                Navigator.loadFragment(activity, MainCategoriesFragment.newInstance(activity), R.id.main_frameLayout_Container, false);
+                            }
                         }
                     }
 
                     @Override
                     public void failure(RetrofitError error) {
                         loading.setVisibility(View.GONE);
-                        Snackbar.make(loading,activity.getResources().getString(R.string.error),Snackbar.LENGTH_LONG).show();
+                        GlobalFunctions.showErrorMessage(error, loading);
 
                     }
                 });
     }
 
-    public void setData() {
+    private void backToCart() {
+        FragmentManager fm = activity.getSupportFragmentManager();
+        for (int i = 0; i < 2; ++i) {
+            fm.popBackStack();
+        }
     }
-
-
 }

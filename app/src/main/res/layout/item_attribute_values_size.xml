@@ -5,7 +5,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:background="@mipmap/box_unsel">
+    android:layout_margin="10dp">
         <TextView
             android:id="@+id/productSize_txtView_size"
             android:layout_width="wrap_content"
@@ -13,6 +13,9 @@
             android:text="@string/test_size"
             android:textAllCaps="true"
             android:textSize="14sp"
+            android:gravity="center"
+            android:padding="5dp"
             android:textColor="@color/colorPrimary"
-            android:fontFamily="@font/lato_regular"/>
+            android:background="@mipmap/box_unsel"/>
+
 </LinearLayout>

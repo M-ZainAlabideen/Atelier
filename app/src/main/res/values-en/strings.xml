@@ -23,7 +23,7 @@
     <string name="notes">Notes</string>
     <string name="write_something">Write Something</string>
     <string name="related_products">Related Products</string>
-    <string name="add_to_cart">add to Cart</string>
+    <string name="add_to_cart">Add To Cart</string>
     <string name="test_size">XL</string>
     <string name="total_price">Total Price</string>
     <string name="checkout">Check out</string>
@@ -38,7 +38,8 @@
         لقد تم توليد هذا النص من مولد النص العربى،
         حيث يمكنك أن تولد مثل هذا النص
     </string>
-    <string name="name">User Name</string>
+    <string name="DataMissing">Please select below required fields.</string>
+    <string name="name">Name</string>
     <string name="phone">Phone Number</string>
     <string name="mail">Email</string>
     <string name="password">Password</string>
@@ -46,7 +47,7 @@
     <string name="user_name">User Name</string>
     <string name="password2">Password</string>
     <string name="forget_password">forget Password?</string>
-    <string name="skip">Skip</string>
+    <string name="skip">Continue as a Guest</string>
     <string name="create_account">Create Account</string>
     <string name="login">Login</string>
     <string name="mail_address">Email Address</string>
@@ -71,11 +72,10 @@
     <string name="password_required">Please Enter Your Password</string>
     <string name="successfully_updated">your Profile Updated Successfully</string>
     <string name="maximum">available Quantity of this Product Is</string>
-    <string name="currency">KWD</string>
     <string name="empty_cart">The Cart Is Empty</string>
     <string name="sure_for_delete">are You Sure You Want to Delete?</string>
     <string name="order_date">Order Date</string>
-    <string name="order_status">Order State</string>
+    <string name="order_status">Order Status</string>
     <string name="order_number">Order Number</string>
     <string name="retry_message">This order is not yet paid for. To pay now, click the "Retry payment" button.</string>
     <string name="re_order">Re-Order</string>
@@ -114,6 +114,33 @@
     <string name="product_favorites_added">Product added successfully to Favorites</string>
     <string name="order_details">Order Details</string>
     <string name="price">Price</string>
-
+    <string name="message_sent">Message Sent Successfully</string>
+    <string name="name_required">Please Enter Your Name</string>
+    <string name="message_required">Please Enter Your Message</string>
+    <string name="subject">Subject</string>
+    <string name="subject_required">Please Enter the Subject of Message</string>
+    <string name="recover_password">Recover Password</string>
+    <string name="check_mail">Message Sent Successfully, Please Check Your mail</string>
+    <string name="change_password">Change Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="old_password">Current Password</string>
+    <string name="old_password_required">Please Enter The Current Password</string>
+    <string name="new_password_required">Please Enter The New Password</string>
+    <string name="confirm_password_required">Please Confirm The Password</string>
+    <string name="password_match">Password Not Matched</string>
+    <string name="updated_password">Password Updated Successfully</string>
+    <string name="unfavorite">Product Removed Successfully from wishList</string>
+    <string name="empty_favorites">WishList is Empty</string>
+    <string name="test_attribute_title">عنوان الصفة</string>
+    <string name="SuccessPage">"atelier."</string>
+    <string name="ErrorPage">error.aspx</string>
+    <string name="OperationFailed">Operation Failed</string>
+    <string name="new_password">New Password</string>
+    <string name="cancel">Cancel</string>
+    <string name="select">Select</string>
+    <string name="apply_coupon">Apply</string>
+    <string name="sub_total_price">Sub Total</string>
+    <string name="discount">Discount</string>
+    <string name="enter_coupon">Please Enter Coupon Code</string>
 
 </resources>

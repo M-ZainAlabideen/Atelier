@@ -39,6 +39,7 @@
         لقد تم توليد هذا النص من مولد النص العربى،
         حيث يمكنك أن تولد مثل هذا النص
     </string>
+    <string name="DataMissing">عذرا, هناك بعض البيانات المطلوبة غير موجودة</string>
     <string name="name">الإسم</string>
     <string name="phone">رقم الهاتف</string>
     <string name="mail">الإيميل</string>
@@ -47,7 +48,7 @@
     <string name="user_name">إسم المستخدم</string>
     <string name="password2">كلمة المرور</string>
     <string name="forget_password">هل نسيت كلمة السر؟</string>
-    <string name="skip">تخطي</string>
+    <string name="skip">الدخول كزائر</string>
     <string name="create_account">إنشاء حساب</string>
     <string name="login">تسجيل الدخول</string>
     <string name="mail_address">البريد الإلكتروني</string>
@@ -72,9 +73,8 @@
     <string name="password_required">من فضلك قم بإدخال كلمة المرور</string>
     <string name="successfully_updated">تم تعديل بيانات الصفحة الشخصية بنجاح</string>
     <string name="maximum">الكمية المتاحة من هذا المنتج هي</string>
-    <string name="currency">دينار كويتي</string>
     <string name="empty_cart">سلة المشتريات فارغة</string>
-    <string name="sure_for_delete">هل تريد غزالة هذا المنتج من العربة ؟</string>
+    <string name="sure_for_delete">هل تريد إزالة هذا المنتج من العربة ؟</string>
     <string name="order_date">تاريخ الطلب</string>
     <string name="order_status">حالة الطلب</string>
     <string name="order_number">رقم الطلب</string>
@@ -115,5 +115,34 @@
     <string name="product_favorites_added">تم إضافة المنتج إلي لقائمة المفضلة بنجاح</string>
     <string name="order_details">تفاصيل الطلب</string>
     <string name="price">السعر</string>
+    <string name="message_sent">تم إرسال رسالتك بنجاح</string>
+    <string name="name_required">من فضلك قم بإدخال اسمك</string>
+    <string name="message_required">من فضلك قم بإدخال الرسالة</string>
+    <string name="subject">موضوع الرسالة</string>
+    <string name="subject_required">من فضلك قم بإدخال عنوان الرسالة</string>
+    <string name="recover_password">إستعادة كلمة المرور</string>
+    <string name="check_mail">تم إرسال رسالة عبر بريدك الإلكتروني</string>
+    <string name="change_password">تغيير كلمة المرور</string>
+    <string name="confirm_password">تأكيد كلمة المرور</string>
+    <string name="old_password">كلمة المرور الحالية</string>
+    <string name="old_password_required">برجاء إدخال كلمة المرور الحالية</string>
+    <string name="new_password_required">برجاء إدخال كلمة المرور الجديدة</string>
+    <string name="confirm_password_required">برجاء إعادة إدخال كلمة المرور</string>
+    <string name="password_match">كلمة المرور غير متطابقة</string>
+    <string name="updated_password">تم تحديث كلمة المرور بنجاح</string>
+    <string name="unfavorite">تم إزالة المنتج من قائمة المفضلة</string>
+    <string name="empty_favorites">قائمة المفضلة فارغة</string>
+    <string name="test_attribute_title">عنوان الصفة</string>
+    <string name="SuccessPage">"atelier."</string>
+    <string name="ErrorPage">error.aspx</string>
+    <string name="OperationFailed">فشل العملية</string>
+    <string name="new_password">كلمة المرور الجديدة</string>
+    <string name="cancel">إلغاء</string>
+    <string name="select">اختر</string>
+    <string name="apply_coupon">الكوبون</string>
+    <string name="sub_total_price">السعر قبل الخصم</string>
+    <string name="discount">الخصم</string>
+    <string name="enter_coupon">من فضلك قم بإدخال الكوبون</string>
+
 
 </resources>

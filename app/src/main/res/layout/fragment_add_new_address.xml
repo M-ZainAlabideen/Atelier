@@ -65,6 +65,14 @@
         app:layout_constraintTop_toBottomOf="@+id/addAddress_editTxt_mail">
 
 
+        <View
+            android:id="@+id/addAddress_view_selectCountry"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/addAddress_imgView_countryBg"
+            app:layout_constraintEnd_toEndOf="@+id/addAddress_imgView_countryBg"
+            app:layout_constraintStart_toStartOf="@+id/addAddress_imgView_countryBg"
+            app:layout_constraintTop_toTopOf="@+id/addAddress_imgView_countryBg" />
         <ImageView
             android:id="@+id/addAddress_imgView_countryBg"
             android:layout_width="0dp"
@@ -79,7 +87,6 @@
             android:id="@+id/addAddress_txtView_country"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
             android:layout_marginBottom="16dp"
             android:fontFamily="@font/droid_arabic_kufi"
             android:text="@string/select_country"
@@ -102,6 +109,14 @@
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
 
 
+        <View
+            android:id="@+id/addAddress_view_selectCity"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/addAddress_imgView_stateBg"
+            app:layout_constraintEnd_toEndOf="@+id/addAddress_imgView_stateBg"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
         <ImageView
             android:id="@+id/addAddress_imgView_stateBg"
             android:layout_width="0dp"
@@ -116,7 +131,6 @@
             android:id="@+id/addAddress_txtView_state"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
             android:layout_marginBottom="16dp"
             android:fontFamily="@font/droid_arabic_kufi"
             android:text="@string/select_state"

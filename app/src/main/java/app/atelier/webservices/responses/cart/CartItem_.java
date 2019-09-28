@@ -5,6 +5,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+import app.atelier.webservices.responses.attributes.OrderAttributeModel;
+
 public class CartItem_ {
     @SerializedName("shopping_cart_type")
     @Expose
@@ -19,7 +21,7 @@ public class CartItem_ {
     @Expose
     public Integer customerId;
 
-//    @SerializedName("product_attributes")
-//    @Expose
-//    public List<ProductAttribute> product_attributes;
+    @SerializedName("product_attributes")
+    @Expose
+    public List<OrderAttributeModel> product_attributes;
 }

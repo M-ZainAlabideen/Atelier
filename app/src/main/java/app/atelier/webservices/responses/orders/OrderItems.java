@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.List;
 
+import app.atelier.webservices.responses.attributes.OrderAttributeModel;
 import app.atelier.webservices.responses.products.ProductModel;
 
 public class OrderItems implements Serializable {

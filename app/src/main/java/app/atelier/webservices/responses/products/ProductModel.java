@@ -3,12 +3,14 @@ package app.atelier.webservices.responses.products;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.atelier.webservices.responses.attributes.AttributeModel;
 import app.atelier.webservices.responses.vendors.VendorModel;
 
-public class ProductModel {
+public class ProductModel implements Serializable {
     @SerializedName("show_timer")
     @Expose
     public Boolean showTimer;
@@ -233,10 +235,13 @@ public class ProductModel {
     public ArrayList<ImageModel> images = null;
 
 
-//    @SerializedName("attributes")
-//    @Expose
-//    public List<Attribute> attributes = null;
+    @SerializedName("attributes")
+    @Expose
+    public List<AttributeModel> attributes = null;
 
+    @SerializedName("Is_AddedToWishList")
+    @Expose
+    public boolean IsAddedToWishList;
 
     @SerializedName("product_attribute_combinations")
     @Expose

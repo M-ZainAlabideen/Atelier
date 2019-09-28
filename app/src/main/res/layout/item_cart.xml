@@ -23,7 +23,7 @@
             android:background="@color/colorPrimary">
 
             <ImageView
-                android:id="@+id/delete_icon"
+                android:id="@+id/cart_imgView_delete"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
@@ -42,13 +42,12 @@
                 android:id="@+id/cart_txtView_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="20dp"
                 android:fontFamily="@font/droid_arabic_kufi_bold"
                 android:text="@string/test_product_title"
                 android:textColor="@color/darkGray"
                 android:textSize="13sp"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/cart_imgView_delete2"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -77,10 +76,9 @@
                 android:id="@+id/cart_txtView_quantity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/droid_arabic_kufi_bold"
                 android:text="2"
                 android:textColor="@color/darkGray"
-                android:textSize="16sp"
+                android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="@+id/cart_imgView_plus"
                 app:layout_constraintStart_toEndOf="@+id/cart_imgView_plus"
                 app:layout_constraintTop_toTopOf="@+id/cart_imgView_plus" />
@@ -102,7 +100,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:fontFamily="@font/lato_black"
                 android:text="@string/test_price"
                 android:textColor="@color/colorPrimary"
                 android:textSize="16sp"
@@ -125,6 +122,16 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@mipmap/placeholder_cart_product" />
+
+            <ImageView
+                android:id="@+id/cart_imgView_delete2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:padding="13dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@mipmap/iocn_delete" />
 
         </android.support.constraint.ConstraintLayout>
     </FrameLayout>

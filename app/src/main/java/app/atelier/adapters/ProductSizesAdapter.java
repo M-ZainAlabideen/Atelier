@@ -35,7 +35,7 @@ public class ProductSizesAdapter extends RecyclerView.Adapter<ProductSizesAdapte
     @NonNull
     @Override
     public ProductSizesAdapter.viewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View childView = LayoutInflater.from(context).inflate(R.layout.item_product_size, viewGroup, false);
+        View childView = LayoutInflater.from(context).inflate(R.layout.item_attribute_values_size, viewGroup, false);
         return new ProductSizesAdapter.viewHolder(childView);
     }
 

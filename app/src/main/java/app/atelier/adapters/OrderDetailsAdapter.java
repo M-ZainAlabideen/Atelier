@@ -18,6 +18,7 @@ import java.util.List;
 
 import app.atelier.R;
 import app.atelier.classes.Navigator;
+import app.atelier.classes.SessionManager;
 import app.atelier.fragments.ProductDetailsFragment;
 import app.atelier.webservices.responses.orders.OrderItems;
 import app.atelier.webservices.responses.orders.OrderModel;
@@ -29,12 +30,14 @@ public class OrderDetailsAdapter extends RecyclerView.Adapter<OrderDetailsAdapte
     Context context;
     List<OrderItems> orderDetailsArrList;
     OrderModel order;
+    SessionManager sessionManager;
 
 
     public OrderDetailsAdapter(Context context, List<OrderItems> orderDetailsArrList,OrderModel order) {
         this.context = context;
         this.orderDetailsArrList = orderDetailsArrList;
         this.order = order;
+        sessionManager = new SessionManager(context);
     }
 
     public class viewHolder extends RecyclerView.ViewHolder {
@@ -67,7 +70,7 @@ public class OrderDetailsAdapter extends RecyclerView.Adapter<OrderDetailsAdapte
     public void onBindViewHolder(@NonNull final OrderDetailsAdapter.viewHolder viewHolder, final int position) {
 
         viewHolder.title.setText(orderDetailsArrList.get(position).product.getLocalizedName() + "\n" +
-                orderDetailsArrList.get(position).attributeDescription);
+                orderDetailsArrList.get(position).attributeDescription.replace("<br />","\n"));
 
         if (orderDetailsArrList.get(position).product.vendor != null) {
             viewHolder.vendorName.setText(orderDetailsArrList.get(position).product.vendor.name);
@@ -77,16 +80,16 @@ public class OrderDetailsAdapter extends RecyclerView.Adapter<OrderDetailsAdapte
 
         viewHolder.quantity.setText(context.getString(R.string.quantity) + ": " +   orderDetailsArrList.get(position).quantity);
         viewHolder.price.setText(context.getString(R.string.price) + ": " + orderDetailsArrList.get(position).unitPriceInclTax
-        + context.getString(R.string.currency));
+        + sessionManager.getCurrencyCode());
         viewHolder.total.setText(context.getString(R.string.total_price) + ": " + orderDetailsArrList.get(position).priceExclTax
-                + context.getString(R.string.currency));
-        viewHolder.title.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Navigator.loadFragment((FragmentActivity)context, ProductDetailsFragment.newInstance((FragmentActivity)context), R.id.main_frameLayout_Container, true);
-
-            }
-        });
+                + sessionManager.getCurrencyCode());
+//        viewHolder.title.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Navigator.loadFragment((FragmentActivity)context, ProductDetailsFragment.newInstance((FragmentActivity)context), R.id.main_frameLayout_Container, true);
+//
+//            }
+//        });
     }
 
     @Override

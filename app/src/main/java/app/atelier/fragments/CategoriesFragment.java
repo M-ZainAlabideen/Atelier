@@ -19,6 +19,8 @@ import app.atelier.MainActivity;
 import app.atelier.R;
 import app.atelier.adapters.CategoriesAdapter;
 import app.atelier.classes.Constants;
+import app.atelier.classes.GlobalFunctions;
+import app.atelier.classes.SessionManager;
 import app.atelier.webservices.AtelierApiConfig;
 import app.atelier.webservices.responses.categories.CategoryModel;
 import app.atelier.webservices.responses.categories.GetCategories;
@@ -31,6 +33,7 @@ import retrofit.client.Response;
 public class CategoriesFragment extends Fragment {
     public static FragmentActivity activity;
     public static CategoriesFragment fragment;
+    public static SessionManager sessionManager;
 
     @BindView(R.id.categories_recyclerView_List)
     RecyclerView categoriesList;
@@ -47,6 +50,7 @@ public class CategoriesFragment extends Fragment {
                                                  String CategoryId) {
         fragment = new CategoriesFragment();
         CategoriesFragment.activity = activity;
+        sessionManager = new SessionManager(activity);
         Bundle b = new Bundle();
         b.putString("flag",flag);
         b.putString("CategoryId", CategoryId);
@@ -68,7 +72,7 @@ public class CategoriesFragment extends Fragment {
         MainActivity.title.setText(getArguments().getString("flag"));
         MainActivity.appbar.setVisibility(View.VISIBLE);
         MainActivity.bottomAppbar.setVisibility(View.VISIBLE);
-        MainActivity.setupBottomAppbar("categories");
+        MainActivity.setupAppbar("categories",true,true);
 
         MainActivity.categories.setImageResource(R.mipmap.icon_cate_sel);
         layoutManager = new GridLayoutManager(activity, 3);
@@ -85,8 +89,10 @@ public class CategoriesFragment extends Fragment {
     }
 
     public void subcategoriesApi() {
-        AtelierApiConfig.getCallingAPIInterface().subcategories(Constants.AUTHORIZATION_VALUE,
-                MainActivity.language, getArguments().getString("CategoryId")
+        AtelierApiConfig.getCallingAPIInterface().subcategories(
+                Constants.AUTHORIZATION_VALUE,
+                sessionManager.getUserLanguage(),
+                getArguments().getString("CategoryId")
                 , new Callback<GetCategories>() {
                     @Override
                     public void success(GetCategories getCategories, Response response) {
@@ -100,7 +106,7 @@ public class CategoriesFragment extends Fragment {
                     @Override
                     public void failure(RetrofitError error) {
                         loading.setVisibility(View.GONE);
-                        Snackbar.make(loading, activity.getResources().getString(R.string.error), Snackbar.LENGTH_LONG).show();
+                        GlobalFunctions.showErrorMessage(error,loading);
 
                     }
                 });

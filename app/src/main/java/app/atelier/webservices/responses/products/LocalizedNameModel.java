@@ -3,7 +3,9 @@ package app.atelier.webservices.responses.products;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class LocalizedNameModel {
+import java.io.Serializable;
+
+public class LocalizedNameModel implements Serializable {
 
     @SerializedName("language_id")
     @Expose

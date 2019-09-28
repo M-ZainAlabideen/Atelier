@@ -1,4 +1,4 @@
-package app.atelier.webservices.responses.orders;
+package app.atelier.webservices.responses.attributes;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -12,5 +12,5 @@ public class OrderAttributeModel {
     public Integer code;
     @SerializedName("value")
     @Expose
-    public Integer value;
+    public String value;
 }

@@ -24,6 +24,7 @@ import app.atelier.MainActivity;
 import app.atelier.R;
 import app.atelier.adapters.OrdersAdapter;
 import app.atelier.classes.Constants;
+import app.atelier.classes.GlobalFunctions;
 import app.atelier.classes.Navigator;
 import app.atelier.classes.SessionManager;
 import app.atelier.webservices.AtelierApiConfig;
@@ -41,6 +42,7 @@ import retrofit.client.Response;
 public class OrdersFragment extends Fragment {
     public static FragmentActivity activity;
     public static OrdersFragment fragment;
+    public static SessionManager sessionManager;
 
     @BindView(R.id.orders_recyclerView_ordersList)
     RecyclerView ordersList;
@@ -58,6 +60,7 @@ public class OrdersFragment extends Fragment {
     public static OrdersFragment newInstance(FragmentActivity activity) {
         fragment = new OrdersFragment();
         OrdersFragment.activity = activity;
+        sessionManager = new SessionManager(activity);
         return fragment;
     }
 
@@ -75,7 +78,7 @@ public class OrdersFragment extends Fragment {
         MainActivity.title.setText(activity.getResources().getString(R.string.account));
         MainActivity.appbar.setVisibility(View.VISIBLE);
         MainActivity.bottomAppbar.setVisibility(View.VISIBLE);
-        MainActivity.setupBottomAppbar("");
+        MainActivity.setupAppbar("",true,true);
 
         ordersAdapter = new OrdersAdapter(activity, ordersArrList);
         layoutManager = new LinearLayoutManager(activity);
@@ -92,8 +95,12 @@ public class OrdersFragment extends Fragment {
 
 
     public void ordersApi() {
-        AtelierApiConfig.getCallingAPIInterface().orders(Constants.AUTHORIZATION_VALUE,
-                MainActivity.language,SessionManager.getUserId(activity), String.valueOf(pageIndex), Constants.LIMIT,
+        AtelierApiConfig.getCallingAPIInterface().orders(
+                Constants.AUTHORIZATION_VALUE,
+                sessionManager.getUserLanguage(),
+                sessionManager.getUserId(),
+                String.valueOf(pageIndex),
+                Constants.LIMIT,
                 new Callback<GetOrders>() {
                     @Override
                     public void success(GetOrders getOrders, Response response) {
@@ -148,7 +155,8 @@ public class OrdersFragment extends Fragment {
 
                     @Override
                     public void failure(RetrofitError error) {
-
+                        loading.setVisibility(View.GONE);
+                        GlobalFunctions.showErrorMessage(error,loading);
                     }
                 });
     }
@@ -157,7 +165,8 @@ public class OrdersFragment extends Fragment {
         loading.setVisibility(View.VISIBLE);
         AtelierApiConfig.getCallingAPIInterface().orders(
                 Constants.AUTHORIZATION_VALUE,
-                MainActivity.language, SessionManager.getUserId(activity),
+                sessionManager.getUserLanguage(),
+                sessionManager.getUserId(),
                 String.valueOf(pageIndex), Constants.LIMIT,
                 new Callback<GetOrders>() {
                     @Override
@@ -182,13 +191,11 @@ public class OrdersFragment extends Fragment {
 
                     @Override
                     public void failure(RetrofitError error) {
-
+                        loading.setVisibility(View.GONE);
+                        GlobalFunctions.showErrorMessage(error,loading);
                     }
                 }
         );
     }
-    public void setData() {
-    }
-
 
 }

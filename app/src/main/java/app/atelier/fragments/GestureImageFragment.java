@@ -13,6 +13,7 @@ import com.duolingo.open.rtlviewpager.RtlViewPager;
 
 import java.util.ArrayList;
 
+import app.atelier.MainActivity;
 import app.atelier.R;
 import app.atelier.adapters.GestureImageAdapter;
 import butterknife.BindView;
@@ -51,6 +52,11 @@ public class GestureImageFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //hidden MainAppBarLayout and Ads for making the image fullScreen
+        MainActivity.appbar.setVisibility(View.VISIBLE);
+        MainActivity.search.setVisibility(View.GONE);
+        MainActivity.menu.setVisibility(View.GONE);
+
+        MainActivity.bottomAppbar.setVisibility(View.GONE);
         pager.setAdapter(new GestureImageAdapter(activity, imagesArrayList));
         pager.setCurrentItem(position);
 

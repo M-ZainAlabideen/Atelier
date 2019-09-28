@@ -13,8 +13,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +25,7 @@ import app.atelier.MainActivity;
 import app.atelier.R;
 import app.atelier.adapters.ProductsAdapter;
 import app.atelier.classes.Constants;
+import app.atelier.classes.GlobalFunctions;
 import app.atelier.classes.Navigator;
 import app.atelier.classes.SessionManager;
 import app.atelier.webservices.AtelierApiConfig;
@@ -36,10 +40,12 @@ import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import retrofit.mime.TypedInput;
 
 public class FavoritesFragment extends Fragment {
     public static FragmentActivity activity;
     public static FavoritesFragment fragment;
+    public static SessionManager sessionManager;
 
     @BindView(R.id.recyclerView_productsList)
     RecyclerView productsList;
@@ -52,6 +58,7 @@ public class FavoritesFragment extends Fragment {
     public static FavoritesFragment newInstance(FragmentActivity activity) {
         fragment = new FavoritesFragment();
         FavoritesFragment.activity = activity;
+        sessionManager = new SessionManager(activity);
         return fragment;
     }
 
@@ -69,7 +76,7 @@ public class FavoritesFragment extends Fragment {
         MainActivity.title.setText(getString(R.string.my_favorite));
         MainActivity.appbar.setVisibility(View.VISIBLE);
         MainActivity.bottomAppbar.setVisibility(View.VISIBLE);
-        MainActivity.setupBottomAppbar("favorite");
+        MainActivity.setupAppbar("favorite",true,true);
 
         productsAdapter = new ProductsAdapter(activity,
                 "favorite",
@@ -84,28 +91,33 @@ public class FavoritesFragment extends Fragment {
                     @Override
                     public void onAddCartClick(int position) {
                         CartItem_ cartItem_ = new CartItem_();
-                        cartItem_.productId = favoritesArrList.get(position).id;
-                        cartItem_.customerId = Integer.valueOf(SessionManager.getUserId(activity));
+                        cartItem_.productId = favoritesArrList.get(position).productId;
+                        cartItem_.customerId = Integer.valueOf(sessionManager.getUserId());
                         cartItem_.quantity = 1;
-                        cartItem_.shoppingCartType = "ShoppingCart";
+                        cartItem_.shoppingCartType = "1";
                         CartItem cartItem = new CartItem();
                         cartItem.shoppingCartItem = cartItem_;
                         addCartOrFavoriteApi("addToCart", cartItem);
                     }
 
                     @Override
-                    public void onAddFavoriteClick(int position) {
-                        CartItem_ favoriteItem_ = new CartItem_();
+                    public void onAddFavoriteClick(int position, ImageView addFavorite) {
+                        if (addFavorite.getDrawable().getConstantState() ==
+                                getResources().getDrawable( R.mipmap.icon_add_fav_sel).getConstantState()){
+                            deleteFavoriteApi(position,addFavorite);
+                        }
+                        else {
 
-                        favoriteItem_.productId = favoritesArrList.get(position).id;
-                        favoriteItem_.customerId = Integer.valueOf(SessionManager.getUserId(activity));
+                            CartItem_ favoriteItem_ = new CartItem_();
+                        favoriteItem_.productId = favoritesArrList.get(position).productId;
+                        favoriteItem_.customerId = Integer.valueOf(sessionManager.getUserId());
                         favoriteItem_.quantity = 1;
-                        favoriteItem_.shoppingCartType = "Wishlist";
+                        favoriteItem_.shoppingCartType = "2";
                         CartItem favoriteItem = new CartItem();
                         favoriteItem.shoppingCartItem = favoriteItem_;
                         addCartOrFavoriteApi("addToFavorite", favoriteItem);
 
-                    }
+                    }}
                 });
         layoutManager = new GridLayoutManager(activity, 2);
         productsList.setLayoutManager(layoutManager);
@@ -121,8 +133,8 @@ public class FavoritesFragment extends Fragment {
     public void favoritesApi() {
         loading.setVisibility(View.VISIBLE);
         AtelierApiConfig.getCallingAPIInterface().shoppingCartItems(
-                Constants.AUTHORIZATION_VALUE, MainActivity.language
-                , SessionManager.getUserId(activity),
+                Constants.AUTHORIZATION_VALUE, sessionManager.getUserLanguage()
+                , sessionManager.getUserId(),
                 "Wishlist",
                 new Callback<GetCartProducts>() {
                     @Override
@@ -141,17 +153,16 @@ public class FavoritesFragment extends Fragment {
                     @Override
                     public void failure(RetrofitError error) {
                         loading.setVisibility(View.GONE);
-                        Snackbar.make(loading, getString(R.string.error), Snackbar.LENGTH_SHORT).show();
+                        GlobalFunctions.showErrorMessage(error,loading);
                     }
                 }
         );
     }
 
-
     public void addCartOrFavoriteApi(final String type, CartItem cartItem) {
         loading.setVisibility(View.VISIBLE);
         AtelierApiConfig.getCallingAPIInterface().createShoppingCart(
-                Constants.AUTHORIZATION_VALUE, MainActivity.language,
+                Constants.AUTHORIZATION_VALUE, sessionManager.getUserLanguage(),
                 Constants.CONTENT_TYPE_VALUE, cartItem,
                 new Callback<GetCartProducts>() {
                     @Override
@@ -179,7 +190,7 @@ public class FavoritesFragment extends Fragment {
                                             .setIcon(R.mipmap.logo)
                                             .show();
                                     MainActivity.emptyCart = false;
-                                    MainActivity.cart.setImageResource(R.mipmap.icon_cart_with_notifi);
+                                    MainActivity.notification.setVisibility(View.VISIBLE);
                                 }
                             }
                         }
@@ -188,9 +199,71 @@ public class FavoritesFragment extends Fragment {
                     @Override
                     public void failure(RetrofitError error) {
                         loading.setVisibility(View.GONE);
-                        Snackbar.make(loading, error.getMessage(), Snackbar.LENGTH_SHORT).show();
+                        GlobalFunctions.showErrorMessage(error,loading);
                     }
                 }
         );
+    }
+
+    private void deleteFavoriteApi( final int position, final ImageView addFavorite){
+        loading.setVisibility(View.VISIBLE);
+        AtelierApiConfig.getCallingAPIInterface().deleteFavoriteItem(
+                Constants.AUTHORIZATION_VALUE,
+                sessionManager.getUserLanguage(),
+                "2",
+                String.valueOf(favoritesArrList.get(position).id),
+                sessionManager.getUserId(),
+                new Callback<Response>() {
+                    @Override
+                    public void success(Response response, Response response2) {
+
+                        TypedInput body = response.getBody();
+                        String outResponse = "";
+
+                        try {
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(body.in()));
+                            StringBuilder out = new StringBuilder();
+                            String newLine = System.getProperty("line.separator");
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                out.append(line);
+                                out.append(newLine);
+                            }
+
+                            outResponse = out.toString();
+
+                        } catch (Exception ex) {
+
+                            ex.printStackTrace();
+                        }
+
+                        if (outResponse != null) {
+                            outResponse = outResponse.replace("\"", "");
+                            outResponse = outResponse.replace("\n", "");
+                            if (outResponse.equalsIgnoreCase("{}")) {
+
+                                favoritesArrList.remove(position);
+                                productsList.getAdapter().notifyItemRemoved(position);
+                                productsList.getAdapter().notifyItemRangeChanged(0, favoritesArrList.size(), favoritesArrList);
+                                if (favoritesArrList.size() == 0) {
+                                    Snackbar.make(loading, activity.getResources().getString(R.string.empty_favorites), Snackbar.LENGTH_LONG).show();
+                                    addFavorite.setImageResource(R.mipmap.icon_add_fav_unsel);
+                                }
+
+                            }
+                        }
+
+                        loading.setVisibility(View.GONE);
+                    }
+
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        loading.setVisibility(View.GONE);
+                        GlobalFunctions.showErrorMessage(error,loading);
+                    }
+                }
+        );
+
     }
 }

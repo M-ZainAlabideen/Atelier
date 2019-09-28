@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:id="@+id/product_constraint_container">
 
     <android.support.v7.widget.CardView
         android:layout_width="wrap_content"
@@ -71,7 +72,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:fontFamily="@font/lato_black"
                 android:text="@string/test_price"
                 app:layout_goneMarginStart="5dp"
                 android:layout_marginEnd="5dp"

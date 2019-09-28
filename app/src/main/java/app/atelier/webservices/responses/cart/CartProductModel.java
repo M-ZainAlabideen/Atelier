@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 import app.atelier.webservices.responses.customers.CustomerModel;
-import app.atelier.webservices.responses.orders.OrderAttributeModel;
+import app.atelier.webservices.responses.attributes.OrderAttributeModel;
 import app.atelier.webservices.responses.products.ProductModel;
 
 public class CartProductModel {

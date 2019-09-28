@@ -1,28 +1,36 @@
 package app.atelier.webservices;
 
 import app.atelier.classes.Constants;
+import app.atelier.webservices.contact.GetContactUsRequest;
+import app.atelier.webservices.contact.GetContactUsResponse;
 import app.atelier.webservices.responses.addresses.GetAddresses;
 import app.atelier.webservices.responses.brands.GetBrands;
+import app.atelier.webservices.responses.cards.GetCards;
 import app.atelier.webservices.responses.cart.GetCartProducts;
 import app.atelier.webservices.responses.categories.GetCategories;
 import app.atelier.webservices.responses.countries.GetCountries;
+import app.atelier.webservices.responses.coupon.GetCouponOrderTotal;
 import app.atelier.webservices.responses.customers.GetCustomers;
 import app.atelier.webservices.responses.orders.GetOrders;
 import app.atelier.webservices.responses.products.GetProducts;
 import app.atelier.webservices.responses.cart.CartItem;
+import app.atelier.webservices.responses.settings.GetSettings;
+import app.atelier.webservices.responses.sliders.GetSlider;
 import app.atelier.webservices.responses.states.GetStates;
 import app.atelier.webservices.responses.stores.GetStores;
+import app.atelier.webservices.responses.topics.GetTopics;
 import retrofit.Callback;
 import retrofit.client.Response;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
+import retrofit.http.Field;
+import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
-
 public interface AtelierApiInterface {
 
     @GET("/current_store")
@@ -58,6 +66,12 @@ public interface AtelierApiInterface {
                       @Path("id") String id,
                       Callback<GetCustomers> response);
 
+    @GET("/sliders")
+    void sliders(@Header(Constants.AUTHORIZATION) String Authorization,
+                 @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
+                 @Query("category_id") String category_id,
+                 Callback<GetSlider> getSlidersCallback);
+
     //*****************************CATEGORIES***********************************
 
     @GET("/categories?fields=id,localized_names,image,has_sub_categories")
@@ -79,9 +93,10 @@ public interface AtelierApiInterface {
 
 
     //*****************************PRODUCTS***********************************
-    @GET("/products?fields=id,localized_names,localized_short_descriptions,images,price,old_price,available_end_date_time_utc,show_timer,prices_percentage,formatted_old_price,formatted_price")
+    @GET("/products?fields=id,localized_names,localized_short_descriptions,images,attributes,price,Is_AddedToWishList,old_price,available_end_date_time_utc,show_timer,prices_percentage,formatted_old_price,formatted_price")
     void products(@Header(Constants.AUTHORIZATION) String Authorization,
                   @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
+                  @Query("customer_id") String customerId,
                   @Query("category_id") String categoryId,
                   @Query("manufacturer_id") String manufacturerId,
                   @Query("limit") String limit,
@@ -92,9 +107,10 @@ public interface AtelierApiInterface {
                   Callback<GetProducts> response);
 
 
-    @GET("/products/search?fields=id,localized_names,localized_short_descriptions,images,price,old_price,available_end_date_time_utc,show_timer,prices_percentage,formatted_old_price,formatted_price")
+    @GET("/products/search?fields=id,localized_names,localized_short_descriptions,images,price,Is_AddedToWishList,old_price,available_end_date_time_utc,show_timer,prices_percentage,formatted_old_price,formatted_price")
     void searchProducts(@Header(Constants.AUTHORIZATION) String Authorization,
                         @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
+                        @Query("customer_id") String customerId,
                         @Query("category_id") String categoryId,
                         @Query("manufacturer_id") String manufacturerId,
                         @Query("limit") String limit,
@@ -108,20 +124,19 @@ public interface AtelierApiInterface {
                         Callback<GetProducts> response);
 
 
-    @GET("/products/{id}/related?fields=id,localized_names,localized_short_descriptions,images,price,old_price,available_end_date_time_utc,show_timer,prices_percentage,formatted_old_price,formatted_price")
+    @GET("/products/{id}/related?fields=id,localized_names,localized_short_descriptions,images,price,Is_AddedToWishList,old_price,available_end_date_time_utc,show_timer,prices_percentage,formatted_old_price,formatted_price")
     void relatedProducts(@Header(Constants.AUTHORIZATION) String Authorization,
                          @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
+                         @Query("customer_id") String customerId,
                          @Path("id") String id,
-                         @Query("manufacturer_id") String manufacturerId,
                          Callback<GetProducts> response);
 
     @GET("/products/{id}")
     void productById(@Header(Constants.AUTHORIZATION) String Authorization,
                      @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
+                     @Query("customer_id") String customerId,
                      @Path("id") String id,
                      Callback<GetProducts> response);
-
-
 
 
     //*****************************CART***********************************
@@ -155,6 +170,15 @@ public interface AtelierApiInterface {
                                 @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
                                 @Path("id") String id,
                                 Callback<Response> response);
+
+
+    @DELETE("/shopping_cart_items/{shopping_cart_type}/{product_id}/{customer_id}")
+    void deleteFavoriteItem(@Header(Constants.AUTHORIZATION) String Authorization,
+                            @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
+                            @Path("shopping_cart_type") String shoppingCartType,
+                            @Path("product_id") String productId,
+                            @Path("customer_id") String customerId,
+                            Callback<Response> response);
 
 
     @GET("/shopping_cart_items/{id}?fields=quantity&shopping_cart_type_id=1")
@@ -194,7 +218,7 @@ public interface AtelierApiInterface {
     @POST("/orders")
     void createOrders(@Header(Constants.AUTHORIZATION) String Authorization,
                       @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
-                      @Header("Content-Type") String content_type,
+                      @Header(Constants.CONTENT_TYPE) String content_type,
                       @Body GetOrders orders,
                       Callback<Response> response);
 
@@ -244,4 +268,50 @@ public interface AtelierApiInterface {
     void countries(@Header(Constants.AUTHORIZATION) String Authorization,
                    @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
                    Callback<GetCountries> getCountries);
+
+
+    //************************PASSWORD*********************************
+
+    @FormUrlEncoded
+    @POST("/customers/recoverypassword")
+    void forgetPassword(@Header(Constants.AUTHORIZATION) String Authorization,
+                        @Field("email") String email,
+                        Callback<Response> response);
+
+    //@FormUrlEncoded
+    @POST("/customers/changepassword")
+    void changePassword(@Header(Constants.AUTHORIZATION) String Authorization,
+                        @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
+                        @Query("customer_id") String customer_id,
+                        @Query("old_password") String old_password,
+                        @Query("new_password") String new_password,
+                        Callback<GetCustomers> getGetCustomer);
+
+    //************************CONTENT*********************************
+
+    @POST("/contact_us")
+    void contactUs(@Header(Constants.AUTHORIZATION) String Authorization,
+                   @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
+                   @Header(Constants.CONTENT_TYPE) String contentType,
+                   @Body GetContactUsRequest contactUs,
+                   Callback<GetContactUsResponse> getGetContactUs);
+
+    @GET("/topics/{id}")
+    void topics(@Header(Constants.AUTHORIZATION) String Authorization,
+                @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
+                @Path("id") String id,
+                Callback<GetTopics> getTopics);
+
+    @GET("/settings")
+    void settings(@Header(Constants.AUTHORIZATION) String Authorization,
+                  @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
+                  Callback<GetSettings> getProductsCallback);
+
+    //********************************************************************
+    @GET("/ApplyDiscountCoupon")
+    void applyCoupon(@Header(Constants.AUTHORIZATION) String Authorization,
+               @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
+               @Query("customerId") String customerId,
+               @Query("discountcouponcode") String discountCouponCode,
+               Callback<GetCouponOrderTotal> getProductsCallback);
 }

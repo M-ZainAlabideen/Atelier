@@ -13,7 +13,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/view7"
+        app:layout_constraintBottom_toTopOf="@+id/view10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -28,7 +28,7 @@
         app:srcCompat="@mipmap/icon_edit_profile" />
 
     <TextView
-        android:id="@+id/textView17"
+        android:id="@+id/myAccount_tv_editProfile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
@@ -45,12 +45,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="25dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView17"
+        app:layout_constraintBottom_toBottomOf="@+id/myAccount_tv_editProfile"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView17"
+        app:layout_constraintTop_toTopOf="@+id/myAccount_tv_editProfile"
         app:srcCompat="@mipmap/icon_arrow" />
 
 
+    <View
+        android:id="@+id/view10"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="30dp"
+        android:background="@color/lightGray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/myAccount_tv_editProfile" />
 
     <View
         android:id="@+id/view7"
@@ -59,8 +68,9 @@
         android:layout_marginTop="30dp"
         android:background="@color/lightGray"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView17" />
+        app:layout_constraintTop_toBottomOf="@+id/myAccount_tv_changePass" />
 
 
     <View
@@ -84,7 +94,7 @@
         app:srcCompat="@mipmap/icon_my_orders" />
 
     <TextView
-        android:id="@+id/textView170"
+        android:id="@+id/myAccount_tv_myOrders"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
@@ -101,9 +111,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="25dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView170"
+        app:layout_constraintBottom_toBottomOf="@+id/myAccount_tv_myOrders"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView170"
+        app:layout_constraintTop_toTopOf="@+id/myAccount_tv_myOrders"
         app:srcCompat="@mipmap/icon_arrow" />
 
     <View
@@ -114,7 +124,7 @@
         android:background="@color/lightGray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView170" />
+        app:layout_constraintTop_toBottomOf="@+id/myAccount_tv_myOrders" />
 
     <View
         android:id="@+id/myAccount_View_logout"
@@ -138,7 +148,7 @@
         app:srcCompat="@mipmap/icon_logout" />
 
     <TextView
-        android:id="@+id/textView171"
+        android:id="@+id/myAccount_tv_logout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
@@ -155,9 +165,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="25dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView171"
+        app:layout_constraintBottom_toBottomOf="@+id/myAccount_tv_logout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView171"
+        app:layout_constraintTop_toTopOf="@+id/myAccount_tv_logout"
         app:srcCompat="@mipmap/icon_arrow" />
 
     <View
@@ -168,7 +178,7 @@
         android:background="@color/lightGray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView171" />
+        app:layout_constraintTop_toBottomOf="@+id/myAccount_tv_logout" />
 
     <ProgressBar
         android:id="@+id/loading"
@@ -208,7 +218,7 @@
         app:srcCompat="@mipmap/icon_addresses" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/myAccount_tv_addresses"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
@@ -228,16 +238,59 @@
         android:background="@color/lightGray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        app:layout_constraintTop_toBottomOf="@+id/myAccount_tv_addresses" />
 
     <ImageView
         android:id="@+id/myAccount_imgView_addressesArrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="25dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView3"
+        app:layout_constraintBottom_toBottomOf="@+id/myAccount_tv_addresses"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView3"
+        app:layout_constraintTop_toTopOf="@+id/myAccount_tv_addresses"
+        app:srcCompat="@mipmap/icon_arrow" />
+
+    <View
+        android:id="@+id/myAccount_View_changePass"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/view7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view10" />
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view10"
+        app:srcCompat="@mipmap/icon_change_password" />
+
+    <TextView
+        android:id="@+id/myAccount_tv_changePass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:fontFamily="@font/droid_arabic_kufi_bold"
+        android:text="@string/change_password"
+        android:textColor="@color/darkGray"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView4"
+        app:layout_constraintStart_toEndOf="@+id/imageView4"
+        app:layout_constraintTop_toTopOf="@+id/imageView4" />
+
+    <ImageView
+        android:id="@+id/myAccount_imgView_changePassArrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="25dp"
+        app:layout_constraintBottom_toBottomOf="@+id/myAccount_tv_changePass"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/myAccount_tv_changePass"
         app:srcCompat="@mipmap/icon_arrow" />
 
 </android.support.constraint.ConstraintLayout>

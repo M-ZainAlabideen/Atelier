@@ -28,6 +28,11 @@ public class OrderModel implements Serializable {
     @SerializedName("payment_method_system_name")
     @Expose
     public String paymentMethodSystemName;
+
+    @SerializedName("Payment_Method_Code")
+    @Expose
+    public String paymentMethodCode;
+
     @SerializedName("customer_currency_code")
     @Expose
     public String customerCurrencyCode;

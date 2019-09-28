@@ -1,5 +1,6 @@
 package app.atelier.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,7 +25,10 @@ import app.atelier.MainActivity;
 import app.atelier.R;
 import app.atelier.classes.Constants;
 import app.atelier.classes.FixControl;
+import app.atelier.classes.GlobalFunctions;
+import app.atelier.classes.LocaleHelper;
 import app.atelier.classes.Navigator;
+import app.atelier.classes.SessionManager;
 import app.atelier.webservices.AtelierApiConfig;
 import app.atelier.webservices.responses.categories.CategoryModel;
 import app.atelier.webservices.responses.categories.GetCategories;
@@ -38,18 +42,16 @@ import retrofit.client.Response;
 public class MainCategoriesFragment extends Fragment {
     public static FragmentActivity activity;
     public static MainCategoriesFragment fragment;
+    public static SessionManager sessionManager;
 
-    @BindView(R.id.mainCategories_linearLayout_container)
-    LinearLayout container;
     @BindView(R.id.mainCategories_imgView_first)
     ImageView first;
     @BindView(R.id.mainCategories_imgView_second)
     ImageView second;
-    @BindView(R.id.mainCategories_txtView_firstTitle)
+    @BindView(R.id.mainCategories_tv_firstTitle)
     TextView firstTitle;
-    @BindView(R.id.mainCategories_txtView_secondTitle)
+    @BindView(R.id.mainCategories_tv_secondTitle)
     TextView secondTitle;
-
     @BindView(R.id.loading)
     ProgressBar loading;
 
@@ -58,6 +60,7 @@ public class MainCategoriesFragment extends Fragment {
     public static MainCategoriesFragment newInstance(FragmentActivity activity) {
         fragment = new MainCategoriesFragment();
         MainCategoriesFragment.activity = activity;
+        sessionManager = new SessionManager(activity);
         return fragment;
     }
 
@@ -74,39 +77,67 @@ public class MainCategoriesFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         MainActivity.appbar.setVisibility(View.GONE);
         MainActivity.bottomAppbar.setVisibility(View.GONE);
-        container.setVisibility(View.GONE);
+        first.setVisibility(View.GONE);
+        second.setVisibility(View.GONE);
         loading.setVisibility(View.VISIBLE);
         if (mainCategoriesArrList.size() == 0) {
             categoriesApi();
         } else {
             setData(mainCategoriesArrList);
-            container.setVisibility(View.VISIBLE);
+            first.setVisibility(View.VISIBLE);
+            second.setVisibility(View.VISIBLE);
             loading.setVisibility(View.GONE);
         }
     }
 
-    @OnClick(R.id.mainCategories_view_suits)
+    @OnClick(R.id.mainCategories_imgView_first)
     public void suitsClick() {
         MainActivity.mainCategoryId = mainCategoriesArrList.get(0).id;
         Navigator.loadFragment(activity, HomeFragment.newInstance(activity, MainActivity.mainCategoryId), R.id.main_frameLayout_Container, true);
     }
 
-    @OnClick(R.id.mainCategories_view_dresses)
+    @OnClick(R.id.mainCategories_imgView_second)
     public void dressesClick() {
         MainActivity.mainCategoryId = mainCategoriesArrList.get(1).id;
         Navigator.loadFragment(activity, HomeFragment.newInstance(activity, MainActivity.mainCategoryId), R.id.main_frameLayout_Container, true);
     }
 
+    @OnClick(R.id.mainCategories_tv_changeLang)
+    public void changeLangClick(){
+           /*for changing the language of App
+        1- check the value of language in sharedPreference and Reflects the language
+         2- set the new value of language in local and change the value of sharedPreference to new value
+         3- restart the mainActivity with noAnimation
+        * */
+
+        if (sessionManager.getUserLanguage().equals("en")) {
+            sessionManager.setUserLanguage("ar");
+            MainActivity.isEnglish = false;
+        }
+        else{
+            sessionManager.setUserLanguage("en");
+            MainActivity.isEnglish = true;
+        }
+        LocaleHelper.setLocale(activity,sessionManager.getUserLanguage());
+
+        activity.finish();
+        activity.overridePendingTransition(0, 0);
+        startActivity(new Intent(activity, MainActivity.class));
+
+    }
     public void categoriesApi() {
-        AtelierApiConfig.getCallingAPIInterface().categories(Constants.AUTHORIZATION_VALUE,
-                MainActivity.language, new Callback<GetCategories>() {
+        AtelierApiConfig.getCallingAPIInterface().categories(
+                Constants.AUTHORIZATION_VALUE,
+                sessionManager.getUserLanguage(),
+                new Callback<GetCategories>() {
                     @Override
                     public void success(GetCategories getCategories, Response response) {
                         if (getCategories.categories != null) {
                             if (getCategories.categories.size() > 0) {
                                 mainCategoriesArrList.addAll(getCategories.categories);
                                 setData(mainCategoriesArrList);
-                                container.setVisibility(View.VISIBLE);
+                                first.setVisibility(View.VISIBLE);
+                                second.setVisibility(View.VISIBLE);
                                 loading.setVisibility(View.GONE);
 
                             }
@@ -116,14 +147,14 @@ public class MainCategoriesFragment extends Fragment {
                     @Override
                     public void failure(RetrofitError error) {
                         loading.setVisibility(View.GONE);
-                        Snackbar.make(loading,activity.getResources().getString(R.string.error),Snackbar.LENGTH_LONG).show();
+                        GlobalFunctions.showErrorMessage(error,loading);
                     }
                 });
     }
 
     public void setData(List<CategoryModel> mainCategoriesArrList) {
-        int Width = FixControl.getImageWidth(activity, R.mipmap.icon_dress1);
-        int Height = FixControl.getImageHeight(activity, R.mipmap.icon_dress1);
+        int Width = FixControl.getImageWidth(activity, R.mipmap.dresses_icon);
+        int Height = FixControl.getImageHeight(activity, R.mipmap.dresses_icon);
         first.getLayoutParams().height = Height;
        first.getLayoutParams().width = Width;
         if (mainCategoriesArrList.get(0).getPhoto() != null
@@ -132,15 +163,15 @@ public class MainCategoriesFragment extends Fragment {
 
             Glide.with(activity).load(mainCategoriesArrList.get(0).getPhoto())
                     .apply(new RequestOptions()
-                            .placeholder(R.mipmap.icon_dress1)
-                            .error(R.mipmap.icon_dress1))
+                            .placeholder(R.mipmap.dresses_icon)
+                            .error(R.mipmap.dresses_icon))
                     .into(first);
         }
 
 
 
-    int Width2 = FixControl.getImageWidth(activity, R.mipmap.icon_dress2);
-    int Height2 = FixControl.getImageHeight(activity, R.mipmap.icon_dress2);
+    int Width2 = FixControl.getImageWidth(activity, R.mipmap.abaya_icon);
+    int Height2 = FixControl.getImageHeight(activity, R.mipmap.abaya_icon);
         second.getLayoutParams().height = Height2;
        second.getLayoutParams().width = Width2;
         if (mainCategoriesArrList.get(1).getPhoto() != null
@@ -149,12 +180,13 @@ public class MainCategoriesFragment extends Fragment {
 
         Glide.with(activity).load(mainCategoriesArrList.get(1).getPhoto())
                 .apply(new RequestOptions()
-                        .placeholder(R.mipmap.icon_dress2)
-                        .error(R.mipmap.icon_dress2))
+                        .placeholder(R.mipmap.abaya_icon)
+                        .error(R.mipmap.abaya_icon))
                 .into(second);
     }
 
         firstTitle.setText(mainCategoriesArrList.get(0).getLocalizedName());
         secondTitle.setText(mainCategoriesArrList.get(1).getLocalizedName());
-}
+
+    }
 }

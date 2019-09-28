@@ -62,6 +62,10 @@ public class StoreModel {
         @Expose
         public ArrayList<StoreCurrencyModel> storeCurrencies;
 
+        @SerializedName("store_payment_methods")
+        @Expose
+        public ArrayList<PaymentModel> storePaymentMethods;
+
         @SerializedName("id")
         @Expose
         public int id;

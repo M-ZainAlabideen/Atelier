@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,48 +8,56 @@
     android:fillViewport="true"
     android:background="@color/white">
 
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/imageView8"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:scaleType="centerCrop"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@mipmap/placeholder_product_details" />
+        <com.glide.slider.library.SliderLayout
+            android:id="@+id/productDetails_slider"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="0dp"
+            android:elevation="5dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+        </com.glide.slider.library.SliderLayout>
+
 
         <ImageView
-            android:id="@+id/imageView9"
+            android:id="@+id/productDetails_img_addFavorite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView8"
-            app:layout_constraintStart_toStartOf="@+id/imageView8"
+            android:layout_marginStart="18dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/productDetails_slider"
             app:srcCompat="@mipmap/icon_add_fav_unsel" />
 
         <TextView
-            android:id="@+id/textView4"
+            android:id="@+id/productDetails_txt_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="20dp"
             android:layout_marginEnd="8dp"
-            android:gravity="center"
             android:fontFamily="@font/droid_arabic_kufi_bold"
+            android:gravity="center"
             android:text="@string/test_product_title"
             android:textColor="@color/darkGray"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView8" />
+            app:layout_constraintTop_toBottomOf="@+id/productDetails_img_addFavorite" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/productDetails_txt_description"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -61,7 +69,7 @@
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView4" />
+            app:layout_constraintTop_toBottomOf="@+id/productDetails_txt_name" />
 
         <LinearLayout
             android:id="@+id/linearLayout"
@@ -73,10 +81,10 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView5">
+            app:layout_constraintTop_toBottomOf="@+id/productDetails_txt_description">
 
             <ImageView
-                android:id="@+id/imageView10"
+                android:id="@+id/productDetails_img_plus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="12dp"
@@ -85,18 +93,17 @@
                 tools:layout_editor_absoluteY="454dp" />
 
             <TextView
-                android:id="@+id/textView6"
+                android:id="@+id/productDetails_txt_quantity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/lato_regular"
-                android:text="2"
+                android:text="1"
                 android:textColor="@color/darkGray"
                 android:textSize="16sp"
                 tools:layout_editor_absoluteX="319dp"
                 tools:layout_editor_absoluteY="454dp" />
 
             <ImageView
-                android:id="@+id/imageView11"
+                android:id="@+id/productDetails_img_minus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="12dp"
@@ -105,19 +112,19 @@
                 tools:layout_editor_absoluteY="445dp" />
 
             <TextView
-                android:id="@+id/textView7"
+                android:id="@+id/productDetails_txt_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="24dp"
                 android:layout_weight="1"
-                android:fontFamily="@font/lato_black"
                 android:text="@string/test_price"
                 android:textColor="@color/colorPrimary"
                 android:textSize="16sp" />
         </LinearLayout>
 
         <View
-            android:id="@+id/view"
+            android:visibility="visible"
+            android:id="@+id/view1"
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_marginTop="10dp"
@@ -128,18 +135,20 @@
             app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
         <LinearLayout
-            android:id="@+id/linearLayout2"
+            android:visibility="visible"
+            android:id="@+id/productDetails_linear_sizeOption1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view">
+            app:layout_constraintTop_toBottomOf="@+id/view1">
 
 
             <RadioButton
-                android:id="@+id/radioButton"
+                android:visibility="visible"
+                android:id="@+id/productDetails_radio_radioSize1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="22dp"
@@ -147,10 +156,11 @@
                 android:fontFamily="@font/droid_arabic_kufi_bold"
                 android:padding="10dp"
                 android:text="@string/size"
-                android:textColor="@color/darkGray"
+                android:textColor="@color/black"
                 android:textSize="12sp" />
 
             <android.support.v7.widget.RecyclerView
+                android:id="@+id/productDetails_recycler_sizeOptionsList1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="92dp"
@@ -158,6 +168,7 @@
         </LinearLayout>
 
         <View
+            android:visibility="visible"
             android:id="@+id/view2"
             android:layout_width="match_parent"
             android:layout_height="2dp"
@@ -165,11 +176,12 @@
             android:background="@color/lightGray"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+            app:layout_constraintTop_toBottomOf="@+id/productDetails_linear_sizeOption1" />
 
 
         <RadioButton
-            android:id="@+id/radioButton2"
+            android:visibility="visible"
+            android:id="@+id/productDetails_radio_radioSize2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="22dp"
@@ -178,20 +190,21 @@
             android:fontFamily="@font/droid_arabic_kufi_bold"
             android:padding="10dp"
             android:text="@string/size_cm"
-            android:textColor="@color/darkGray"
+            android:textColor="@color/black"
             android:textSize="12sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view2" />
 
         <LinearLayout
-            android:id="@+id/linearLayout3"
+            android:visibility="visible"
+            android:id="@+id/productDetails_linear_sizeOptions2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/radioButton2">
+            app:layout_constraintTop_toBottomOf="@+id/productDetails_radio_radioSize2">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -202,14 +215,16 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/productDetails_tv_title1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/droid_arabic_kufi"
                     android:text="@string/length"
-                    android:textColor="@color/darkGray"
+                    android:textColor="@color/black"
                     android:textSize="12sp" />
 
                 <EditText
+                    android:id="@+id/productDetails_editTxt_value1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -219,11 +234,12 @@
                     android:inputType="number" />
 
                 <TextView
+                    android:id="@+id/productDetails_tv_measure1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/droid_arabic_kufi"
                     android:text="@string/cm"
-                    android:textColor="@color/lightGray2"
+                    android:textColor="@color/black"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -237,14 +253,16 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/productDetails_tv_title2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/droid_arabic_kufi"
                     android:text="@string/shoulder"
-                    android:textColor="@color/darkGray"
+                    android:textColor="@color/black"
                     android:textSize="12sp" />
 
                 <EditText
+                    android:id="@+id/productDetails_editTxt_value2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -254,11 +272,12 @@
                     android:inputType="number" />
 
                 <TextView
+                    android:id="@+id/productDetails_tv_measure2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/droid_arabic_kufi"
                     android:text="@string/cm"
-                    android:textColor="@color/lightGray2"
+                    android:textColor="@color/black"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -271,14 +290,16 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/productDetails_tv_title3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/droid_arabic_kufi"
                     android:text="@string/chest"
-                    android:textColor="@color/darkGray"
+                    android:textColor="@color/black"
                     android:textSize="12sp" />
 
                 <EditText
+                    android:id="@+id/productDetails_editTxt_value3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -288,11 +309,12 @@
                     android:inputType="number" />
 
                 <TextView
+                    android:id="@+id/productDetails_tv_measure3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/droid_arabic_kufi"
                     android:text="@string/cm"
-                    android:textColor="@color/lightGray2"
+                    android:textColor="@color/black"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -305,14 +327,16 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/productDetails_tv_title4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/droid_arabic_kufi"
                     android:text="@string/Sleeve"
-                    android:textColor="@color/darkGray"
+                    android:textColor="@color/black"
                     android:textSize="12sp" />
 
                 <EditText
+                    android:id="@+id/productDetails_editTxt_value4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -322,17 +346,19 @@
                     android:inputType="number" />
 
                 <TextView
+                    android:id="@+id/productDetails_tv_measure4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/droid_arabic_kufi"
                     android:text="@string/cm"
-                    android:textColor="@color/lightGray2"
+                    android:textColor="@color/black"
                     android:textSize="12sp" />
             </LinearLayout>
 
         </LinearLayout>
 
         <View
+            android:visibility="visible"
             android:id="@+id/view3"
             android:layout_width="match_parent"
             android:layout_height="2dp"
@@ -340,39 +366,21 @@
             android:background="@color/lightGray"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+            app:layout_constraintTop_toBottomOf="@+id/productDetails_linear_sizeOptions2" />
 
 
-        <LinearLayout
-            android:id="@+id/linearLayout5"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view3">
-
-            <TextView
-                android:id="@+id/textView10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:fontFamily="@font/droid_arabic_kufi_bold"
-                android:text="@string/color"
-                android:textColor="@color/darkGray"
-                android:textSize="12sp" />
 
             <android.support.v7.widget.RecyclerView
+                android:id="@+id/productDetails_recycler_attributes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="105dp"/>
-        </LinearLayout>
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/view3"/>
 
 
         <View
+            android:visibility="gone"
             android:id="@+id/view4"
             android:layout_width="match_parent"
             android:layout_height="2dp"
@@ -380,9 +388,10 @@
             android:background="@color/lightGray"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
+            app:layout_constraintTop_toBottomOf="@+id/productDetails_recycler_attributes" />
 
         <TextView
+            android:visibility="gone"
             android:id="@+id/textView11"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -396,7 +405,8 @@
             app:layout_constraintTop_toBottomOf="@+id/view4" />
 
         <EditText
-            android:id="@+id/editText2"
+            android:visibility="gone"
+            android:id="@+id/productDetails_editTxt_notes"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -424,10 +434,10 @@
             android:background="@color/lightGray"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editText2" />
+            app:layout_constraintTop_toBottomOf="@+id/productDetails_editTxt_notes" />
 
         <TextView
-            android:id="@+id/textView12"
+            android:id="@+id/productDetails_tv_relatedTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="22dp"
@@ -440,45 +450,60 @@
             app:layout_constraintTop_toBottomOf="@+id/view5" />
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="486dp"
-            android:layout_height="171dp"
+            android:id="@+id/productDetails_recycler_relatedProducts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="11dp"
             android:layout_marginTop="16dp"
+            android:paddingBottom="80dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView12" />
+            app:layout_constraintTop_toBottomOf="@+id/productDetails_tv_relatedTitle" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+
+        <ProgressBar
+            android:id="@+id/loading"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="21dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginEnd="21dp"
-            android:layout_marginBottom="16dp"
-            android:gravity="center"
-            android:background="@color/colorPrimary"
-            android:orientation="horizontal"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:indeterminateTint="@color/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recyclerView">
-
-            <ImageView
-                android:id="@+id/imageView12"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                app:srcCompat="@mipmap/icon_add_cart2" />
-
-            <TextView
-                android:id="@+id/textView13"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:padding="16dp"
-                android:textColor="@color/white"
-                android:fontFamily="@font/droid_arabic_kufi"
-                android:text="@string/add_to_cart" />
-        </LinearLayout>
+            app:layout_constraintTop_toTopOf="parent" />
     </android.support.constraint.ConstraintLayout>
-</android.support.v4.widget.NestedScrollView>
+    </android.support.v4.widget.NestedScrollView>
+    <LinearLayout
+        android:id="@+id/productDetails_linear_addCart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:background="@color/colorPrimary"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        >
+
+        <ImageView
+            android:id="@+id/imageView12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            app:srcCompat="@mipmap/icon_add_cart2" />
+
+        <TextView
+            android:id="@+id/textView13"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:padding="16dp"
+            android:textColor="@color/white"
+            android:fontFamily="@font/droid_arabic_kufi"
+            android:text="@string/add_to_cart" />
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

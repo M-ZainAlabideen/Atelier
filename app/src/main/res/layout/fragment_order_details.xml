@@ -5,6 +5,7 @@
     android:background="@android:color/white">
 
     <ScrollView
+        android:id="@+id/orderDetails_scrollView_container"
         android:layout_above="@+id/orderDetails_linearLayout_bottomContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -17,7 +18,7 @@
                 android:id="@+id/orderDetails_txtView_details"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/black"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
                 android:paddingTop="10dp"
@@ -66,17 +67,6 @@
         android:layout_alignParentBottom="true"
         android:padding="10dp">
 
-        <TextView
-            android:id="@+id/tv_msg"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/retry_message"
-            android:paddingTop="0dp"
-            android:textColor="@color/black"
-            android:fontFamily="@font/droid_arabic_kufi"
-            android:paddingBottom="5dp"
-            android:visibility="visible"/>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -90,7 +80,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:fontFamily="@font/droid_arabic_kufi"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/black"
                 android:layout_marginEnd="10dp"
                 android:textAllCaps="true"/>
             <Button
@@ -98,7 +88,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/PDFInvoice"
-                android:background="@color/colorPrimary"
+                android:background="@color/black"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:fontFamily="@font/droid_arabic_kufi"

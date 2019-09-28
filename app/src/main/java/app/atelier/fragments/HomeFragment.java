@@ -2,11 +2,13 @@ package app.atelier.fragments;
 
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,17 +17,23 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import app.atelier.MainActivity;
 import app.atelier.R;
 import app.atelier.adapters.BrandsAdapter;
 import app.atelier.adapters.SliderAdapter;
 import app.atelier.classes.Constants;
+import app.atelier.classes.GlobalFunctions;
+import app.atelier.classes.SessionManager;
 import app.atelier.classes.WrapContentRtlViewPager;
 import app.atelier.webservices.AtelierApiConfig;
 import app.atelier.webservices.responses.brands.BrandModel;
 import app.atelier.webservices.responses.brands.GetBrands;
 import app.atelier.webservices.responses.categories.CategoryModel;
+import app.atelier.webservices.responses.sliders.GetSlider;
+import app.atelier.webservices.responses.sliders.SliderModel;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.relex.circleindicator.CircleIndicator;
@@ -36,6 +44,7 @@ import retrofit.client.Response;
 public class HomeFragment extends Fragment {
     public static FragmentActivity activity;
     public static HomeFragment fragment;
+    public static SessionManager sessionManager;
 
     @BindView(R.id.home_RtlViewPager_slider)
     WrapContentRtlViewPager slider;
@@ -45,17 +54,20 @@ public class HomeFragment extends Fragment {
     RecyclerView brandsList;
     @BindView(R.id.loading)
     ProgressBar loading;
-    ArrayList<String> sliderArrayList = new ArrayList<>();
+    ArrayList<SliderModel> sliderArrayList = new ArrayList<>();
     SliderAdapter sliderAdapter;
 
     ArrayList<BrandModel> brandsArrayList = new ArrayList<>();
     GridLayoutManager layoutManager;
     BrandsAdapter brandsAdapter;
 
+    private static int currentPage = 0;
+    private static int NUM_PAGES = 0;
 
     public static HomeFragment newInstance(FragmentActivity activity, String mainCategoryId) {
         fragment = new HomeFragment();
         HomeFragment.activity = activity;
+        sessionManager = new SessionManager(activity);
         Bundle b = new Bundle();
         b.putString("mainCategoryId", mainCategoryId);
         fragment.setArguments(b);
@@ -76,28 +88,66 @@ public class HomeFragment extends Fragment {
         MainActivity.title.setText(activity.getResources().getString(R.string.atelier));
         MainActivity.appbar.setVisibility(View.VISIBLE);
         MainActivity.bottomAppbar.setVisibility(View.VISIBLE);
-        MainActivity.setupBottomAppbar("home");
+        MainActivity.setupAppbar("home",true,true);
 
         loading.setVisibility(View.VISIBLE);
-
-
-        sliderArrayList.clear();
-        sliderArrayList.add("http://www.gaanaa.net/up/uploads/1381628529055.jpg");
-        sliderArrayList.add("https://i.ytimg.com/vi/0S40aHerXPE/hqdefault.jpg");
-        sliderAdapter = new SliderAdapter(activity, sliderArrayList);
-        slider.setAdapter(sliderAdapter);
-        sliderCircle.setViewPager(slider);
 
         layoutManager = new GridLayoutManager(activity, 3);
         brandsAdapter = new BrandsAdapter(activity, brandsArrayList);
         brandsList.setLayoutManager(layoutManager);
         brandsList.setAdapter(brandsAdapter);
 
+        sliderAdapter = new SliderAdapter(activity, sliderArrayList);
+        slider.setAdapter(sliderAdapter);
+        sliderCircle.setViewPager(slider);
+
+
         if (sliderArrayList.size() <= 0) {
-            //  ApiCall();
-        } else {
-            setData();
+            sliderApi();
         }
+
+        else
+            NUM_PAGES = sliderArrayList.size();
+
+            slider.setCurrentItem(0,true);
+            // Auto start of viewpager
+            final Handler handler = new Handler();
+            final Runnable Update = new Runnable() {
+                public void run() {
+                    if (currentPage == NUM_PAGES) {
+                        currentPage = 0;
+                    }
+                    slider.setCurrentItem(currentPage++, true);
+                }
+            };
+            Timer swipeTimer = new Timer();
+            swipeTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    handler.post(Update);
+                }
+            }, 3000, 3000);
+
+            // Pager listener over indicator
+            sliderCircle.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+                @Override
+                public void onPageSelected(int position) {
+                    currentPage = position;
+
+                }
+
+                @Override
+                public void onPageScrolled(int pos, float arg1, int arg2) {
+
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int pos) {
+
+                }
+            });
+
 
 
         if (brandsArrayList.size() == 0) {
@@ -110,7 +160,7 @@ public class HomeFragment extends Fragment {
 
     public void getBrandsApi() {
         AtelierApiConfig.getCallingAPIInterface().brands(Constants.AUTHORIZATION_VALUE,
-                MainActivity.language,getArguments().getString("mainCategoryId"),
+                sessionManager.getUserLanguage(),getArguments().getString("mainCategoryId"),
                 new Callback<GetBrands>() {
                     @Override
                     public void success(GetBrands getBrands, Response response) {
@@ -124,21 +174,48 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void failure(RetrofitError error) {
                         loading.setVisibility(View.GONE);
-                        Snackbar.make(loading,activity.getResources().getString(R.string.error),Snackbar.LENGTH_LONG).show();
+                        GlobalFunctions.showErrorMessage(error,loading);
 
                     }
                 });
     }
 
-    public void sliderApi(){}
+    public void sliderApi(){
+        AtelierApiConfig.getCallingAPIInterface().sliders(
+                Constants.AUTHORIZATION_VALUE,
+                sessionManager.getUserLanguage(),
+             getArguments().getString("mainCategoryId"),
+                new Callback<GetSlider>() {
+                    @Override
+                    public void success(GetSlider getSlider, Response response) {
+                        if(getSlider != null){
+                            if(getSlider.sliders != null){
+                                if(getSlider.sliders.size() > 0){
+                                    for (SliderModel value: getSlider.sliders) {
+                                        if(value.image != null){
+                                            if(value.image.src != null){
+                                                sliderArrayList.add(value);
 
-    public void setData() {
+                                            }
+                                        }
+                                    }
+                                    sliderAdapter = new SliderAdapter(activity, sliderArrayList);
+                                    slider.setAdapter(sliderAdapter);
+                                    sliderCircle.setViewPager(slider);
+                                    NUM_PAGES = sliderArrayList.size();
+
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        loading.setVisibility(View.GONE);
+                        GlobalFunctions.showErrorMessage(error,loading);
+                    }
+                }
+        );
     }
 
-    public void ApiCall2() {
-        setData2();
-    }
-
-    public void setData2() {
-    }
 }

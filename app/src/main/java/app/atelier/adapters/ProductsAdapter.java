@@ -1,12 +1,15 @@
 package app.atelier.adapters;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -16,6 +19,7 @@ import java.util.List;
 
 import app.atelier.R;
 import app.atelier.classes.FixControl;
+import app.atelier.classes.SessionManager;
 import app.atelier.webservices.responses.cart.CartProductModel;
 import app.atelier.webservices.responses.orders.OrderModel;
 import app.atelier.webservices.responses.products.ProductModel;
@@ -29,6 +33,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
     List<ProductModel> productsArrList;
     List<CartProductModel> favoritesArrList;
     OnItemClickListener listener;
+    SessionManager sessionManager;
 
     public ProductsAdapter(Context context, String flag,
                            List<ProductModel> productsArrList,
@@ -39,11 +44,14 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
         this.favoritesArrList = favoritesArrList;
         this.flag = flag;
         this.listener = listener;
+        sessionManager = new SessionManager(context);
     }
 
 
     public class viewHolder extends RecyclerView.ViewHolder {
 
+        @BindView(R.id.product_constraint_container)
+        ConstraintLayout container;
         @BindView(R.id.product_imgView_productImg)
         ImageView productImg;
         @BindView(R.id.product_imgView_addFavorite)
@@ -70,7 +78,21 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ProductsAdapter.viewHolder viewHolder, final int position) {
+    public void onBindViewHolder(@NonNull final ProductsAdapter.viewHolder viewHolder, final int position) {
+
+
+        if (sessionManager.getUserLanguage().equals("en")) {
+            Typeface enBold = Typeface.createFromAsset(context.getAssets(), "montserrat_medium.ttf");
+            viewHolder.title.setTypeface(enBold);
+        } else {
+            Typeface arBold = Typeface.createFromAsset(context.getAssets(), "droid_arabic_kufi_bold.ttf");
+            viewHolder.title.setTypeface(arBold);
+        }
+
+        if(flag.equals("relatedProduct")){
+            viewHolder.container.setLayoutParams(new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        }
         if(flag.equals("favorite")){
             viewHolder.addFavorite.setImageResource(R.mipmap.icon_add_fav_sel);
             int Width = FixControl.getImageWidth(context, R.mipmap.placeholder_product);
@@ -88,9 +110,12 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
 
             viewHolder.title.setText(favoritesArrList.get(position).product.getLocalizedName());
             viewHolder.price.setText(String.valueOf(favoritesArrList.get(position).product.price)+
-                    " "+context.getString(R.string.currency));
+                    " "+sessionManager.getCurrencyCode());
         }
         else{
+            if(productsArrList.get(position).IsAddedToWishList){
+                viewHolder.addFavorite.setImageResource(R.mipmap.icon_add_fav_sel);
+            }
             int Width = FixControl.getImageWidth(context, R.mipmap.placeholder_product);
             int Height = FixControl.getImageHeight(context, R.mipmap.placeholder_product);
             viewHolder.productImg.getLayoutParams().height = Height;
@@ -106,7 +131,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
 
             viewHolder.title.setText(productsArrList.get(position).getLocalizedName());
             viewHolder.price.setText(String.valueOf(productsArrList.get(position).price)+
-                    " "+context.getString(R.string.currency));
+                    " "+sessionManager.getCurrencyCode());
 
         }
 
@@ -120,7 +145,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
         viewHolder.addFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onAddFavoriteClick(position);
+                listener.onAddFavoriteClick(position,viewHolder.addFavorite);
             }
         });
 
@@ -149,7 +174,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
 
         void onAddCartClick(int position);
 
-        void onAddFavoriteClick(int position);
+        void onAddFavoriteClick(int position,ImageView addFavorite);
 
     }
 

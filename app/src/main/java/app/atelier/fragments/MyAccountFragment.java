@@ -1,5 +1,6 @@
 package app.atelier.fragments;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,10 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import app.atelier.MainActivity;
 import app.atelier.R;
 import app.atelier.classes.Constants;
+import app.atelier.classes.GlobalFunctions;
 import app.atelier.classes.Navigator;
 import app.atelier.classes.SessionManager;
 import app.atelier.webservices.AtelierApiConfig;
@@ -30,15 +33,29 @@ import retrofit.client.Response;
 public class MyAccountFragment extends Fragment {
     public static FragmentActivity activity;
     public static MyAccountFragment fragment;
+    public static SessionManager sessionManager;
     
     @BindView(R.id.myAccount_imgView_editProfileArrow)
     ImageView editProfileArrow;
+    @BindView(R.id.myAccount_imgView_changePassArrow)
+    ImageView changePassArrow;
     @BindView(R.id.myAccount_imgView_myOrdersArrow)
     ImageView myOrdersArrow;
     @BindView(R.id.myAccount_imgView_logoutArrow)
     ImageView logoutArrow;
     @BindView(R.id.myAccount_imgView_addressesArrow)
     ImageView addressesArrow;
+    @BindView(R.id.myAccount_tv_editProfile)
+    TextView editProfile;
+    @BindView(R.id.myAccount_tv_changePass)
+    TextView changePass;
+    @BindView(R.id.myAccount_tv_myOrders)
+    TextView myOrders;
+    @BindView(R.id.myAccount_tv_addresses)
+    TextView addresses;
+    @BindView(R.id.myAccount_tv_logout)
+    TextView logout;
+
 
     @BindView(R.id.myAccount_imgView_logoutImg)
     ImageView logoutImg;
@@ -49,6 +66,7 @@ public class MyAccountFragment extends Fragment {
     public static MyAccountFragment newInstance(FragmentActivity activity) {
         fragment = new MyAccountFragment();
         MyAccountFragment.activity = activity;
+        sessionManager = new SessionManager(activity);
         return fragment;
     }
 
@@ -66,14 +84,29 @@ public class MyAccountFragment extends Fragment {
         MainActivity.title.setText(activity.getResources().getString(R.string.account));
         MainActivity.appbar.setVisibility(View.VISIBLE);
         MainActivity.bottomAppbar.setVisibility(View.VISIBLE);
-        MainActivity.setupBottomAppbar("");
+        MainActivity.setupAppbar("",true,true);
 
-        if(MainActivity.isEnglish){
+        if (sessionManager.getUserLanguage().equals("en")) {
+            Typeface enBold = Typeface.createFromAsset(activity.getAssets(), "montserrat_medium.ttf");
+            editProfile.setTypeface(enBold);
+            myOrders.setTypeface(enBold);
+            addresses.setTypeface(enBold);
+            changePass.setTypeface(enBold);
+            logout.setTypeface(enBold);
+
             editProfileArrow.setRotation(180);
+            changePassArrow.setRotation(180);
             myOrdersArrow.setRotation(180);
             logoutArrow.setRotation(180);
             addressesArrow.setRotation(180);
             logoutImg.setRotation(180);
+        } else {
+            Typeface arBold = Typeface.createFromAsset(activity.getAssets(), "droid_arabic_kufi_bold.ttf");
+            editProfile.setTypeface(arBold);
+            myOrders.setTypeface(arBold);
+            addresses.setTypeface(arBold);
+            changePass.setTypeface(arBold);
+            logout.setTypeface(arBold);
         }
     }
 
@@ -83,6 +116,10 @@ public class MyAccountFragment extends Fragment {
 
     }
 
+    @OnClick(R.id.myAccount_View_changePass)
+    public void changePasswordClick(){
+        Navigator.loadFragment(activity, ChangePasswordFragment.newInstance(activity), R.id.main_frameLayout_Container, true);
+    }
     @OnClick(R.id.myAccount_View_myOrders)
     public void myOrdersClick(){
         Navigator.loadFragment(activity, OrdersFragment.newInstance(activity), R.id.main_frameLayout_Container, true);
@@ -101,14 +138,16 @@ public class MyAccountFragment extends Fragment {
     public void createGuestCustomerApi() {
         loading.setVisibility(View.VISIBLE);
         AtelierApiConfig.getCallingAPIInterface().createGuestCustomer(
-                Constants.AUTHORIZATION_VALUE, MainActivity.language, Constants.CONTENT_TYPE_VALUE,
+                Constants.AUTHORIZATION_VALUE, 
+                sessionManager.getUserLanguage(), 
+                Constants.CONTENT_TYPE_VALUE,
                 new Callback<GetCustomers>() {
                     @Override
                     public void success(GetCustomers getCustomers, Response response) {
                         loading.setVisibility(View.GONE);
                         if (getCustomers != null) {
                             CustomerModel customer = getCustomers.customers.get(0);
-                            SessionManager.setUser(activity,
+                            sessionManager.setUser(
                                     customer.id,
                                     customer.userName,
                                     customer.firstName,
@@ -116,15 +155,17 @@ public class MyAccountFragment extends Fragment {
                                     customer.phone,
                                     customer.email,
                                     customer.password);
+                            sessionManager.guestLogout();
                             MainActivity.accountOrLogin.setText(activity.getResources().getString(R.string.login));
-                            Navigator.loadFragment(activity,LoginFragment.newInstance(activity),R.id.main_frameLayout_Container,false);
+                            MainActivity.shoppingCartItemsCount(activity);
+                            Navigator.loadFragment(activity,LoginFragment.newInstance(activity,"myAccount"),R.id.main_frameLayout_Container,false);
                         }
                     }
 
                     @Override
                     public void failure(RetrofitError error) {
                         loading.setVisibility(View.GONE);
-                        Snackbar.make(loading, getResources().getString(R.string.error), Snackbar.LENGTH_LONG).show();
+                        GlobalFunctions.showErrorMessage(error,loading);
                     }
                 }
         );
