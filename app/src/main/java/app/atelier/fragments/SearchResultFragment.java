@@ -90,7 +90,7 @@ public class SearchResultFragment extends Fragment {
         searchAdapter = new ProductsAdapter(activity, "search", searchArrList, null, new ProductsAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                Navigator.loadFragment(activity, ProductDetailsFragment.newInstance(activity, searchArrList.get(position)),
+                Navigator.loadFragment(activity, ProductDetailsFragment.newInstance(activity, searchArrList.get(position).id),
                         R.id.main_frameLayout_Container, true);
             }
 
@@ -164,7 +164,7 @@ public class SearchResultFragment extends Fragment {
                                     //if the size of newsList equal 0 , it's mean no data and make lastPage true
                                     isLastPage = true;
                                     searchList.setVisibility(View.GONE);
-                                    Snackbar.make(loading,getString(R.string.no_data),Snackbar.LENGTH_SHORT).show();
+                                    Snackbar.make(loading,getString(R.string.empty_search),Snackbar.LENGTH_SHORT).show();
 
                                 } else {
 
@@ -283,7 +283,7 @@ public class SearchResultFragment extends Fragment {
                                     addFavorite.setImageResource(R.mipmap.icon_add_fav_sel);
                                 } else {
                                     new AlertDialog.Builder(activity)
-                                            .setTitle(activity.getString(R.string.message))
+                                            .setTitle(activity.getString(R.string.app_name))
                                             .setMessage(activity.getString(R.string.product_added))
                                             .setPositiveButton(R.string.continue_shopping, new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int which) {

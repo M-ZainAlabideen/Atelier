@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -11,15 +12,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <app.atelier.classes.WrapContentRtlViewPager
-        android:id="@+id/home_RtlViewPager_slider"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:focusableInTouchMode="true"
-        android:overScrollMode="never"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@mipmap/placeholder_slider" />
+
+        <com.duolingo.open.rtlviewpager.RtlViewPager
+            android:id="@+id/home_RtlViewPager_slider"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:focusableInTouchMode="true"
+            android:overScrollMode="never"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView5"
+            app:layout_constraintEnd_toEndOf="@id/imageView5"
+            app:layout_constraintStart_toStartOf="@id/imageView5"
+            app:layout_constraintTop_toTopOf="@id/imageView5" />
 
 
     <me.relex.circleindicator.CircleIndicator
@@ -61,6 +73,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+
 
     </android.support.constraint.ConstraintLayout>
 </android.support.v4.widget.NestedScrollView>

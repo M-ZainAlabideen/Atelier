@@ -13,4 +13,7 @@ public class OrderAttributeModel {
     @SerializedName("value")
     @Expose
     public String value;
+    @SerializedName("type")
+    @Expose
+    public String type;
 }

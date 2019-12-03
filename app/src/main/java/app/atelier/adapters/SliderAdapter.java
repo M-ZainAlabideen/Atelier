@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,11 +37,22 @@ public class SliderAdapter extends PagerAdapter {
         assert childView != null;
         ImageView sliderImage = (ImageView) childView.findViewById(R.id.slider_imgView_sliderImg);
 
+        int Width = FixControl.getImageWidth(context, R.mipmap.placeholder_slider);
+        int Height = FixControl.getImageHeight(context, R.mipmap.placeholder_slider);
+        Log.d("fapa1", Width + "==" + Height);
+        sliderImage.getLayoutParams().height = Height;
+        // sliderImage.getLayoutParams().width = Width;
+
         if (sliderArrayList.get(position).image != null) {
             if (sliderArrayList.get(position).image.src != null
                     && !sliderArrayList.get(position).image.src.matches("")) {
-                Glide.with(context.getApplicationContext()).load(sliderArrayList.get(position).image.src).apply(new RequestOptions()
-                        .placeholder(R.mipmap.placeholder_slider)).into(sliderImage);
+                Glide.with(context.getApplicationContext())
+                        .load(sliderArrayList.get(position).image.src)
+                        .apply(new RequestOptions().centerCrop()
+                        .placeholder(R.mipmap.placeholder_slider))
+                        .into(sliderImage);
+
+                sliderImage.getLayoutParams().height = Height;
             }
         }
         sliderImage.setOnClickListener(new View.OnClickListener() {

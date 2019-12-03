@@ -3,7 +3,7 @@
     <string name="account">حسابي</string>
     <string name="categories">الأقسام</string>
     <string name="contact">تواصل معنا</string>
-    <string name="about">عن أتيليه</string>
+    <string name="about">عن أتيله</string>
     <string name="lang">ENG</string>
     <string name="exit">خروج</string>
     <string name="navigation_drawer_open" translatable="false">drawer_open</string>
@@ -26,7 +26,7 @@
     <string name="related_products">المنتجات ذات الصلة</string>
     <string name="add_to_cart">إضافة للسلة</string>
     <string name="test_size">XL</string>
-    <string name="total_price">السعر الكلي</string>
+    <string name="total_price">المجموع</string>
     <string name="checkout">الدفع</string>
     <string name="master">ماستر كارد</string>
     <string name="visa">فيزا كارد</string>
@@ -57,15 +57,13 @@
     <string name="phone2">الجوال</string>
     <string name="test_category_name">عبايات 1</string>
     <string name="test_product_details2">,فساتين خروج , قطن , زهرى</string>
-    <string name="message">الرسالة</string>
     <string name="send">إرسال</string>
-    <string name="error">حدث خطأ ما يرجي المحالة في وقت لاحق</string>
     <string name="required_fields">من فضلك قم بملئ جميع البيانات المطلوبة</string>
     <string name="agree_required">من فضلك قم بالموافقة علي الشروط والأحكام</string>
     <string name="dresses">عبايات</string>
     <string name="suits">بدل استقبال</string>
     <string name="cart">سلة المشتريات</string>
-    <string name="atelier">أتيليه</string>
+    <string name="atelier">أتيله</string>
     <string name="payment">الدفع</string>
     <string name="user_name_required">من فضلك قم بإدخال إسم المستخدم الخاص بك</string>
     <string name="phone_required">من فضلك قم بإدخال رقم الهاتف</string>
@@ -78,7 +76,7 @@
     <string name="order_date">تاريخ الطلب</string>
     <string name="order_status">حالة الطلب</string>
     <string name="order_number">رقم الطلب</string>
-    <string name="retry_message">لم يتم دفه هذا الطلب بعد. للدفع الان, انقر فوق الزر.</string>
+    <string name="retry_message">لم يتم دفع هذا الطلب بعد. للدفع الان, انقر فوق الزر.</string>
     <string name="re_order">إعادة الطلب</string>
     <string name="PDFInvoice">فاتورة PDF</string>
     <string name="quantity">الكمية</string>
@@ -86,7 +84,7 @@
     <string name="edit">تعديل</string>
     <string name="add_address">إضافة عنوان</string>
     <string name="next">التالي</string>
-    <string name="select_state">اختر المحافظة</string>
+    <string name="select_area">اختر المحافظة</string>
     <string name="select_country">اختر الدولة</string>
     <string name="address">العنوان بالتفصيل</string>
     <string name="order">اطلب</string>
@@ -100,7 +98,6 @@
     <string name="order_done"> تمت عملية الشراء بنجاح . الرجاء التواصل مع التاجر/مزود الخدمه من أجل الحصول على الخدمة. </string>
     <string name="confirm">تأكيد</string>
     <string name="file_manager">تم تحميل الملف , متاح الآن في ذاكرة الهاتف</string>
-    <string name="no_data">لا توجد بيانات متاحة</string>
     <string name="my_addresses">عناويني</string>
     <string name="delete_address">هل انت متأكد انك تريد تحذف هذا العنوان؟ </string>
     <string name="select_address">من فضلك قم بإختيار العنوان أولا</string>
@@ -133,16 +130,28 @@
     <string name="unfavorite">تم إزالة المنتج من قائمة المفضلة</string>
     <string name="empty_favorites">قائمة المفضلة فارغة</string>
     <string name="test_attribute_title">عنوان الصفة</string>
-    <string name="SuccessPage">"atelier."</string>
-    <string name="ErrorPage">error.aspx</string>
     <string name="OperationFailed">فشل العملية</string>
     <string name="new_password">كلمة المرور الجديدة</string>
     <string name="cancel">إلغاء</string>
     <string name="select">اختر</string>
     <string name="apply_coupon">الكوبون</string>
-    <string name="sub_total_price">السعر قبل الخصم</string>
+    <string name="sub_total_price">الإجمالي</string>
     <string name="discount">الخصم</string>
-    <string name="enter_coupon">من فضلك قم بإدخال الكوبون</string>
-
+    <string name="enter_coupon">ادخل الكوبون</string>
+    <string name="main_page">الرئيسية</string>
+    <string name="remove">إزالة</string>
+    <string name="no_products">لا توجد منتجات</string>
+    <string name="message">الرسالة ...</string>
+    <string name="product_details">تفاصيل المنتج</string>
+    <string name="enter_size">قم بإدخال المقاسات أولا</string>
+    <string name="empty_orders">قائمة الطلبات فارغة</string>
+    <string name="empty_products">قائمة المنتجات فارغة</string>
+    <string name="empty_search">لا يوجد نتائج للبحث</string>
+    <string name="select_size">قم بإختيار المقاس أولا</string>
+    <string name="no_brands">لا يوجد ماركات لعرضها</string>
+    <string name="enter_email">قم بإدخال البريد الإلكتروني</string>
+    <string name="deliveryCost">خدمة التوصيل</string>
+    <string name="inch">بوصة</string>
+    <string name="size_inch">المقاس بالبوصة</string>
 
 </resources>

@@ -6,12 +6,14 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -47,9 +49,8 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class AddNewAddressFragment extends Fragment {
-    public static FragmentActivity activity;
-    public static AddNewAddressFragment fragment;
-    public static SessionManager sessionManager;
+    @BindView(R.id.addAddress_cl_container)
+    ConstraintLayout container;
     @BindView(R.id.addAddress_editTxt_firstName)
     EditText firstName;
     @BindView(R.id.addAddress_editTxt_lastName)
@@ -71,11 +72,13 @@ public class AddNewAddressFragment extends Fragment {
     @BindView(R.id.loading)
     ProgressBar loading;
 
+    public static FragmentActivity activity;
+    public static AddNewAddressFragment fragment;
+    private SessionManager sessionManager;
     List<CountryModel> countriesArrList = new ArrayList<>();
     List<StateModel> statesArrList = new ArrayList<>();
     private AlertDialog dialog;
     AddressModel myAddress;
-    public static Map<String, String> User;
 
     public static AddNewAddressFragment newInstance(FragmentActivity activity,
                                                     String comingFrom,
@@ -83,10 +86,8 @@ public class AddNewAddressFragment extends Fragment {
                                                     AddressModel address) {
         fragment = new AddNewAddressFragment();
         AddNewAddressFragment.activity = activity;
-        sessionManager = new SessionManager(activity);
-         User = sessionManager.getUser();
         Bundle b = new Bundle();
-        b.putString("comingFrom",comingFrom);
+        b.putString("comingFrom", comingFrom);
         b.putString("flag", flag);
         if (flag.equals("edit")) {
             b.putSerializable("address", address);
@@ -106,18 +107,52 @@ public class AddNewAddressFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        //set The title of fragment
         MainActivity.title.setText(activity.getResources().getString(R.string.add_address));
+
+        //make the appbar and bottomAppbar visible
         MainActivity.appbar.setVisibility(View.VISIBLE);
         MainActivity.bottomAppbar.setVisibility(View.VISIBLE);
-        MainActivity.setupAppbar("",true,true);
+
+        /*setup the appbar and bottom appBar and
+         * make bottomAppbar without selection and topAppbar has SearchView and has sideMenu
+         **/
+        MainActivity.setupAppbar("", true, true);
+
+        // this function make click anywhere in the screen close any opened keyboard
+        FixControl.setupUI(container, activity);
+
+        /*
+         *initialize the Session Manger which used for create the session of user ,setting and getting userData
+         * such as id,email,userName ..etc ,making login and logout for user and so on.
+         * */
+        sessionManager = new SessionManager(activity);
+
+
+        /*in case of english >> change the background Image of country and state
+         * to change arrow location from right to left (for working perfectly as spinner)
+         **/
 
         if (MainActivity.isEnglish) {
             countryBg.setImageResource(R.mipmap.spinner_bg);
             stateBg.setImageResource(R.mipmap.spinner_bg);
         }
+
+        /*when back from screen to this screen the countryList still has data so, its not useful to call api again
+         *this condition mean just call api when countriesList has no data
+         * */
         if (countriesArrList.size() <= 0) {
             countriesApi();
         }
+        /*
+         * this fragment(screen) used for 2 purpose add New Address and edit Address
+         * so check for flag to know if coming from addNewAddress or editAddress
+         * 1- in case of editAddress , set the data of this address in boxes(editTexts)
+         * to make editing on it and save
+         * 2- in case of addNewAddress , set the userData from his sessionManager as default Data
+         * and user can edit it and click save to add new address
+         * */
         if (getArguments().getString("flag").equals("edit")) {
             myAddress = (AddressModel) getArguments().getSerializable("address");
             firstName.setText(myAddress.firstName);
@@ -129,25 +164,29 @@ public class AddNewAddressFragment extends Fragment {
             state.setText(myAddress.province);
         } else {
             myAddress = new AddressModel();
-            firstName.setText(User.get("firstName"));
-            lastName.setText(User.get("lastName"));
-            phone.setText(User.get("phone"));
-            mail.setText(User.get("email"));
+            firstName.setText(sessionManager.getFirstName());
+            lastName.setText(sessionManager.getLastName());
+            phone.setText(sessionManager.getPhone());
+            mail.setText(sessionManager.getEmail());
         }
     }
 
+    //click on Country >> open the popUp of countries for selecting one
     @OnClick(R.id.addAddress_view_selectCountry)
     public void countryClick() {
         createPopUp(activity, "country", countriesArrList, null);
     }
 
+    //click on State >> open the popUp of states for selecting one
     @OnClick(R.id.addAddress_view_selectCity)
     public void stateClick() {
         createPopUp(activity, "state", null, statesArrList);
     }
 
+    //click done for saving of addressData
     @OnClick(R.id.addAddress_btn_done)
     public void doneClick() {
+        //make check that all data entered before saving (firstName,lastName,phone,email,details,country and state)
         String firstNameStr = firstName.getText().toString();
         String lastNameStr = lastName.getText().toString();
         String phoneStr = phone.getText().toString();
@@ -155,19 +194,24 @@ public class AddNewAddressFragment extends Fragment {
         String detailsStr = details.getText().toString();
         String countryStr = country.getText().toString();
         String stateStr = state.getText().toString();
-        if (firstNameStr == null || firstNameStr.matches("")) {
+
+        if (firstNameStr == null || firstNameStr.isEmpty()) {
             Snackbar.make(loading, getString(R.string.first_name_required), Snackbar.LENGTH_SHORT).show();
-        } else if (lastNameStr == null || lastNameStr.matches("")) {
+        } else if (lastNameStr == null || lastNameStr.isEmpty()) {
             Snackbar.make(loading, getString(R.string.last_name_required), Snackbar.LENGTH_SHORT).show();
-        } else if (phoneStr == null || phoneStr.matches("")) {
+        } else if (phoneStr == null || phoneStr.isEmpty()) {
             Snackbar.make(loading, getString(R.string.phone_required), Snackbar.LENGTH_SHORT).show();
-        } else if (mailStr == null || mailStr.matches("")) {
+        } else if (mailStr == null || mailStr.isEmpty()) {
             Snackbar.make(loading, getString(R.string.mail_required), Snackbar.LENGTH_SHORT).show();
         } else if (countryStr.equals(getString(R.string.select_country))) {
             Snackbar.make(loading, getString(R.string.country_required), Snackbar.LENGTH_SHORT).show();
-        } else if (stateStr.equals(getString(R.string.select_state))) {
+        } else if (stateStr.equals(getString(R.string.select_area))) {
             Snackbar.make(loading, getString(R.string.state_required), Snackbar.LENGTH_SHORT).show();
         } else {
+            /*
+             * in case of all data entered correctly
+             * set the data in address object to pass this object in the api Calling
+             * */
             myAddress.firstName = firstNameStr;
             myAddress.lastName = lastNameStr;
             myAddress.phoneNumber = phoneStr;
@@ -177,6 +221,9 @@ public class AddNewAddressFragment extends Fragment {
             myAddress.address1 = detailsStr;
             GetAddresses getAddresses = new GetAddresses();
             getAddresses.address = myAddress;
+
+            //in case of comingFrom edit address >> call editAddressApi
+            // else, call addAddressApi
             if (getArguments().getString("flag").equals("edit")) {
                 editAddressApi(getAddresses);
             } else {
@@ -186,35 +233,70 @@ public class AddNewAddressFragment extends Fragment {
         }
     }
 
-
-    public void createPopUp(final Context context,
-                            final String type,
-                            final List<CountryModel> countriesArrList,
-                            final List<StateModel> statesArrList) {
+    //custom popUp(AlertDialog) of selecting country or selecting state
+    public void createPopUp(final Context context, final String type, final List<CountryModel> countriesArrList, final List<StateModel> statesArrList) {
+        //Declaration and initialization the DialogBuilder
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        //inflate the custom design of alertDialog
         View popUpView = ((Activity) context).getLayoutInflater().inflate(R.layout.custom_pop_up, null);
+
+        //Declaration and initialization the recyclerView from the inflating customView
         RecyclerView popUpRecycler = (RecyclerView) popUpView.findViewById(R.id.popUp_Recycler);
+
+        //set the layoutManager of recyclerView
         popUpRecycler.setLayoutManager(new LinearLayoutManager(context));
+
+        //set the adapter of recyclerView
         popUpRecycler.setAdapter(new PopUpAdapter(context, type, countriesArrList, statesArrList));
+
+        //make the dialogBuilder cancelable
         builder.setCancelable(true);
+
+        //connect the customView with dialogBuilder
         builder.setView(popUpView);
+
+        //create the alertDialog from the builder
         dialog = builder.create();
+
+        //show the alertDialog
         dialog.show();
+
+        //handling the items click of recyclerView (using Custom OnItemTouchListener)
         popUpRecycler.addOnItemTouchListener(new RecyclerItemClickListener(context, popUpRecycler, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
+                /*
+                *check the type
+                * in case of countrySelection click >> the type = country
+                * else >> the type = state
+                */
                 if (type.equalsIgnoreCase("country")) {
+                    /*
+                    *check if the new selected country equal the current country >> do nothing
+                    * else >>
+                    * 1- set the new selected country at countryTextView
+                    * 2- initialize the the value in the stateTextView (for selection a new state related to the new countrySelection)
+                    * 3- save the new selectedCountryId
+                    * 4- call satesApi with the new CountryId
+                    */
                     if (!country.getText().toString().equals(countriesArrList.get(position).name)) {
                         country.setText(countriesArrList.get(position).name);
-                        state.setText(getString(R.string.select_state));
+                        state.setText(getString(R.string.select_area));
                         myAddress.countryId = countriesArrList.get(position).id;
                         stateProvincesApi(myAddress.countryId + "");
                     }
                 } else {
+                    /*
+                    * in case of selectNewState
+                     * 1- set the new selected state at stateTextView
+                     * 2- save the new selectedStateId
+                     * */
                     myAddress.stateProvinceId = statesArrList.get(position).id;
                     state.setText(statesArrList.get(position).name);
                 }
 
+                //finally call the function which close the popUp
                 closePopUp();
             }
 
@@ -226,8 +308,8 @@ public class AddNewAddressFragment extends Fragment {
     }
 
     public void closePopUp() {
+        //close the alertDialog(popUp)
         dialog.cancel();
-
     }
 
     public void countriesApi() {
@@ -245,7 +327,7 @@ public class AddNewAddressFragment extends Fragment {
                     @Override
                     public void failure(RetrofitError error) {
                         loading.setVisibility(View.GONE);
-                        GlobalFunctions.showErrorMessage(error,loading);
+                        GlobalFunctions.showErrorMessage(error, loading);
                     }
                 });
     }
@@ -268,7 +350,7 @@ public class AddNewAddressFragment extends Fragment {
                     @Override
                     public void failure(RetrofitError error) {
                         loading.setVisibility(View.GONE);
-                        GlobalFunctions.showErrorMessage(error,loading);
+                        GlobalFunctions.showErrorMessage(error, loading);
                     }
                 });
     }
@@ -285,8 +367,7 @@ public class AddNewAddressFragment extends Fragment {
                         loading.setVisibility(View.GONE);
                         if (getAddresses != null) {
                             if (getAddresses.addresses.size() > 0) {
-                                FixControl.hideKeyboard(firstName,activity);
-                               Navigator.loadFragment(activity,AddressesFragment.newInstance(activity,getArguments().getString("comingFrom")),R.id.main_frameLayout_Container,false);
+                                Navigator.loadFragment(activity, AddressesFragment.newInstance(activity, getArguments().getString("comingFrom")), R.id.main_frameLayout_Container, false);
 
                             }
                         }
@@ -295,7 +376,7 @@ public class AddNewAddressFragment extends Fragment {
                     @Override
                     public void failure(RetrofitError error) {
                         loading.setVisibility(View.GONE);
-                        GlobalFunctions.showErrorMessage(error,loading);
+                        GlobalFunctions.showErrorMessage(error, loading);
                     }
                 }
         );
@@ -312,7 +393,6 @@ public class AddNewAddressFragment extends Fragment {
                         loading.setVisibility(View.GONE);
                         if (getAddresses != null) {
                             if (getAddresses.addresses.size() > 0) {
-                                FixControl.hideKeyboard(firstName,activity);
                                 getFragmentManager().popBackStack();
                             }
                         }
@@ -321,9 +401,10 @@ public class AddNewAddressFragment extends Fragment {
                     @Override
                     public void failure(RetrofitError error) {
                         loading.setVisibility(View.GONE);
-                        GlobalFunctions.showErrorMessage(error,loading);
+                        GlobalFunctions.showErrorMessage(error, loading);
                     }
                 });
     }
+
 }
 

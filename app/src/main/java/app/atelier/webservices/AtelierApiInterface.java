@@ -1,17 +1,19 @@
 package app.atelier.webservices;
 
+import java.util.ArrayList;
+
 import app.atelier.classes.Constants;
-import app.atelier.webservices.contact.GetContactUsRequest;
-import app.atelier.webservices.contact.GetContactUsResponse;
+import app.atelier.webservices.responses.contact.GetContactUsRequest;
+import app.atelier.webservices.responses.contact.GetContactUsResponse;
 import app.atelier.webservices.responses.addresses.GetAddresses;
 import app.atelier.webservices.responses.brands.GetBrands;
-import app.atelier.webservices.responses.cards.GetCards;
 import app.atelier.webservices.responses.cart.GetCartProducts;
 import app.atelier.webservices.responses.categories.GetCategories;
 import app.atelier.webservices.responses.countries.GetCountries;
 import app.atelier.webservices.responses.coupon.GetCouponOrderTotal;
 import app.atelier.webservices.responses.customers.GetCustomers;
 import app.atelier.webservices.responses.orders.GetOrders;
+import app.atelier.webservices.responses.products.Delivery;
 import app.atelier.webservices.responses.products.GetProducts;
 import app.atelier.webservices.responses.cart.CartItem;
 import app.atelier.webservices.responses.settings.GetSettings;
@@ -93,7 +95,7 @@ public interface AtelierApiInterface {
 
 
     //*****************************PRODUCTS***********************************
-    @GET("/products?fields=id,localized_names,localized_short_descriptions,images,attributes,price,Is_AddedToWishList,old_price,available_end_date_time_utc,show_timer,prices_percentage,formatted_old_price,formatted_price")
+    @GET("/products?fields=id,localized_names,localized_full_descriptions,images,attributes,price,Is_AddedToWishList,old_price,available_end_date_time_utc,show_timer,prices_percentage,formatted_old_price,formatted_price")
     void products(@Header(Constants.AUTHORIZATION) String Authorization,
                   @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
                   @Query("customer_id") String customerId,
@@ -107,7 +109,7 @@ public interface AtelierApiInterface {
                   Callback<GetProducts> response);
 
 
-    @GET("/products/search?fields=id,localized_names,localized_short_descriptions,images,price,Is_AddedToWishList,old_price,available_end_date_time_utc,show_timer,prices_percentage,formatted_old_price,formatted_price")
+    @GET("/products/search?fields=id,localized_names,localized_full_descriptions,images,attributes,price,Is_AddedToWishList,old_price,available_end_date_time_utc,show_timer,prices_percentage,formatted_old_price,formatted_price")
     void searchProducts(@Header(Constants.AUTHORIZATION) String Authorization,
                         @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
                         @Query("customer_id") String customerId,
@@ -124,7 +126,7 @@ public interface AtelierApiInterface {
                         Callback<GetProducts> response);
 
 
-    @GET("/products/{id}/related?fields=id,localized_names,localized_short_descriptions,images,price,Is_AddedToWishList,old_price,available_end_date_time_utc,show_timer,prices_percentage,formatted_old_price,formatted_price")
+    @GET("/products/{id}/related?fields=id,localized_names,localized_full_descriptions,images,attributes,price,Is_AddedToWishList,old_price,available_end_date_time_utc,show_timer,prices_percentage,formatted_old_price,formatted_price")
     void relatedProducts(@Header(Constants.AUTHORIZATION) String Authorization,
                          @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
                          @Query("customer_id") String customerId,
@@ -172,11 +174,11 @@ public interface AtelierApiInterface {
                                 Callback<Response> response);
 
 
-    @DELETE("/shopping_cart_items/{shopping_cart_type}/{product_id}/{customer_id}")
+    @DELETE("/shopping_cart_items/{shopping_cart_type}/{id}/{customer_id}")
     void deleteFavoriteItem(@Header(Constants.AUTHORIZATION) String Authorization,
                             @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
                             @Path("shopping_cart_type") String shoppingCartType,
-                            @Path("product_id") String productId,
+                            @Path("id") String productId,
                             @Path("customer_id") String customerId,
                             Callback<Response> response);
 
@@ -314,4 +316,25 @@ public interface AtelierApiInterface {
                @Query("customerId") String customerId,
                @Query("discountcouponcode") String discountCouponCode,
                Callback<GetCouponOrderTotal> getProductsCallback);
+
+    @DELETE("/RemoveDiscountCoupon")
+    void removeCoupon(@Header(Constants.AUTHORIZATION) String Authorization,
+                      @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
+                      @Query("customerId") String customerId,
+                      @Query("discountcouponcode") String discountCouponCode,
+                      Callback<Response> response);
+
+    @GET("/shipping/{id}")
+    void deliveryCost(@Header(Constants.AUTHORIZATION) String Authorization,
+                      @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
+                      @Path("id") String id,
+                      Callback<Delivery> response);
+
+    @POST("/customers/devicetoken")
+    void insertToken(@Header("Authorization") String Authorization,
+                     @Query("token") String token,
+                     @Query("device_type") String deviceType,
+                     @Query("device_id") String deviceId,
+                     @Query("customer_id") String userId,
+                     Callback<Response> response);
 }

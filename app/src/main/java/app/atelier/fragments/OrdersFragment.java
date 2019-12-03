@@ -149,7 +149,7 @@ public class OrdersFragment extends Fragment {
                         }
                         else {
                             isLastPage = true;
-                            Snackbar.make(loading,getString(R.string.no_data),Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(loading,getString(R.string.empty_orders),Snackbar.LENGTH_SHORT).show();
                         }
                     }
 

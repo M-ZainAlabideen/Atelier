@@ -147,17 +147,15 @@ public class MyAccountFragment extends Fragment {
                         loading.setVisibility(View.GONE);
                         if (getCustomers != null) {
                             CustomerModel customer = getCustomers.customers.get(0);
-                            sessionManager.setUser(
-                                    customer.id,
-                                    customer.userName,
-                                    customer.firstName,
-                                    customer.lastName,
-                                    customer.phone,
-                                    customer.email,
-                                    customer.password);
+                            sessionManager.setUserId(String.valueOf(customer.id));
+                            sessionManager.setUserName(customer.userName);
+                            sessionManager.setFirstName(customer.firstName);
+                            sessionManager.setLastName(customer.lastName);
+                            sessionManager.setPhone(customer.phone);
+                            sessionManager.setEmail(customer.email);
                             sessionManager.guestLogout();
                             MainActivity.accountOrLogin.setText(activity.getResources().getString(R.string.login));
-                            MainActivity.shoppingCartItemsCount(activity);
+                            MainActivity.shoppingCartItemsCount();
                             Navigator.loadFragment(activity,LoginFragment.newInstance(activity,"myAccount"),R.id.main_frameLayout_Container,false);
                         }
                     }

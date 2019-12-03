@@ -3,6 +3,7 @@ package app.atelier.fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -19,11 +20,21 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.net.ssl.SNIHostName;
+
 import app.atelier.MainActivity;
 import app.atelier.R;
+import app.atelier.classes.AppController;
 import app.atelier.classes.Constants;
 import app.atelier.classes.FixControl;
 import app.atelier.classes.GlobalFunctions;
@@ -38,12 +49,15 @@ import butterknife.OnClick;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import retrofit.mime.TypedInput;
 
 public class CreateAccountFragment extends Fragment {
     public static FragmentActivity activity;
     public static CreateAccountFragment fragment;
     public static SessionManager sessionManager;
 
+    @BindView(R.id.createAccount_cl_container)
+    ConstraintLayout container;
     @BindView(R.id.createAccount_editText_userName)
     EditText userName;
     @BindView(R.id.createAccount_editText_phone)
@@ -57,6 +71,7 @@ public class CreateAccountFragment extends Fragment {
     @BindView(R.id.loading)
     ProgressBar loading;
 
+    String regid = "";
 
     public static CreateAccountFragment newInstance(FragmentActivity activity, String comingFrom) {
         fragment = new CreateAccountFragment();
@@ -81,7 +96,7 @@ public class CreateAccountFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         MainActivity.appbar.setVisibility(View.GONE);
         MainActivity.bottomAppbar.setVisibility(View.GONE);
-
+        FixControl.setupUI(container,activity);
         agree.setOnCheckedChangeListener(checkedListener);
 
     }
@@ -121,7 +136,10 @@ public class CreateAccountFragment extends Fragment {
             Snackbar.make(loading, activity.getResources().getString(R.string.required_fields), Snackbar.LENGTH_LONG).show();
         } else if (!agree.isChecked()) {
             Snackbar.make(loading, activity.getResources().getString(R.string.agree_required), Snackbar.LENGTH_LONG).show();
-        } else {
+        } else if(!FixControl.isValidEmail(mailStr)){
+            Snackbar.make(loading,getString(R.string.enter_email), Snackbar.LENGTH_SHORT).show();
+        }
+        else {
             CustomerModel customer = new CustomerModel();
             customer.userName = userNameStr;
             customer.phone = phoneStr;
@@ -151,15 +169,35 @@ public class CreateAccountFragment extends Fragment {
                         loading.setVisibility(View.GONE);
                         if (getCustomers.customers.size() > 0) {
                             CustomerModel customer = getCustomers.customers.get(0);
-                            sessionManager.setUser(customer.id,
-                                    customer.userName,
-                                    customer.firstName,
-                                    customer.lastName,
-                                    customer.phone,
-                                    customer.email,
-                                    customer.password);
+                            sessionManager.setUserId(String.valueOf(customer.id));
+                            sessionManager.setUserName(customer.userName);
+                            sessionManager.setFirstName(customer.firstName);
+                            sessionManager.setLastName(customer.lastName);
+                            sessionManager.setPhone(customer.phone);
+                            sessionManager.setEmail(customer.email);
+                            sessionManager.LoginSession();
+
+                            FirebaseInstanceId.getInstance().getInstanceId()
+                                    .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                                            if (!task.isSuccessful()) {
+                                                Log.w("login", "getInstanceId failed", task.getException());
+                                                return;
+                                            }
+
+                                            // Get new Instance ID token
+                                            regid = task.getResult().getToken();
+
+                                            Log.e("registerationid Splash ", "regid -> "+regid);
+
+                                            registerInBackground();
+
+
+                                        }
+                                    });
+
                             MainActivity.accountOrLogin.setText(activity.getResources().getString(R.string.account));
-                            FixControl.hideKeyboard(userName,activity);
                             if (getArguments().getString("comingFrom").equals("cart")) {
                                 backToCart();
                             } else {
@@ -182,5 +220,50 @@ public class CreateAccountFragment extends Fragment {
         for (int i = 0; i < 2; ++i) {
             fm.popBackStack();
         }
+    }
+
+    private void registerInBackground() {
+
+        AtelierApiConfig.getCallingAPIInterface().insertToken(Constants.AUTHORIZATION, regid, "2", AppController.getInstance().getIMEI(), sessionManager.getUserId().length() > 0 ? sessionManager.getUserId() : null, new Callback<Response>() {
+            @Override
+            public void success(retrofit.client.Response s, retrofit.client.Response response) {
+
+                TypedInput body = response.getBody();
+
+                try {
+
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(body.in()));
+
+                    StringBuilder out = new StringBuilder();
+
+                    String newLine = System.getProperty("line.separator");
+
+                    String line;
+
+                    while ((line = reader.readLine()) != null) {
+                        out.append(line);
+                        out.append(newLine);
+                    }
+
+                    String outResponse = out.toString();
+                    Log.d("outResponse", "" + outResponse);
+
+                    sessionManager.setRegId(regid);
+
+
+                } catch (Exception ex) {
+
+                    ex.printStackTrace();
+
+
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
+
     }
 }

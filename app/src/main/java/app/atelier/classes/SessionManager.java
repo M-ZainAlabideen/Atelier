@@ -25,7 +25,8 @@ public class SessionManager {
     private static final String LANGUAGE_CODE = "language_code";
     private static final String CURRENCY_CODE = "currency_name";
 
-
+    private static String IsNotificationOn = "IsNotificationOn";
+    public static final String KEY_RegID = "regId";
 
     public SessionManager(Context context) {
         this.context = context;
@@ -46,33 +47,59 @@ public class SessionManager {
         editor.commit();
     }
 
-    public void setUser(int id, String userName, String firstName, String lastName, String phone, String email, String password) {
-        editor.putString(USER_ID, String.valueOf(id));
-        editor.putString(USER_NAME, userName);
-        editor.putString(FIRST_NAME, firstName);
-        editor.putString(LAST_NAME, lastName);
-        editor.putString(PHONE, phone);
-        editor.putString(EMAIL, email);
-        editor.putString(PASSWORD, password);
+    public void setUserId(String userId) {
+        editor.putString(USER_ID, userId);
         editor.apply();
-
-    }
-
-    public Map<String, String> getUser() {
-        Map<String, String> userMap = new HashMap<>();
-        userMap.put(USER_ID, sharedPref.getString(USER_ID, ""));
-        userMap.put(USER_NAME, sharedPref.getString(USER_NAME, ""));
-        userMap.put(FIRST_NAME, sharedPref.getString(FIRST_NAME, ""));
-        userMap.put(LAST_NAME, sharedPref.getString(LAST_NAME, ""));
-        userMap.put(PHONE, sharedPref.getString(PHONE, ""));
-        userMap.put(EMAIL, sharedPref.getString(EMAIL, ""));
-        userMap.put(PASSWORD, sharedPref.getString(PASSWORD, ""));
-
-        return userMap;
     }
 
     public String getUserId() {
         return sharedPref.getString(USER_ID, "");
+    }
+
+    public void setUserName(String userName) {
+        editor.putString(USER_NAME, userName);
+        editor.apply();
+    }
+
+    public String getUserName() {
+        return sharedPref.getString(USER_NAME, "");
+    }
+
+
+    public void setFirstName(String firstName) {
+        editor.putString(FIRST_NAME, firstName);
+        editor.apply();
+    }
+
+    public String getFirstName() {
+        return sharedPref.getString(FIRST_NAME, "");
+    }
+
+    public void setLastName(String lastName) {
+        editor.putString(LAST_NAME, lastName);
+        editor.apply();
+    }
+
+    public String getLastName() {
+        return sharedPref.getString(LAST_NAME, "");
+    }
+
+    public void setPhone(String phone) {
+        editor.putString(PHONE, phone);
+        editor.apply();
+    }
+
+    public String getPhone() {
+        return sharedPref.getString(PHONE, "");
+    }
+
+    public void setEmail(String email) {
+        editor.putString(EMAIL, email);
+        editor.apply();
+    }
+
+    public String getEmail() {
+        return sharedPref.getString(EMAIL, "");
     }
 
     public void setUserLanguage(String languageCode) {
@@ -107,5 +134,22 @@ public class SessionManager {
 
     public String getCurrencyCode() {
         return sharedPref.getString(CURRENCY_CODE, "");
+    }
+
+    public void changeNotification(boolean status){
+        editor.putBoolean(IsNotificationOn,status);
+        editor.commit();
+    }
+    public boolean isNotificationOn(){
+        return  sharedPref.getBoolean(IsNotificationOn,true);
+    }
+
+    public String getRegId() {
+        return sharedPref.getString(KEY_RegID, "");
+    }
+
+    public void setRegId(String id) {
+        editor.putString(KEY_RegID, id);
+        editor.commit();
     }
 }

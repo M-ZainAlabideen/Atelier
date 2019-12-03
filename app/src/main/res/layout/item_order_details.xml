@@ -20,8 +20,7 @@
             android:layout_marginTop="5dp"
             android:textColor="@color/black"
             android:fontFamily="@font/droid_arabic_kufi"
-            android:text="@string/test_product_title"
-            android:maxLines="4"/>
+            android:text="@string/test_product_title" />
 
         <TextView
             android:id="@+id/orderDetails_txtView_vendorName"

@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
+
     <ScrollView
         android:id="@+id/orderDetails_scrollView_container"
         android:layout_above="@+id/orderDetails_linearLayout_bottomContainer"
@@ -105,8 +106,6 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_gravity="center_horizontal"
         android:indeterminateTint="@color/colorPrimary"
-         />
-
+        android:layout_centerInParent="true"/>
 </RelativeLayout>

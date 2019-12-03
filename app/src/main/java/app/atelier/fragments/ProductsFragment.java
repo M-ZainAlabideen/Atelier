@@ -91,7 +91,7 @@ public class ProductsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         MainActivity.title.setText(getArguments().getString("title"));
-        MainActivity.setupAppbar("", true, true);
+        MainActivity.setupAppbar("categories", true, true);
         MainActivity.appbar.setVisibility(View.VISIBLE);
         MainActivity.bottomAppbar.setVisibility(View.VISIBLE);
         productsAdapter = new ProductsAdapter(activity,
@@ -101,20 +101,25 @@ public class ProductsFragment extends Fragment {
                 , new ProductsAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                Navigator.loadFragment(activity, ProductDetailsFragment.newInstance(activity, productsArrList.get(position)),
+                Navigator.loadFragment(activity, ProductDetailsFragment.newInstance(activity, productsArrList.get(position).id),
                         R.id.main_frameLayout_Container, true);
             }
 
             @Override
             public void onAddCartClick(int position) {
-                CartItem_ cartItem_ = new CartItem_();
-                cartItem_.productId = productsArrList.get(position).id;
-                cartItem_.customerId = Integer.valueOf(sessionManager.getUserId());
-                cartItem_.quantity = 1;
-                cartItem_.shoppingCartType = "1";
-                CartItem cartItem = new CartItem();
-                cartItem.shoppingCartItem = cartItem_;
-                addCartOrFavoriteApi("addToCart", cartItem, null);
+                if (productsArrList.get(position).attributes != null && productsArrList.get(position).attributes.size() >0) {
+                    Navigator.loadFragment(activity, ProductDetailsFragment.newInstance(activity,productsArrList.get(position).id), R.id.main_frameLayout_Container, true);
+                        }
+                else {
+                    CartItem_ cartItem_ = new CartItem_();
+                    cartItem_.productId = productsArrList.get(position).id;
+                    cartItem_.customerId = Integer.valueOf(sessionManager.getUserId());
+                    cartItem_.quantity = 1;
+                    cartItem_.shoppingCartType = "1";
+                    CartItem cartItem = new CartItem();
+                    cartItem.shoppingCartItem = cartItem_;
+                    addCartOrFavoriteApi("addToCart", cartItem, null, cartItem_.productId);
+                }
             }
 
             @Override
@@ -123,15 +128,20 @@ public class ProductsFragment extends Fragment {
                         getResources().getDrawable(R.mipmap.icon_add_fav_sel).getConstantState()) {
                     deleteFavoriteApi(position, addFavorite);
                 } else {
-                    CartItem_ favoriteItem_ = new CartItem_();
-                    favoriteItem_.productId = productsArrList.get(position).id;
-                    favoriteItem_.customerId = Integer.valueOf(sessionManager.getUserId());
-                    favoriteItem_.quantity = 1;
-                    favoriteItem_.shoppingCartType = "2";
-                    CartItem favoriteItem = new CartItem();
-                    favoriteItem.shoppingCartItem = favoriteItem_;
-                    addCartOrFavoriteApi("addToFavorite", favoriteItem, addFavorite);
 
+                        if (productsArrList.get(position).attributes != null && productsArrList.get(position).attributes.size() >0) {
+                            Navigator.loadFragment(activity, ProductDetailsFragment.newInstance(activity,productsArrList.get(position).id), R.id.main_frameLayout_Container, true);
+                        }
+                    else {
+                            CartItem_ favoriteItem_ = new CartItem_();
+                            favoriteItem_.productId = productsArrList.get(position).id;
+                            favoriteItem_.customerId = Integer.valueOf(sessionManager.getUserId());
+                            favoriteItem_.quantity = 1;
+                            favoriteItem_.shoppingCartType = "2";
+                            CartItem favoriteItem = new CartItem();
+                            favoriteItem.shoppingCartItem = favoriteItem_;
+                            addCartOrFavoriteApi("addToFavorite", favoriteItem, addFavorite, favoriteItem_.productId);
+                        }
                 }
             }
         });
@@ -143,7 +153,7 @@ public class ProductsFragment extends Fragment {
             loading.setVisibility(View.GONE);
         } else {
             String brandId = getArguments().getString("brandId");
-            if(brandId.equals("0"))
+            if (brandId.equals("0"))
                 brandId = null;
             productsApi(brandId);
         }
@@ -174,7 +184,7 @@ public class ProductsFragment extends Fragment {
                                     //if the size of newsList equal 0 , it's mean no data and make lastPage true
                                     isLastPage = true;
                                     productsList.setVisibility(View.GONE);
-                                    Snackbar.make(loading, getString(R.string.no_data), Snackbar.LENGTH_SHORT).show();
+                                    Snackbar.make(loading, getString(R.string.empty_products), Snackbar.LENGTH_SHORT).show();
 
                                 } else {
 
@@ -272,7 +282,7 @@ public class ProductsFragment extends Fragment {
         );
     }
 
-    public void addCartOrFavoriteApi(final String type, CartItem cartItem, final ImageView addFavorite) {
+    public void addCartOrFavoriteApi(final String type, CartItem cartItem, final ImageView addFavorite, final int productId) {
         loading.setVisibility(View.VISIBLE);
         AtelierApiConfig.getCallingAPIInterface().createShoppingCart(
                 Constants.AUTHORIZATION_VALUE,
@@ -289,7 +299,7 @@ public class ProductsFragment extends Fragment {
                                     addFavorite.setImageResource(R.mipmap.icon_add_fav_sel);
                                 } else {
                                     new AlertDialog.Builder(activity)
-                                            .setTitle(activity.getString(R.string.message))
+                                            .setTitle(activity.getString(R.string.app_name))
                                             .setMessage(activity.getString(R.string.product_added))
                                             .setPositiveButton(R.string.continue_shopping, new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int which) {

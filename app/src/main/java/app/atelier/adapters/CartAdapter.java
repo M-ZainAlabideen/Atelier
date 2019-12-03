@@ -31,6 +31,9 @@ import app.atelier.classes.Constants;
 import app.atelier.classes.FixControl;
 import app.atelier.classes.SessionManager;
 import app.atelier.webservices.AtelierApiConfig;
+import app.atelier.webservices.responses.attributes.AttributeModel;
+import app.atelier.webservices.responses.attributes.AttributeValueModel;
+import app.atelier.webservices.responses.attributes.OrderAttributeModel;
 import app.atelier.webservices.responses.cart.CartItem;
 import app.atelier.webservices.responses.cart.CartItem_;
 import app.atelier.webservices.responses.cart.CartProductModel;
@@ -49,7 +52,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.viewHolder> {
     SessionManager sessionManager;
 
 
-    public CartAdapter(Context context, List<CartProductModel> cartArrayList,CartAdapter.OnItemClickListener listener) {
+    public CartAdapter(Context context, List<CartProductModel> cartArrayList, CartAdapter.OnItemClickListener listener) {
         this.context = context;
         this.cartArrayList = cartArrayList;
         this.listener = listener;
@@ -117,18 +120,40 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.viewHolder> {
                     .into(viewHolder.productImg);
         }
         String localizedNameStr = cartArrayList.get(position).product.getLocalizedName();
-        String descriptionStr = cartArrayList.get(position).product.getFullDescription();
-        if(localizedNameStr.length() > 15)
-        viewHolder.title.setText(localizedNameStr.substring(0,15)+"...");
+
+        if (localizedNameStr.length() > 15)
+            viewHolder.title.setText(localizedNameStr.substring(0, 15) + "...");
         else
             viewHolder.title.setText(localizedNameStr);
 
-        if(descriptionStr.length() > 35)
-            viewHolder.description.setText(descriptionStr.substring(0,24)+"...");
-        else
-            viewHolder.description.setText(descriptionStr);
+        String s = "";
+        for (OrderAttributeModel p : cartArrayList.get(position).productAttributes) {
+            for (AttributeModel a : cartArrayList.get(position).product.attributes) {
+                if (p.id == a.id) {
+                    if (a.localized_names != null) {
+                        s += a.localized_names.get(0).localizedName + ": ";
+                    } else {
+                        s += a.product_attribute_name + ": ";
+                    }
+//                    if (p.id == 17 || p.id == 18 || p.id == 19 || p.id == 20) {
+//                        s += p.value + " " + context.getString(R.string.cm) + "\n";
+//                    }
+                     if (p.type.equals("MultilineTextbox") || p.type.equals("TextBox")) {
+                        s += p.value + "\n";
+                    } else {
+                        for (AttributeValueModel av : a.attribute_values) {
+                            if (p.value.equals(av.id)) {
+                                s += av.localized_names.get(0).localizedName + " [" + av.price_after_adjustment + "]\n";
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-        viewHolder.price.setText(cartArrayList.get(position).formattedSubTotal);
+        viewHolder.description.setText(s);
+
+        viewHolder.price.setText(cartArrayList.get(position).formatted_item_sub_total);
         viewHolder.quantity.setText(String.valueOf(cartArrayList.get(position).quantity));
 
         viewHolder.plus.setOnClickListener(new View.OnClickListener() {
@@ -170,7 +195,6 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.viewHolder> {
         void onDeleteItemClick(int position);
 
     }
-
 
 
     @Override

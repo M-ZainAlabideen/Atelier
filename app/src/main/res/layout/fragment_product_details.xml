@@ -13,32 +13,41 @@
         android:layout_height="match_parent"
         android:fillViewport="true">
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/productDetails_cl_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.glide.slider.library.SliderLayout
-            android:id="@+id/productDetails_slider"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="0dp"
-            android:elevation="5dp"
+        <ImageView
+            android:id="@+id/productDetails_img_placeHolder"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/placeholder_product_details"
             android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-        </com.glide.slider.library.SliderLayout>
+        </ImageView>
+
+        <com.glide.slider.library.SliderLayout
+            android:id="@+id/productDetails_slider"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="@+id/productDetails_img_placeHolder"
+            app:layout_constraintEnd_toEndOf="@+id/productDetails_img_placeHolder"
+            app:layout_constraintStart_toStartOf="@+id/productDetails_img_placeHolder"
+            app:layout_constraintTop_toTopOf="@+id/productDetails_img_placeHolder" />
 
 
         <ImageView
             android:id="@+id/productDetails_img_addFavorite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="18dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/productDetails_slider"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="@+id/productDetails_img_placeHolder"
+            app:layout_constraintTop_toBottomOf="@+id/productDetails_img_placeHolder"
             app:srcCompat="@mipmap/icon_add_fav_unsel" />
 
         <TextView
@@ -56,32 +65,33 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/productDetails_img_addFavorite" />
 
-        <TextView
+        <WebView
             android:id="@+id/productDetails_txt_description"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="20dp"
             android:fontFamily="@font/droid_arabic_kufi"
-            android:text="@string/test_product_details"
             android:textColor="@color/darkGray"
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/productDetails_txt_name" />
+            app:layout_constraintTop_toBottomOf="@+id/productDetails_recycler_attributes"
+           />
 
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:layoutDirection="rtl"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/productDetails_txt_description">
+            app:layout_constraintTop_toBottomOf="@+id/productDetails_txt_name">
 
             <ImageView
                 android:id="@+id/productDetails_img_plus"
@@ -111,28 +121,40 @@
                 tools:layout_editor_absoluteX="270dp"
                 tools:layout_editor_absoluteY="445dp" />
 
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
             <TextView
                 android:id="@+id/productDetails_txt_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="24dp"
-                android:layout_weight="1"
                 android:text="@string/test_price"
+                android:layout_marginEnd="8dp"
                 android:textColor="@color/colorPrimary"
                 android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/productDetails_txt_oldPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/test_price"
+                android:layout_marginEnd="24dp"
+                android:textSize="16sp"
+               />
         </LinearLayout>
 
         <View
-            android:visibility="visible"
             android:id="@+id/view1"
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:layout_marginTop="10dp"
             android:background="@color/lightGray"
+            android:visibility="visible"
+            android:layout_marginTop="12dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+            app:layout_constraintTop_toBottomOf="@+id/productDetails_tv_shortDescription" />
 
         <LinearLayout
             android:visibility="visible"
@@ -140,7 +162,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view1">
@@ -163,7 +185,10 @@
                 android:id="@+id/productDetails_recycler_sizeOptionsList1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="92dp"
+                tools:listitem="@layout/item_attribute_values_selected_size"
+                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                android:orientation="horizontal"
+                android:layout_marginStart="22dp"
                 android:layout_marginEnd="24dp" />
         </LinearLayout>
 
@@ -189,7 +214,7 @@
             android:button="@drawable/radio_selector"
             android:fontFamily="@font/droid_arabic_kufi_bold"
             android:padding="10dp"
-            android:text="@string/size_cm"
+            android:text="@string/size_inch"
             android:textColor="@color/black"
             android:textSize="12sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -201,160 +226,395 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/productDetails_radio_radioSize2">
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_margin="18dp"
-                android:layout_weight=".25"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/productDetails_tv_title1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/droid_arabic_kufi"
-                    android:text="@string/length"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
+                    android:layout_height="match_parent"
+                    android:layout_margin="12dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-                <EditText
-                    android:id="@+id/productDetails_editTxt_value1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@drawable/et_bg"
-                    android:ems="10"
-                    android:inputType="number" />
+                    <TextView
+                        android:id="@+id/productDetails_tv_title1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_arabic_kufi"
+                        android:text="@string/length"
+                        android:textColor="@color/black"
+                        android:textSize="11sp" />
 
-                <TextView
-                    android:id="@+id/productDetails_tv_measure1"
+                    <EditText
+                        android:id="@+id/productDetails_editTxt_value1"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/et_bg"
+                        android:ems="10"
+                        android:gravity="center"
+                        android:inputType="number" />
+
+                    <TextView
+                        android:id="@+id/productDetails_tv_measure1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_arabic_kufi"
+                        android:text="@string/inch"
+                        android:textColor="@color/black"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/droid_arabic_kufi"
-                    android:text="@string/cm"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
+                    android:layout_height="match_parent"
+                    android:layout_margin="12dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/productDetails_tv_title2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_arabic_kufi"
+                        android:text="@string/shoulder"
+                        android:textColor="@color/black"
+                        android:textSize="11sp" />
+
+                    <EditText
+                        android:id="@+id/productDetails_editTxt_value2"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/et_bg"
+                        android:ems="10"
+                        android:gravity="center"
+                        android:inputType="number" />
+
+                    <TextView
+                        android:id="@+id/productDetails_tv_measure2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_arabic_kufi"
+                        android:text="@string/inch"
+                        android:textColor="@color/black"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_margin="12dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/productDetails_tv_title3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_arabic_kufi"
+                        android:text="@string/chest"
+                        android:textColor="@color/black"
+                        android:textSize="11sp" />
+
+                    <EditText
+                        android:id="@+id/productDetails_editTxt_value3"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/et_bg"
+                        android:ems="10"
+                        android:gravity="center"
+                        android:inputType="number" />
+
+                    <TextView
+                        android:id="@+id/productDetails_tv_measure3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_arabic_kufi"
+                        android:text="@string/inch"
+                        android:textColor="@color/black"
+                        android:textSize="11sp" />
+                </LinearLayout>
             </LinearLayout>
-
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_margin="18dp"
-                android:layout_weight=".25"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
 
-                <TextView
-                    android:id="@+id/productDetails_tv_title2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/droid_arabic_kufi"
-                    android:text="@string/shoulder"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
 
-                <EditText
-                    android:id="@+id/productDetails_editTxt_value2"
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@drawable/et_bg"
-                    android:ems="10"
-                    android:inputType="number" />
+                    android:layout_height="match_parent"
+                    android:layout_margin="12dp"
+                    android:gravity="center"
+                    android:layout_weight=".3"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/productDetails_tv_measure2"
+                    <TextView
+                        android:id="@+id/productDetails_tv_title4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_arabic_kufi"
+                        android:text="@string/Sleeve"
+                        android:textColor="@color/black"
+                        android:textSize="11sp" />
+
+                    <EditText
+                        android:id="@+id/productDetails_editTxt_value4"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/et_bg"
+                        android:ems="10"
+                        android:gravity="center"
+                        android:inputType="number" />
+
+                    <TextView
+                        android:id="@+id/productDetails_tv_measure4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_arabic_kufi"
+                        android:text="@string/inch"
+                        android:textColor="@color/black"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+
+
+
+
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/droid_arabic_kufi"
-                    android:text="@string/cm"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
+                    android:layout_height="match_parent"
+                    android:layout_margin="12dp"
+                    android:gravity="center"
+                    android:layout_weight=".3"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/productDetails_tv_title5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_arabic_kufi"
+                        android:text="@string/Sleeve"
+                        android:textColor="@color/black"
+                        android:textSize="11sp" />
+
+                    <EditText
+                        android:visibility="gone"
+                        android:id="@+id/productDetails_editTxt_value5"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/et_bg"
+                        android:ems="10"
+                        android:gravity="center"
+                        android:inputType="number" />
+
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/productDetails_tv_measure5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_arabic_kufi"
+                        android:text="@string/inch"
+                        android:textColor="@color/black"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_margin="12dp"
+                    android:gravity="center"
+                    android:layout_weight=".3"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/productDetails_tv_title6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_arabic_kufi"
+                        android:text="@string/Sleeve"
+                        android:textColor="@color/black"
+                        android:textSize="11sp" />
+
+                    <EditText
+                        android:visibility="gone"
+                        android:id="@+id/productDetails_editTxt_value6"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/et_bg"
+                        android:ems="10"
+                        android:gravity="center"
+                        android:inputType="number" />
+
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/productDetails_tv_measure6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_arabic_kufi"
+                        android:text="@string/inch"
+                        android:textColor="@color/black"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
             </LinearLayout>
 
-            <LinearLayout
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+        <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_margin="18dp"
-                android:layout_weight=".25"
+                android:layout_margin="12dp"
                 android:gravity="center"
+                android:layout_weight=".3"
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/productDetails_tv_title3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/droid_arabic_kufi"
-                    android:text="@string/chest"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
-
-                <EditText
-                    android:id="@+id/productDetails_editTxt_value3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@drawable/et_bg"
-                    android:ems="10"
-                    android:inputType="number" />
-
-                <TextView
-                    android:id="@+id/productDetails_tv_measure3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/droid_arabic_kufi"
-                    android:text="@string/cm"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_margin="18dp"
-                android:layout_weight=".25"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/productDetails_tv_title4"
+                    android:visibility="gone"
+                    android:id="@+id/productDetails_tv_title7"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/droid_arabic_kufi"
                     android:text="@string/Sleeve"
                     android:textColor="@color/black"
-                    android:textSize="12sp" />
+                    android:textSize="11sp" />
 
                 <EditText
-                    android:id="@+id/productDetails_editTxt_value4"
-                    android:layout_width="wrap_content"
+                    android:visibility="gone"
+                    android:id="@+id/productDetails_editTxt_value7"
+                    android:layout_width="90dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/et_bg"
                     android:ems="10"
+                    android:gravity="center"
                     android:inputType="number" />
 
                 <TextView
-                    android:id="@+id/productDetails_tv_measure4"
+                    android:visibility="gone"
+                    android:id="@+id/productDetails_tv_measure7"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/droid_arabic_kufi"
-                    android:text="@string/cm"
+                    android:text="@string/inch"
                     android:textColor="@color/black"
-                    android:textSize="12sp" />
+                    android:textSize="11sp" />
             </LinearLayout>
 
+
+
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="12dp"
+                android:gravity="center"
+                android:layout_weight=".3"
+                android:orientation="vertical">
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/productDetails_tv_title8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/droid_arabic_kufi"
+                    android:text="@string/Sleeve"
+                    android:textColor="@color/black"
+                    android:textSize="11sp" />
+
+                <EditText
+                    android:visibility="gone"
+                    android:id="@+id/productDetails_editTxt_value8"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/et_bg"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:inputType="number" />
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/productDetails_tv_measure8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/droid_arabic_kufi"
+                    android:text="@string/inch"
+                    android:textColor="@color/black"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="12dp"
+                android:gravity="center"
+                android:layout_weight=".3"
+                android:orientation="vertical">
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/productDetails_tv_title9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/droid_arabic_kufi"
+                    android:text="@string/Sleeve"
+                    android:textColor="@color/black"
+                    android:textSize="11sp" />
+
+                <EditText
+                    android:visibility="gone"
+                    android:id="@+id/productDetails_editTxt_value9"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/et_bg"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:inputType="number" />
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/productDetails_tv_measure9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/droid_arabic_kufi"
+                    android:text="@string/inch"
+                    android:textColor="@color/black"
+                    android:textSize="11sp" />
+            </LinearLayout>
+        </LinearLayout>
         </LinearLayout>
 
         <View
@@ -374,6 +634,7 @@
                 android:id="@+id/productDetails_recycler_attributes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingBottom="50dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/view3"/>
@@ -434,7 +695,7 @@
             android:background="@color/lightGray"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/productDetails_editTxt_notes" />
+            app:layout_constraintTop_toBottomOf="@+id/productDetails_txt_description" />
 
         <TextView
             android:id="@+id/productDetails_tv_relatedTitle"
@@ -455,25 +716,26 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="11dp"
             android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
             android:paddingBottom="80dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/productDetails_tv_relatedTitle" />
 
-
-        <ProgressBar
-            android:id="@+id/loading"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/productDetails_tv_shortDescription"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:indeterminateTint="@color/colorPrimary"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="وصف "
+            android:fontFamily="@font/droid_arabic_kufi"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:textColor="@color/darkGray"
+            android:layout_marginTop="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
     </android.support.constraint.ConstraintLayout>
     </android.support.v4.widget.NestedScrollView>
     <LinearLayout
@@ -505,5 +767,24 @@
             android:textColor="@color/white"
             android:fontFamily="@font/droid_arabic_kufi"
             android:text="@string/add_to_cart" />
+
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/loading"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:indeterminateTint="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.224" />
+
 </android.support.constraint.ConstraintLayout>

@@ -57,10 +57,13 @@ public class OrderModel implements Serializable {
     @SerializedName("order_sub_total_discount_excl_tax")
     @Expose
     public Double orderSubTotalDiscountExclTax;
-    @SerializedName("order_shipping_incl_tax")
+    @SerializedName("shipping_address_id")
+    @Expose
+    public Integer shippingAddressId;
+    @SerializedName("OrderShippingInclTax")
     @Expose
     public Double orderShippingInclTax;
-    @SerializedName("order_shipping_excl_tax")
+    @SerializedName("OrderShippingExclTax")
     @Expose
     public Double orderShippingExclTax;
     @SerializedName("payment_method_additional_fee_incl_tax")

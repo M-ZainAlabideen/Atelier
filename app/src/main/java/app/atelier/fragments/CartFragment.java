@@ -1,11 +1,9 @@
 package app.atelier.fragments;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -19,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -31,6 +30,7 @@ import app.atelier.MainActivity;
 import app.atelier.R;
 import app.atelier.adapters.CartAdapter;
 import app.atelier.classes.Constants;
+import app.atelier.classes.FixControl;
 import app.atelier.classes.GlobalFunctions;
 import app.atelier.classes.Navigator;
 import app.atelier.classes.RecyclerItemTouchHelper;
@@ -42,6 +42,7 @@ import app.atelier.webservices.responses.cart.CartProductModel;
 import app.atelier.webservices.responses.cart.GetCartProducts;
 import app.atelier.webservices.responses.coupon.GetCouponOrderTotal;
 import app.atelier.webservices.responses.customers.GetCustomers;
+import app.atelier.webservices.responses.products.Delivery;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -60,20 +61,36 @@ public class CartFragment extends Fragment {
 
     @BindView(R.id.Cart_tv_discount)
     TextView discount;
+
+    @BindView(R.id.Cart_tv_delivery)
+    TextView delivery;
+
     @BindView(R.id.Cart_tv_total)
     TextView total;
+
     @BindView(R.id.Cart_tv_subtotalValue)
     TextView subtotalValue;
+
     @BindView(R.id.Cart_tv_discountValue)
     TextView discountValue;
+
+    @BindView(R.id.Cart_tv_deliveryValue)
+    TextView deliveryValue;
+
     @BindView(R.id.Cart_tv_totalValue)
     TextView totalValue;
+
     @BindView(R.id.Cart_et_coupon)
-    TextView coupon;
+    EditText couponField;
+
+    @BindView(R.id.Cart_btn_applyCoupon)
+    Button applyCoupon;
 
     @BindView(R.id.Cart_btn_checkout)
     Button checkout;
-    @BindView(R.id.cart_constraintLayout_container)
+    @BindView(R.id.cart_constraintLayout_bottomContainer)
+    ConstraintLayout bottomContainer;
+    @BindView(R.id.cart_cl_container)
     ConstraintLayout container;
     @BindView(R.id.loading)
     ProgressBar loading;
@@ -84,6 +101,9 @@ public class CartFragment extends Fragment {
     CartItem cartItem = new CartItem();
 
     double OrderTotalDiscount = -1;
+    double deliveryCost;
+    boolean isApplied = false;
+    String couponValue;
 
     public static CartFragment newInstance(FragmentActivity activity) {
         fragment = new CartFragment();
@@ -91,7 +111,6 @@ public class CartFragment extends Fragment {
         sessionManager = new SessionManager(activity);
         return fragment;
     }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -99,7 +118,6 @@ public class CartFragment extends Fragment {
         ButterKnife.bind(this, childView);
         return childView;
     }
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -107,18 +125,21 @@ public class CartFragment extends Fragment {
         MainActivity.appbar.setVisibility(View.VISIBLE);
         MainActivity.bottomAppbar.setVisibility(View.VISIBLE);
         MainActivity.setupAppbar("cart", true, true);
-        container.setVisibility(View.GONE);
+        FixControl.setupUI(container, activity);
+        bottomContainer.setVisibility(View.GONE);
         if (sessionManager.getUserLanguage().equals("en")) {
             Typeface enBold = Typeface.createFromAsset(activity.getAssets(), "montserrat_medium.ttf");
             totalValue.setTypeface(enBold);
             subtotalValue.setTypeface(enBold);
             discountValue.setTypeface(enBold);
+            deliveryValue.setTypeface(enBold);
             checkout.setTypeface(enBold);
         } else {
             Typeface arBold = Typeface.createFromAsset(activity.getAssets(), "droid_arabic_kufi_bold.ttf");
             totalValue.setTypeface(arBold);
             subtotalValue.setTypeface(arBold);
             discountValue.setTypeface(arBold);
+            deliveryValue.setTypeface(arBold);
             checkout.setTypeface(arBold);
         }
 
@@ -152,22 +173,25 @@ public class CartFragment extends Fragment {
 
             @Override
             public void onMinusClick(int position) {
+                if (cartArrList != null) {
+                    if (cartArrList.size() > 0) {
+                        if (cartArrList.get(position).quantity > 1) {
 
-                if (cartArrList.get(position).quantity > 1) {
+                            updateCartProductAPi(position, false);
 
-                    updateCartProductAPi(position, false);
+                        } else {
 
-                } else {
+                            deleteCartProductApi(position);
 
-                    deleteCartProductApi(position);
-
+                        }
+                    }
                 }
             }
 
             @Override
             public void onDeleteItemClick(final int position) {
                 new AlertDialog.Builder(activity)
-                        .setTitle(activity.getString(R.string.message))
+                        .setTitle(activity.getString(R.string.app_name))
                         .setMessage(activity.getString(R.string.sure_for_delete))
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -188,13 +212,7 @@ public class CartFragment extends Fragment {
         cartList.setLayoutManager(layoutManager);
         cartList.setAdapter(cartAdapter);
 
-        if (cartArrList.size() > 0) {
-            loading.setVisibility(View.GONE);
-            container.setVisibility(View.VISIBLE);
-            setTotalPrice();
-        } else {
-            CartProductsApi(false);
-        }
+        CartProductsApi(false);
 
 
         ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT,
@@ -208,22 +226,23 @@ public class CartFragment extends Fragment {
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(cartList);
 
     }
-
     @OnClick(R.id.Cart_btn_applyCoupon)
     public void applyCouponClick() {
-        String couponStr = coupon.getText().toString();
-        if (couponStr == null || couponStr.matches("")) {
-            Snackbar.make(loading, getString(R.string.enter_coupon), Snackbar.LENGTH_SHORT).show();
+        if (isApplied) {
+            deleteCouponApi();
         } else {
-            applyCouponApi(couponStr);
+            couponValue = couponField.getText().toString();
+            if (couponValue == null || couponValue.matches("")) {
+                Snackbar.make(loading, getString(R.string.enter_coupon), Snackbar.LENGTH_SHORT).show();
+            } else
+                applyCouponApi();
         }
     }
-
     @OnClick(R.id.Cart_btn_checkout)
     public void checkoutClick() {
         {
-            if (sessionManager.getUser().get("userName") != null
-                    && !sessionManager.getUser().get("userName").matches("")) {
+            if (sessionManager.getUserName() != null
+                    && !sessionManager.getUserName().matches("")) {
                 checkout();
             } else {
                 Fragment fragment = LoginFragment.newInstance(activity, "cart");
@@ -231,8 +250,6 @@ public class CartFragment extends Fragment {
             }
         }
     }
-
-
     private void checkout() {
 
         loading.setVisibility(View.VISIBLE);
@@ -252,8 +269,8 @@ public class CartFragment extends Fragment {
 
                                         boolean isAddressEmpty = true;
 
-                                        if (sessionManager.getUser().get("userName") != null
-                                                && !sessionManager.getUser().get("userName").matches("")) {
+                                        if (sessionManager.getUserName() != null
+                                                && !sessionManager.getUserName().matches("")) {
                                             if (outResponse.customers.get(0).addresses.size() > 0) {
                                                 isAddressEmpty = false;
                                             }
@@ -288,14 +305,13 @@ public class CartFragment extends Fragment {
                         });
 
     }
-
-    private void applyCouponApi(String coupon) {
+    private void applyCouponApi() {
         loading.setVisibility(View.VISIBLE);
         AtelierApiConfig.getCallingAPIInterface().applyCoupon(
                 Constants.AUTHORIZATION_VALUE,
                 sessionManager.getUserLanguage(),
                 sessionManager.getUserId(),
-                coupon,
+                couponValue,
                 new Callback<GetCouponOrderTotal>() {
                     @Override
                     public void success(GetCouponOrderTotal getCouponOrderTotal, Response response) {
@@ -317,7 +333,32 @@ public class CartFragment extends Fragment {
                 }
         );
     }
+    private void deleteCouponApi() {
+        loading.setVisibility(View.VISIBLE);
+        AtelierApiConfig.getCallingAPIInterface()
+                .removeCoupon(
+                        Constants.AUTHORIZATION_VALUE,
+                        sessionManager.getUserLanguage(),
+                        sessionManager.getUserId(),
+                        couponValue,
+                        new Callback<Response>() {
+                            @Override
+                            public void success(Response response, Response response2) {
+                                loading.setVisibility(View.GONE);
+                                CartProductsApi(true);
 
+                            }
+
+                            @Override
+                            public void failure(RetrofitError error) {
+                                loading.setVisibility(View.GONE);
+                                GlobalFunctions.showErrorMessage(error, loading);
+                            }
+                        }
+                );
+        CartProductsApi(true);
+
+    }
     private void prepareCartProductData(int position, boolean isAdd) {
 
         CartItem_ cartItem_ = new CartItem_();
@@ -328,7 +369,6 @@ public class CartFragment extends Fragment {
         cartItem.shoppingCartItem = cartItem_;
 
     }
-
     public void updateCartProductAPi(final int position, boolean isAdd) {
         loading.setVisibility(View.VISIBLE);
         prepareCartProductData(position, isAdd);
@@ -343,9 +383,10 @@ public class CartFragment extends Fragment {
                                 if (getCartProducts.CartProducts.size() > 0) {
                                     cartArrList.set(position, getCartProducts.CartProducts.get(0));
                                     cartList.getAdapter().notifyItemChanged(position, cartArrList.get(position));
-                                    setTotalPrice();
-                                } else
+                                    CartProductsApi(true);
+                                } else {
                                     MainActivity.notification.setVisibility(View.INVISIBLE);
+                                }
 
                             }
 
@@ -355,12 +396,13 @@ public class CartFragment extends Fragment {
                     @Override
                     public void failure(RetrofitError error) {
                         loading.setVisibility(View.GONE);
-                        GlobalFunctions.showErrorMessage(error, loading);
+                        if (isAdded()) {
+                            GlobalFunctions.showErrorMessage(error, loading);
+                        }
                     }
                 }
         );
     }
-
     private void deleteCartProductApi(final int position) {
         loading.setVisibility(View.VISIBLE);
         AtelierApiConfig.getCallingAPIInterface().deleteShoppingCartItem(
@@ -399,8 +441,8 @@ public class CartFragment extends Fragment {
                                 cartList.getAdapter().notifyItemRangeChanged(0, cartArrList.size(), cartArrList);
                                 if (cartArrList.size() == 0) {
                                     Snackbar.make(loading, activity.getResources().getString(R.string.empty_cart), Snackbar.LENGTH_LONG).show();
-                                    container.setVisibility(View.GONE);
-                                    MainActivity.shoppingCartItemsCount(activity);
+                                    bottomContainer.setVisibility(View.GONE);
+                                    MainActivity.shoppingCartItemsCount();
                                     MainActivity.notification.setVisibility(View.INVISIBLE);
                                 }
 
@@ -422,21 +464,20 @@ public class CartFragment extends Fragment {
         );
 
     }
-
     private void setTotalPrice() {
         double total = 0;
         for (CartProductModel item : cartArrList) {
-            total = total + (item.quantity * item.product.price);
+            total = total + item.sub_total;
         }
-        if (OrderTotalDiscount > -1) {
-            totalValue.setText(total + " " + sessionManager.getCurrencyCode());
-            discountValue.setText("-"+OrderTotalDiscount + " " + sessionManager.getCurrencyCode());
-            subtotalValue.setText(total - OrderTotalDiscount + " " + sessionManager.getCurrencyCode());
-        }
-        else
-            subtotalValue.setText(total + " " + sessionManager.getCurrencyCode());
-    }
+        totalValue.setText(total + " " + sessionManager.getCurrencyCode());
+        deliveryValue.setText("+ "+deliveryCost + " " + sessionManager.getCurrencyCode());
+        subtotalValue.setText(total + deliveryCost + " " + sessionManager.getCurrencyCode());
 
+        if (OrderTotalDiscount > -1) {
+            discountValue.setText("-" + OrderTotalDiscount + " " + sessionManager.getCurrencyCode());
+            subtotalValue.setText(total + deliveryCost - OrderTotalDiscount + " " + sessionManager.getCurrencyCode());
+        }
+    }
     public void CartProductsApi(final boolean isCoupon) {
         loading.setVisibility(View.VISIBLE);
         AtelierApiConfig.getCallingAPIInterface().shoppingCartItems(
@@ -448,24 +489,33 @@ public class CartFragment extends Fragment {
                         if (!isCoupon) {
                             if (getCartProducts != null) {
                                 if (getCartProducts.CartProducts.size() > 0) {
+                                    cartArrList.clear();
                                     cartArrList.addAll(getCartProducts.CartProducts);
                                     cartAdapter.notifyDataSetChanged();
-                                    container.setVisibility(View.VISIBLE);
-                                    setTotalPrice();
-                                }
-                            }}
-                            if (getCartProducts.couponOrderTotal != null) {
-                                if (getCartProducts.couponOrderTotal.OrderTotalDiscount != null) {
-                                    OrderTotalDiscount = Double.parseDouble(getCartProducts.couponOrderTotal.OrderTotalDiscount);
-                                    total.setVisibility(View.VISIBLE);
-                                    totalValue.setVisibility(View.VISIBLE);
-                                    discount.setVisibility(View.VISIBLE);
-                                    discountValue.setVisibility(View.VISIBLE);
-                                    setTotalPrice();
-
+                                    deliveryCostApi();
                                 }
                             }
-
+                        }
+                        if (getCartProducts.couponOrderTotal != null) {
+                            if (getCartProducts.couponOrderTotal.OrderTotalDiscount != null) {
+                                OrderTotalDiscount = Double.parseDouble(getCartProducts.couponOrderTotal.OrderTotalDiscount);
+                                couponValue = getCartProducts.couponOrderTotal.discountInfo.get(0).CouponCode;
+                                discount.setVisibility(View.VISIBLE);
+                                discountValue.setVisibility(View.VISIBLE);
+                                isApplied = true;
+                                applyCoupon.setBackgroundResource(R.color.black);
+                                applyCoupon.setText(getString(R.string.remove));
+                            } else {
+                                isApplied = false;
+                                applyCoupon.setBackgroundResource(R.color.colorPrimary);
+                                applyCoupon.setText(getString(R.string.apply_coupon));
+                                discount.setVisibility(View.GONE);
+                                discountValue.setVisibility(View.GONE);
+                                OrderTotalDiscount = -1;
+                            }
+                        }
+                        setTotalPrice();
+                        couponField.setText("");
                     }
 
                     @Override
@@ -476,5 +526,30 @@ public class CartFragment extends Fragment {
                 }
         );
     }
+    private void deliveryCostApi() {
+        loading.setVisibility(View.VISIBLE);
+        AtelierApiConfig.getCallingAPIInterface().deliveryCost(
+                Constants.AUTHORIZATION_VALUE, sessionManager.getUserLanguage(),
+                sessionManager.getUserId(), new Callback<Delivery>() {
+                    @Override
+                    public void success(Delivery delivery, Response response) {
+                        if (delivery != null) {
+                            loading.setVisibility(View.GONE);
+                            if (delivery.getShipping().size()>=1) {
+                                if (delivery.getShipping().get(0).getPrice() > 0) {
+                                    deliveryCost = delivery.getShipping().get(0).getPrice();
+                                    setTotalPrice();
+                                    bottomContainer.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        }
+                    }
 
+                    @Override
+                    public void failure(RetrofitError error) {
+
+                    }
+                }
+        );
+    }
 }

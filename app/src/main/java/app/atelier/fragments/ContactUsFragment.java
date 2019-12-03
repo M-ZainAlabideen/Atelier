@@ -13,19 +13,19 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import app.atelier.MainActivity;
 import app.atelier.R;
 import app.atelier.classes.Constants;
+import app.atelier.classes.FixControl;
 import app.atelier.classes.GlobalFunctions;
 import app.atelier.classes.Navigator;
 import app.atelier.classes.SessionManager;
 import app.atelier.webservices.AtelierApiConfig;
-import app.atelier.webservices.contact.ContactUs;
-import app.atelier.webservices.contact.GetContactUsRequest;
-import app.atelier.webservices.contact.GetContactUsResponse;
+import app.atelier.webservices.responses.contact.ContactUs;
+import app.atelier.webservices.responses.contact.GetContactUsRequest;
+import app.atelier.webservices.responses.contact.GetContactUsResponse;
 import app.atelier.webservices.responses.settings.GetSettings;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,10 +35,8 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class ContactUsFragment extends Fragment {
-    public static FragmentActivity activity;
-    public static ContactUsFragment fragment;
-    public static SessionManager sessionManager;
-
+    @BindView(R.id.contactUs_cl_container)
+    ConstraintLayout container;
     @BindView(R.id.contactUs_editTxt_name)
     EditText name;
     @BindView(R.id.contactUs_editTxt_subject)
@@ -50,7 +48,9 @@ public class ContactUsFragment extends Fragment {
     @BindView(R.id.loading)
     ProgressBar loading;
 
-    public static Map<String,String> User;
+    public static FragmentActivity activity;
+    public static ContactUsFragment fragment;
+    private SessionManager sessionManager;
     private String facebookLink;
     private String instagramLink;
     private String twitterLink;
@@ -59,8 +59,6 @@ public class ContactUsFragment extends Fragment {
     public static ContactUsFragment newInstance(FragmentActivity activity) {
         fragment = new ContactUsFragment();
         ContactUsFragment.activity = activity;
-        sessionManager = new SessionManager(activity);
-        User = sessionManager.getUser();
         return fragment;
     }
 
@@ -79,9 +77,11 @@ public class ContactUsFragment extends Fragment {
         MainActivity.appbar.setVisibility(View.VISIBLE);
         MainActivity.bottomAppbar.setVisibility(View.VISIBLE);
         MainActivity.setupAppbar("",true,true);
-        if(User.get("userName") !=null && !User.get("userName").matches("")){
-            name.setText(User.get("userName"));
-            email.setText(User.get("email"));
+        FixControl.setupUI(container,activity);
+        sessionManager = new SessionManager(activity);
+        if(sessionManager.getUserName() !=null && !sessionManager.getUserName().matches("")){
+            name.setText(sessionManager.getUserName());
+            email.setText(sessionManager.getEmail());
         }
         if(facebookLink == null && youtubeLink == null && twitterLink == null && twitterLink == null) {
             SettingsApi();

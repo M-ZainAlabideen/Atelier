@@ -8,6 +8,7 @@
     android:fillViewport="true">
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/addAddress_cl_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     <EditText
@@ -133,7 +134,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:fontFamily="@font/droid_arabic_kufi"
-            android:text="@string/select_state"
+            android:text="@string/select_area"
             android:textColor="@color/black"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"

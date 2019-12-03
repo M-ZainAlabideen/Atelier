@@ -14,6 +14,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -26,12 +27,15 @@ import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.SearchView;
 
+import com.google.gson.Gson;
+
 import app.atelier.classes.Constants;
 import app.atelier.classes.FixControl;
 import app.atelier.classes.GlobalFunctions;
 import app.atelier.classes.LocaleHelper;
 import app.atelier.classes.Navigator;
 import app.atelier.classes.SessionManager;
+import app.atelier.fragments.ProductDetailsFragment;
 import app.atelier.fragments.TopicsPageFragment;
 import app.atelier.fragments.CartFragment;
 import app.atelier.fragments.CategoriesFragment;
@@ -66,8 +70,6 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
     @BindView(R.id.main_frameLayout_Container)
     FrameLayout Container;
-    @BindView(R.id.main_imgView_back)
-    ImageView back;
 
 
     /*butterKnife don't work with static or private
@@ -84,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
     public static TextView accountOrLogin;
     public static SearchView search;
     public static ImageView menu;
+    public static ImageView mainPage;
+    public static ImageView back;
 
     public static SessionManager sessionManager;
     //sharedPreference and Editor used to check and save the value of language
@@ -126,6 +130,11 @@ public class MainActivity extends AppCompatActivity {
         accountOrLogin = (TextView) findViewById(R.id.main_txtView_accountOrLogin);
         search = (SearchView) findViewById(R.id.main_imgView_search);
         menu = (ImageView) findViewById(R.id.main_imgView_menu);
+        mainPage = (ImageView) findViewById(R.id.main_imgView_mainPage);
+        back = (ImageView) findViewById(R.id.main_imgView_back);
+
+        FixControl.setupUI(back,this);
+
 
         if (language.equals("en")) {
             isEnglish = true;
@@ -139,22 +148,22 @@ public class MainActivity extends AppCompatActivity {
             title.setTypeface(arBold);
         }
 
-        if (sessionManager.getUser().get("id") == null || sessionManager.getUser().get("id").matches("")) {
+        if (sessionManager.getUserId() == null || sessionManager.getUserId().matches("")) {
             createGuestCustomerApi();
+        } else {
+            shoppingCartItemsCount();
         }
-        if (sessionManager.isGuest() || (sessionManager.getUser().get("userName") != null
-                && !sessionManager.getUser().get("userName").matches(""))) {
+        if (sessionManager.isGuest() || (sessionManager.getUserName() != null
+                && !sessionManager.getUserName().matches(""))) {
             Navigator.loadFragment(this, MainCategoriesFragment.newInstance(this), R.id.main_frameLayout_Container, false);
         } else {
             Navigator.loadFragment(this, LoginFragment.newInstance(this, "mainActivity"), R.id.main_frameLayout_Container, false);
         }
 
-        if (sessionManager.getUser().get("userName") != null
-                && !sessionManager.getUser().get("userName").matches("")) {
+        if (sessionManager.getUserName() != null
+                && !sessionManager.getUserName().matches("")) {
             accountOrLogin.setText(getResources().getString(R.string.account));
         }
-
-        shoppingCartItemsCount(this);
 
         //change the color of editText in searchView
         EditText searchEditText = (EditText) search.findViewById(android.support.v7.appcompat.R.id.search_src_text);
@@ -177,7 +186,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     @OnClick(R.id.main_imgView_menu)
     public void menuClick() {
         //open and close the sideMenu when the navigationIcon clicked
@@ -195,6 +203,11 @@ public class MainActivity extends AppCompatActivity {
             search.onActionViewCollapsed();
         } else
             onBackPressed();
+    }
+
+    @OnClick(R.id.main_imgView_mainPage)
+    public void mainPageBackClick() {
+        Navigator.loadFragment(this, MainCategoriesFragment.newInstance(this), R.id.main_frameLayout_Container, false);
     }
 
     @Override
@@ -239,12 +252,19 @@ public class MainActivity extends AppCompatActivity {
     //myAccount click
     @OnClick(R.id.main_linearLayout_accountOrLogin)
     public void accountClick() {
-        if (sessionManager.getUser().get("userName") != null
-                && !sessionManager.getUser().get("userName").matches("")) {
+        if (sessionManager.getUserName() != null
+                && !sessionManager.getUserName().matches("")) {
             Navigator.loadFragment(this, MyAccountFragment.newInstance(this), R.id.main_frameLayout_Container, true);
         } else {
             Navigator.loadFragment(this, LoginFragment.newInstance(this, "mainActivity"), R.id.main_frameLayout_Container, true);
         }
+        drawerLayout.closeDrawers();
+    }
+
+
+    @OnClick(R.id.main_linearLayout_mainPage)
+    public void mainPageClick() {
+        Navigator.loadFragment(this, MainCategoriesFragment.newInstance(this), R.id.main_frameLayout_Container, true);
         drawerLayout.closeDrawers();
     }
 
@@ -318,6 +338,7 @@ public class MainActivity extends AppCompatActivity {
         finish();
         overridePendingTransition(0, 0);
         startActivity(new Intent(this, MainActivity.class));
+        GlobalFunctions.setUpFont(this);
     }
 
     public void createGuestCustomerApi() {
@@ -328,42 +349,45 @@ public class MainActivity extends AppCompatActivity {
                     public void success(GetCustomers getCustomers, Response response) {
                         if (getCustomers != null) {
                             CustomerModel customer = getCustomers.customers.get(0);
-                            sessionManager.setUser(
-                                    customer.id,
-                                    customer.userName,
-                                    customer.firstName,
-                                    customer.lastName,
-                                    customer.phone,
-                                    customer.email,
-                                    customer.password);
+                            sessionManager.setUserId(String.valueOf(customer.id));
+                            sessionManager.setUserName(customer.userName);
+                            sessionManager.setFirstName(customer.firstName);
+                            sessionManager.setLastName(customer.lastName);
+                            sessionManager.setPhone(customer.phone);
+                            sessionManager.setEmail(customer.email);
+
+                            shoppingCartItemsCount();
                         }
                     }
 
                     @Override
                     public void failure(RetrofitError error) {
-                        Snackbar.make(Container, getResources().getString(R.string.error), Snackbar.LENGTH_LONG).show();
+                        GlobalFunctions.showErrorMessage(error, appbar);
                     }
                 }
         );
     }
 
 
-    public static void shoppingCartItemsCount(Context context) {
+    public static void shoppingCartItemsCount() {
 
         AtelierApiConfig.getCallingAPIInterface().shoppingCartItemsCount(
                 Constants.AUTHORIZATION_VALUE,
                 sessionManager.getUserLanguage(),
-                sessionManager.getUser().get("id"),
+                sessionManager.getUserId(),
                 new Callback<GetCartProducts>() {
                     @Override
                     public void success(GetCartProducts outResponse, retrofit.client.Response response) {
 
                         if (outResponse != null) {
                             if (outResponse.CartProducts.size() > 0) {
-                                notification.setVisibility(View.VISIBLE);
                                 emptyCart = false;
+                                notification.setVisibility(View.VISIBLE);
+
                             } else {
                                 emptyCart = true;
+                                notification.setVisibility(View.INVISIBLE);
+
                             }
                         }
                     }
@@ -380,11 +404,15 @@ public class MainActivity extends AppCompatActivity {
 
     public static void setupAppbar(String selection, boolean hasSearch, boolean hasSideMenu) {
         bottomAppbar.setVisibility(View.VISIBLE);
+        mainPage.setVisibility(View.GONE);
+        back.setVisibility(View.VISIBLE);
         if (selection.equals("home")) {
             home.setImageResource(R.mipmap.icon_home_sel);
             categories.setImageResource(R.mipmap.icon_cate_unsel);
             favorite.setImageResource(R.mipmap.icon_fav_unsel);
             cart.setImageResource(R.mipmap.icon_cart_unsel);
+            mainPage.setVisibility(View.VISIBLE);
+            back.setVisibility(View.GONE);
         } else if (selection.equals("categories")) {
             home.setImageResource(R.mipmap.icon_home_unsel);
             categories.setImageResource(R.mipmap.icon_cate_sel);
@@ -406,8 +434,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (!selection.equals("cart") && !emptyCart) {
             MainActivity.notification.setVisibility(View.VISIBLE);
-        }
-        else{
+        } else {
             MainActivity.notification.setVisibility(View.INVISIBLE);
         }
 
@@ -421,6 +448,36 @@ public class MainActivity extends AppCompatActivity {
         } else {
             menu.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        gotoDetails(intent);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        gotoDetails(getIntent());
+
+    }
+
+    private void gotoDetails(Intent intent) {
+
+        if (intent.hasExtra("Id")) {
+                Log.d("gotoDetails", "1 -> " + intent.getStringExtra("type"));
+
+                Log.d("gotoDetails", "2 -> " + intent.getStringExtra("Id"));
+
+            Navigator.loadFragment(this, ProductDetailsFragment.newInstance(this, Integer.parseInt(intent.getStringExtra("Id"))),
+                    R.id.main_frameLayout_Container, true);
+
+        }
+
     }
 
 }

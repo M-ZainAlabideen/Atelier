@@ -15,11 +15,37 @@
             android:layout_marginTop="55dp"/>
 
     <LinearLayout
-        android:id="@+id/main_linearLayout_accountOrLogin"
+        android:id="@+id/main_linearLayout_mainPage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="60dp"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="60dp"
+            app:srcCompat="@mipmap/icon_home_sel" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/main_page"
+            android:textSize="16sp"
+            android:layout_marginRight="28dp"
+            android:fontFamily="@font/droid_arabic_kufi"/>
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/main_linearLayout_accountOrLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
         android:gravity="center">
 
         <ImageView
@@ -39,6 +65,7 @@
 
 
     </LinearLayout>
+
 
     <LinearLayout
         android:id="@+id/main_linearLayout_contactUs"

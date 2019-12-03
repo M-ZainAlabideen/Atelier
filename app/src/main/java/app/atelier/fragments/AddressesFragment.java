@@ -44,6 +44,7 @@ import app.atelier.webservices.responses.cart.GetCartProducts;
 import app.atelier.webservices.responses.customers.GetCustomers;
 import app.atelier.webservices.responses.orders.GetOrders;
 import app.atelier.webservices.responses.orders.OrderModel;
+import app.atelier.webservices.responses.products.Delivery;
 import app.atelier.webservices.responses.stores.GetStores;
 import app.atelier.webservices.responses.stores.PaymentMethodModel;
 import app.atelier.webservices.responses.stores.PaymentModel;
@@ -79,6 +80,7 @@ public class AddressesFragment extends Fragment {
 
     String paymentSystemName;
     String paymentMethodCode;
+    Delivery.ShippingEntity deliveryShipping;
 
     public static AddressesFragment newInstance(FragmentActivity activity, String flag) {
         fragment = new AddressesFragment();
@@ -123,7 +125,7 @@ public class AddressesFragment extends Fragment {
                     @Override
                     public void onItemDeleteClick(final int position) {
                         new AlertDialog.Builder(activity)
-                                .setTitle(getString(R.string.confirm))
+                                .setTitle(getString(R.string.app_name))
                                 .setMessage(getString(R.string.delete_address))
                                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
@@ -154,11 +156,8 @@ public class AddressesFragment extends Fragment {
 
         addressesList.setLayoutManager(layoutManager);
         addressesList.setAdapter(addressesAdapter);
-        if (addressesArrList.size() > 0) {
-            loading.setVisibility(View.GONE);
-        } else {
+
             AddressApi();
-        }
     }
 
     @OnClick(R.id.addresses_txtView_add)
@@ -196,6 +195,7 @@ public class AddressesFragment extends Fragment {
                     @Override
                     public void success(GetCustomers outResponse, retrofit.client.Response response) {
                         loading.setVisibility(View.GONE);
+                        addressesArrList.clear();
                         addressesArrList.addAll(outResponse.customers.get(0).addresses);
                         addressesAdapter.notifyDataSetChanged();
                     }
@@ -289,8 +289,6 @@ public class AddressesFragment extends Fragment {
     }
 
 
-    ///////////////////////////////////////////////////////
-
     public void getPaymentMethods() {
         loading.setVisibility(View.VISIBLE);
         AtelierApiConfig.getCallingAPIInterface().currentStore(
@@ -347,7 +345,7 @@ public class AddressesFragment extends Fragment {
     }
 
     public void shoppingCartItemsForOrderApi() {
-        {
+
             loading.setVisibility(View.VISIBLE);
             AtelierApiConfig.getCallingAPIInterface().shoppingCartItemsForOrder(
                     Constants.AUTHORIZATION_VALUE,
@@ -359,8 +357,7 @@ public class AddressesFragment extends Fragment {
 
                             if (outResponse != null) {
                                 if (outResponse.CartProducts.size() > 0) {
-                                    createOrders(outResponse.CartProducts);
-                                    loading.setVisibility(View.GONE);
+                                    deliveryCostApi();
                                 }
 
                             }
@@ -375,12 +372,11 @@ public class AddressesFragment extends Fragment {
 
                     });
 
-        }
+
     }
 
-    private void createOrders(List<CartProductModel> cartArrayList) {
-        loading.setVisibility(View.VISIBLE);
-        prepareOrdersData(cartArrayList);
+    private void createOrders() {
+        prepareOrdersData();
         AtelierApiConfig.getCallingAPIInterface().createOrders(
                 Constants.AUTHORIZATION_VALUE,
                 sessionManager.getUserLanguage(),
@@ -389,7 +385,6 @@ public class AddressesFragment extends Fragment {
                 new Callback<Response>() {
                     @Override
                     public void success(Response s, Response response) {
-                        loading.setVisibility(View.GONE);
                         TypedInput body = response.getBody();
                         String outResponse = "";
 
@@ -402,6 +397,7 @@ public class AddressesFragment extends Fragment {
                                 out.append(line);
                                 out.append(newLine);
                             }
+                            loading.setVisibility(View.GONE);
                             outResponse = out.toString();
                             outResponse = outResponse.replaceAll("\"", "");
                             String[] mArrayStringValues = outResponse.split(",");
@@ -417,7 +413,7 @@ public class AddressesFragment extends Fragment {
                                 OrderModel order = new OrderModel();
                                 order.id = Integer.parseInt(mArrayStringValues[1].replaceAll("\n", ""));
                                 clearStack();
-                                MainActivity.shoppingCartItemsCount(activity);
+                                MainActivity.shoppingCartItemsCount();
                                 Fragment fragment = OrderDetailsFragment.newInstance(activity, order);
                                 Navigator.loadFragment(activity, fragment, R.id.main_frameLayout_Container, true);
 
@@ -446,15 +442,20 @@ public class AddressesFragment extends Fragment {
 
     }
 
-    private void prepareOrdersData(List<CartProductModel> cartArrayList) {
+    private void prepareOrdersData() {
 
         OrderModel order = new OrderModel();
         order.paymentMethodSystemName = paymentSystemName;
         order.paymentMethodCode = paymentMethodCode;
         order.payment_by = 2;
         order.use_reward_points = "false";
+        order.orderShippingExclTax = deliveryShipping.getPrice();
+        order.orderShippingInclTax = deliveryShipping.getPrice();
+        order.shippingMethod = deliveryShipping.getName();
+        order.shippingRateComputationMethodSystemName = deliveryShipping.getSystemName();
 
         order.billingAddressId = (Integer.parseInt(addressesArrList.get(selectedAddressPosition).id));
+        order.shippingAddressId = (Integer.parseInt(addressesArrList.get(selectedAddressPosition).id));
 
         order.customerId = Integer.parseInt(sessionManager.getUserId());
 
@@ -475,9 +476,33 @@ public class AddressesFragment extends Fragment {
         billingAddress.id = (addressesArrList.get(selectedAddressPosition).id);
 
         order.billingAddress = (billingAddress);
+        order.shippingAddress = billingAddress;
 
         orders.order = order;
 
+    }
+
+    private void deliveryCostApi() {
+        AtelierApiConfig.getCallingAPIInterface().deliveryCost(
+                Constants.AUTHORIZATION_VALUE, sessionManager.getUserLanguage(),
+                sessionManager.getUserId(), new Callback<Delivery>() {
+                    @Override
+                    public void success(Delivery delivery, Response response) {
+                        if (delivery != null) {
+                            loading.setVisibility(View.GONE);
+                            if (delivery.getShipping().get(0).getPrice() > 0) {
+                                deliveryShipping =  delivery.getShipping().get(0);
+                                createOrders();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+
+                    }
+                }
+        );
     }
 
     private void clearStack() {

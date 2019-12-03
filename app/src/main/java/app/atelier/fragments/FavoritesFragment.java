@@ -122,11 +122,8 @@ public class FavoritesFragment extends Fragment {
         layoutManager = new GridLayoutManager(activity, 2);
         productsList.setLayoutManager(layoutManager);
         productsList.setAdapter(productsAdapter);
-         if (favoritesArrList.size() > 0) {
-                loading.setVisibility(View.GONE);
-            } else {
+
                 favoritesApi();
-            }
     }
 
 
@@ -135,17 +132,18 @@ public class FavoritesFragment extends Fragment {
         AtelierApiConfig.getCallingAPIInterface().shoppingCartItems(
                 Constants.AUTHORIZATION_VALUE, sessionManager.getUserLanguage()
                 , sessionManager.getUserId(),
-                "Wishlist",
+                "2",
                 new Callback<GetCartProducts>() {
                     @Override
                     public void success(GetCartProducts getFavorites, Response response) {
                         loading.setVisibility(View.GONE);
                         if (getFavorites != null) {
                             if (getFavorites.CartProducts.size() > 0) {
+                                favoritesArrList.clear();
                                 favoritesArrList.addAll(getFavorites.CartProducts);
                                 productsAdapter.notifyDataSetChanged();
                             } else {
-                                Snackbar.make(loading, getString(R.string.no_data), Snackbar.LENGTH_SHORT).show();
+                                Snackbar.make(loading, getString(R.string.empty_favorites), Snackbar.LENGTH_SHORT).show();
                             }
                         }
                     }
@@ -174,7 +172,7 @@ public class FavoritesFragment extends Fragment {
                                     Snackbar.make(loading, getString(R.string.product_favorites_added), Snackbar.LENGTH_SHORT).show();
                                 } else {
                                     new AlertDialog.Builder(activity)
-                                            .setTitle(activity.getString(R.string.message))
+                                            .setTitle(activity.getString(R.string.app_name))
                                             .setMessage(activity.getString(R.string.product_added))
                                             .setPositiveButton(R.string.continue_shopping, new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int which) {
@@ -211,7 +209,7 @@ public class FavoritesFragment extends Fragment {
                 Constants.AUTHORIZATION_VALUE,
                 sessionManager.getUserLanguage(),
                 "2",
-                String.valueOf(favoritesArrList.get(position).id),
+                String.valueOf(favoritesArrList.get(position).productId),
                 sessionManager.getUserId(),
                 new Callback<Response>() {
                     @Override

@@ -11,10 +11,14 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+
+import com.duolingo.open.rtlviewpager.RtlViewPager;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -24,7 +28,9 @@ import app.atelier.MainActivity;
 import app.atelier.R;
 import app.atelier.adapters.BrandsAdapter;
 import app.atelier.adapters.SliderAdapter;
+import app.atelier.classes.AppController;
 import app.atelier.classes.Constants;
+import app.atelier.classes.FixControl;
 import app.atelier.classes.GlobalFunctions;
 import app.atelier.classes.SessionManager;
 import app.atelier.classes.WrapContentRtlViewPager;
@@ -47,7 +53,9 @@ public class HomeFragment extends Fragment {
     public static SessionManager sessionManager;
 
     @BindView(R.id.home_RtlViewPager_slider)
-    WrapContentRtlViewPager slider;
+    RtlViewPager slider;
+    @BindView(R.id.imageView5)
+    ImageView imageView5;
     @BindView(R.id.home_circleIndicator_sliderCircle)
     CircleIndicator sliderCircle;
     @BindView(R.id.home_recyclerView_brandsList)
@@ -61,8 +69,8 @@ public class HomeFragment extends Fragment {
     GridLayoutManager layoutManager;
     BrandsAdapter brandsAdapter;
 
-    private static int currentPage = 0;
-    private static int NUM_PAGES = 0;
+    private int currentPage = 0;
+    private int NUM_PAGES = 0;
 
     public static HomeFragment newInstance(FragmentActivity activity, String mainCategoryId) {
         fragment = new HomeFragment();
@@ -90,6 +98,9 @@ public class HomeFragment extends Fragment {
         MainActivity.bottomAppbar.setVisibility(View.VISIBLE);
         MainActivity.setupAppbar("home",true,true);
 
+        AppController.getInstance().trackEvent("Atelier", "Details", "Mobile");
+        AppController.getInstance().trackEvent("Atelier", "Details", "Android");
+
         loading.setVisibility(View.VISIBLE);
 
         layoutManager = new GridLayoutManager(activity, 3);
@@ -100,6 +111,12 @@ public class HomeFragment extends Fragment {
         sliderAdapter = new SliderAdapter(activity, sliderArrayList);
         slider.setAdapter(sliderAdapter);
         sliderCircle.setViewPager(slider);
+
+
+
+        int Height = FixControl.getImageHeight(activity, R.mipmap.placeholder_slider);
+        Log.d("fapa2", "==" + Height);
+        imageView5.getLayoutParams().height = Height;
 
 
         if (sliderArrayList.size() <= 0) {
@@ -164,10 +181,13 @@ public class HomeFragment extends Fragment {
                 new Callback<GetBrands>() {
                     @Override
                     public void success(GetBrands getBrands, Response response) {
+                        loading.setVisibility(View.GONE);
                         if (getBrands.brands.size() > 0) {
                             brandsArrayList.addAll(getBrands.brands);
                             brandsAdapter.notifyDataSetChanged();
-                            loading.setVisibility(View.GONE);
+                        }
+                        else{
+                            Snackbar.make(loading,getString(R.string.no_brands),Snackbar.LENGTH_SHORT).show();
                         }
                     }
 

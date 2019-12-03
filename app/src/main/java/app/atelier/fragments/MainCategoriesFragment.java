@@ -123,7 +123,7 @@ public class MainCategoriesFragment extends Fragment {
         activity.finish();
         activity.overridePendingTransition(0, 0);
         startActivity(new Intent(activity, MainActivity.class));
-
+        GlobalFunctions.setUpFont(activity);
     }
     public void categoriesApi() {
         AtelierApiConfig.getCallingAPIInterface().categories(

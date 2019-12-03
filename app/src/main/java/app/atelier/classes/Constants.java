@@ -1,8 +1,12 @@
 package app.atelier.classes;
 
 public class Constants {
-    public static final String BASE_URL = "http://atelier.hardtask.info/api/";
-    public static final String SKIP_PREF = "skip-pref";
+
+//    public static final String BASE_URL1 = "http://atelierq8.com";
+    public static final String BASE_URL1 = "http://demo.atelierq8.com";
+
+    public static final String BASE_URL = BASE_URL1+"/api/";
+    //http://demo.atelierq8.com/
     public static final String AUTHORIZATION = "Authorization";
     public static final String ACCEPT_LANGUAGE = "Accept-Language";
     public static final String CONTENT_TYPE = "Content-Type";
@@ -26,14 +30,24 @@ public class Constants {
             "IN90N2-MnH06S-Q5mFY9IUJHXz2luPQ_2hsgWQ";
 
     public final static int NormalUserRoleId = 3;
-
     public final static String DOWNLOAD_INVOICE = BASE_URL + "/" + "orders/{orderId}/pdf";
-
     public final static String ORDER_COMPLETE_STATUS = "complete";
     public final static String PAYMENT_STATUS_PAID = "paid";
     public final static String FACEBOOK = "storeinformationsettings.facebooklink";
-    public final static String INSTAGRAM = "";
+    public final static String INSTAGRAM = "storeinformationsettings.instagramlink";
     public final static String TWITTER = "storeinformationsettings.twitterlink";
     public final static String YOUTUBE = "storeinformationsettings.youtubelink";
+
+    public final static String SUCCESS_PAGE= "atelierq8.";
+    public final static String ERROR_PAGE = "error.aspx";
+
+    public static final int NOTIFICATION_ID = 100;
+
+    public static final int NOTIFICATION_ID_BIG_IMAGE = 101;
+
+    public static final String PUSH_NOTIFICATION = "pushNotification";
+
+    public static String CMS_NOTIFICATION_IMAGE_URL = BASE_URL1+"/images/thumbs/";
+
 
 }

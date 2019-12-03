@@ -3,6 +3,7 @@ package app.atelier.fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -35,6 +36,8 @@ public class EditProfileFragment extends Fragment {
     public static EditProfileFragment fragment;
     public static SessionManager sessionManager;
 
+    @BindView(R.id.editProfile_cl_container)
+    ConstraintLayout container;
     @BindView(R.id.editProfile_editText_userName)
     EditText userName;
     @BindView(R.id.editProfile_editText_firstName)
@@ -71,6 +74,8 @@ public class EditProfileFragment extends Fragment {
         MainActivity.appbar.setVisibility(View.VISIBLE);
         MainActivity.bottomAppbar.setVisibility(View.VISIBLE);
         MainActivity.setupAppbar("", true, true);
+        FixControl.setupUI(container,activity);
+        GlobalFunctions.DisableLayout(container);
         getCustomerById();
     }
 
@@ -88,7 +93,10 @@ public class EditProfileFragment extends Fragment {
             Snackbar.make(loading, activity.getResources().getString(R.string.phone_required), Snackbar.LENGTH_SHORT).show();
         } else if (mailStr == null || mailStr.matches("")) {
             Snackbar.make(loading, activity.getResources().getString(R.string.mail_required), Snackbar.LENGTH_SHORT).show();
-        } else {
+        } else if(!FixControl.isValidEmail(mailStr)){
+            Snackbar.make(loading,getString(R.string.enter_email), Snackbar.LENGTH_SHORT).show();
+        }
+        else {
             CustomerModel customer = new CustomerModel();
             customer.userName = userNameStr;
             customer.firstName = firstNameStr;
@@ -115,15 +123,12 @@ public class EditProfileFragment extends Fragment {
                         loading.setVisibility(View.GONE);
                         if (getCustomers.customers.size() > 0) {
                             CustomerModel customer = getCustomers.customers.get(0);
-                            sessionManager.setUser(
-                                    customer.id,
-                                    customer.userName,
-                                    customer.firstName,
-                                    customer.lastName,
-                                    customer.phone,
-                                    customer.email,
-                                    customer.password);
-                            FixControl.hideKeyboard(userName,activity);
+                            sessionManager.setUserId(String.valueOf(customer.id));
+                            sessionManager.setUserName(customer.userName);
+                            sessionManager.setFirstName(customer.firstName);
+                            sessionManager.setLastName(customer.lastName);
+                            sessionManager.setPhone(customer.phone);
+                            sessionManager.setEmail(customer.email);
                             Snackbar.make(loading, activity.getResources().getString(R.string.successfully_updated), Snackbar.LENGTH_SHORT).show();
                             Navigator.loadFragment(activity, MyAccountFragment.newInstance(activity), R.id.main_frameLayout_Container, false);
                         }
@@ -153,6 +158,7 @@ public class EditProfileFragment extends Fragment {
                                     phone.setText(getCustomers.customers.get(0).phone);
                                     mail.setText(getCustomers.customers.get(0).email);
                                     loading.setVisibility(View.GONE);
+                                    GlobalFunctions.EnableLayout(container);
                                 }
                             }
                         }

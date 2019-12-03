@@ -295,7 +295,7 @@ public class ProductModel implements Serializable {
 
     @SerializedName("localized_full_descriptions")
     @Expose
-    public List<FullDescriptionModel> FullDescriptionModels;
+    public List<FullDescriptionModel> localizedFullDescriptions;
 
     public String getPhoto(){
 
@@ -319,12 +319,6 @@ public class ProductModel implements Serializable {
 
     }
 
-    public Double getDiscountPercentage(){
-
-        return (100- ((price/oldPrice) * 100));
-
-    }
-
     public String getLocalizedName(){
 
         if(localizedNames != null){
@@ -341,6 +335,23 @@ public class ProductModel implements Serializable {
 
     }
 
+    public String getFullDescription(){
+
+
+        if(localizedFullDescriptions != null){
+
+            if(localizedFullDescriptions.size()>0){
+
+                fullDescription = localizedFullDescriptions.get(0).fullDescription;
+
+            }
+
+        }
+
+        return fullDescription;
+
+    }
+
     public String getShortDescription(){
 
 
@@ -354,24 +365,7 @@ public class ProductModel implements Serializable {
 
         }
 
-        return name;
-
-    }
-
-    public String getFullDescription(){
-
-
-        if(FullDescriptionModels != null){
-
-            if(FullDescriptionModels.size()>0){
-
-                fullDescription = FullDescriptionModels.get(0).fullDescription;
-
-            }
-
-        }
-
-        return name;
+        return shortDescription;
 
     }
 

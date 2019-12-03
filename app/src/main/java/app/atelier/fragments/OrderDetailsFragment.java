@@ -170,6 +170,7 @@ public class OrderDetailsFragment extends Fragment {
 
 
     private void startDownload(String fileUrl, final String filePath) {
+        loading.setVisibility(View.VISIBLE);
 
         DownloadAPIInterface downloadService = DownloadApiConfig.getClient().create(DownloadAPIInterface.class);
 
@@ -187,7 +188,6 @@ public class OrderDetailsFragment extends Fragment {
                         @Override
                         protected void onPreExecute() {
                             super.onPreExecute();
-                            loading.setVisibility(View.VISIBLE);
                         }
 
                         @Override
@@ -353,27 +353,6 @@ public class OrderDetailsFragment extends Fragment {
 
         if (order != null) {
 
-//            if (getArguments().getBoolean("check")) {
-//                if (order.orderStatus.equalsIgnoreCase(Constants.ORDER_COMPLETE_STATUS) &&
-//                        order.paymentStatus.equalsIgnoreCase(Constants.PAYMENT_STATUS_PAID)) {
-//                    if (isAdded()) {
-//                        new AlertDialog.Builder(activity)
-//                                .setTitle(getString(R.string.confirm))
-//                                .setMessage(getString(R.string.order_done))
-//                                .setPositiveButton(getString(android.R.string.ok),
-//                                        new DialogInterface.OnClickListener() {
-//                                            public void onClick(DialogInterface dialog, int which) {
-//
-//                                                dialog.dismiss();
-//                                            }
-//                                        })
-//                                .setCancelable(false)
-//                                .setIcon(R.mipmap.logo)
-//                                .show();
-//                    }
-//                }
-//            }
-
             String htmlContent = "";
             htmlContent = "<h3><b>" + activity.getString(R.string.order) + "&nbsp;#" + order.id + "</b></h3>";
             if (order.createdOnUtc != null) {
@@ -443,58 +422,6 @@ public class OrderDetailsFragment extends Fragment {
 
         container.setVisibility(View.VISIBLE);
 
-    }
-
-    private class DownloadFile extends AsyncTask<String, Void, Void> {
-        String fileUrl;
-        String fileName;
-        File file;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            loading.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected Void doInBackground(String... strings) {
-
-            fileUrl = strings[0];
-            fileName = strings[1];
-            String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
-            File folder = new File(extStorageDirectory, "Atelier");
-            folder.mkdir();
-            file = new File(folder, fileName);
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            FileDownloader.downloadFile(fileUrl, file);
-            return null;
-
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            loading.setVisibility(View.GONE);
-            Snackbar.make(loading, activity.getResources().getString(R.string.file_manager), Snackbar.LENGTH_LONG).show();
-            Intent target = new Intent(Intent.ACTION_VIEW);
-
-            target.setDataAndType(Uri.fromFile(file), "application/pdf");
-
-            target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-
-            Intent intent = Intent.createChooser(target, "Open File");
-
-            try {
-                activity.startActivity(intent);
-
-            } catch (ActivityNotFoundException e) {
-
-            }
-        }
     }
 
     public static String convertDateToString(String date) {
