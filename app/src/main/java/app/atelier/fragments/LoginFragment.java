@@ -62,7 +62,7 @@ public class LoginFragment extends Fragment {
     @BindView(R.id.loading)
     ProgressBar loading;
 
-    String regid = "";
+    String regId = "";
 
     public static LoginFragment newInstance(FragmentActivity activity, String comingFrom) {
         fragment = new LoginFragment();
@@ -168,29 +168,8 @@ public class LoginFragment extends Fragment {
                             sessionManager.setLastName(customer.lastName);
                             sessionManager.setPhone(customer.phone);
                             sessionManager.setEmail(customer.email);
-
                             sessionManager.LoginSession();
-
-                            FirebaseInstanceId.getInstance().getInstanceId()
-                                    .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                                            if (!task.isSuccessful()) {
-                                                Log.w("login", "getInstanceId failed", task.getException());
-                                                return;
-                                            }
-
-                                            // Get new Instance ID token
-                                            regid = task.getResult().getToken();
-
-                                            Log.e("registerationid Splash ", "regid -> "+regid);
-
-                                            registerInBackground();
-
-
-                                        }
-                                    });
-
+                            initializeFirebaseToken();
                             MainActivity.accountOrLogin.setText(activity.getResources().getString(R.string.account));
                             if (getArguments().getString("comingFrom").equals("cart")) {
                                 getFragmentManager().popBackStack();
@@ -246,7 +225,7 @@ public class LoginFragment extends Fragment {
                                                     "add", null);
                                             Navigator.loadFragment(activity, fragment, R.id.main_frameLayout_Container, true);
                                         } else {
-                                            Fragment fragment = AddressesFragment.newInstance(activity, "cart");
+                                            Fragment fragment = AddressesFragment.newInstance(activity, "cart",null);
                                             Navigator.loadFragment(activity, fragment, R.id.main_frameLayout_Container, true);
                                         }
                                     }
@@ -265,9 +244,31 @@ public class LoginFragment extends Fragment {
 
     }
 
+    public void initializeFirebaseToken() {
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("splash", "getInstanceId failed", task.getException());
+                            return;
+                        }
+
+                        // Get new Instance ID token
+                        regId = task.getResult().getToken();
+
+                        Log.e("registrationId Main ", "regId -> "+regId +"------------"+ sessionManager.getUserId());
+
+                        registerInBackground();
+
+
+                    }
+                });
+    }
+
     private void registerInBackground() {
 
-        AtelierApiConfig.getCallingAPIInterface().insertToken(Constants.AUTHORIZATION, regid, "2", AppController.getInstance().getIMEI(), sessionManager.getUserId().length() > 0 ? sessionManager.getUserId() : null, new Callback<Response>() {
+        AtelierApiConfig.getCallingAPIInterface().insertToken(Constants.AUTHORIZATION_VALUE, regId, "2", AppController.getInstance().getIMEI(), sessionManager.getUserId().length() > 0 ? sessionManager.getUserId() : null, new Callback<Response>() {
             @Override
             public void success(retrofit.client.Response s, retrofit.client.Response response) {
 
@@ -291,7 +292,7 @@ public class LoginFragment extends Fragment {
                     String outResponse = out.toString();
                     Log.d("outResponse", "" + outResponse);
 
-                    sessionManager.setRegId(regid);
+                    sessionManager.setRegId(regId);
 
 
                 } catch (Exception ex) {

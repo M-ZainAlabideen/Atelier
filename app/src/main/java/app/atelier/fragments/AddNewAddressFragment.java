@@ -13,7 +13,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -23,7 +22,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import app.atelier.MainActivity;
 import app.atelier.R;
@@ -37,6 +35,8 @@ import app.atelier.classes.SessionManager;
 import app.atelier.webservices.AtelierApiConfig;
 import app.atelier.webservices.responses.addresses.AddressModel;
 import app.atelier.webservices.responses.addresses.GetAddresses;
+import app.atelier.webservices.responses.cities.CityModel;
+import app.atelier.webservices.responses.cities.GetCities;
 import app.atelier.webservices.responses.countries.CountryModel;
 import app.atelier.webservices.responses.countries.GetCountries;
 import app.atelier.webservices.responses.states.GetStates;
@@ -65,10 +65,15 @@ public class AddNewAddressFragment extends Fragment {
     TextView country;
     @BindView(R.id.addAddress_txtView_state)
     TextView state;
+    @BindView(R.id.addAddress_txtView_city)
+    TextView city;
     @BindView(R.id.addAddress_imgView_countryBg)
     ImageView countryBg;
     @BindView(R.id.addAddress_imgView_stateBg)
     ImageView stateBg;
+    @BindView(R.id.addAddress_imgView_cityBg)
+    ImageView cityBg;
+
     @BindView(R.id.loading)
     ProgressBar loading;
 
@@ -77,6 +82,7 @@ public class AddNewAddressFragment extends Fragment {
     private SessionManager sessionManager;
     List<CountryModel> countriesArrList = new ArrayList<>();
     List<StateModel> statesArrList = new ArrayList<>();
+    List<CityModel> citiesArrList = new ArrayList<>();
     private AlertDialog dialog;
     AddressModel myAddress;
 
@@ -137,6 +143,7 @@ public class AddNewAddressFragment extends Fragment {
         if (MainActivity.isEnglish) {
             countryBg.setImageResource(R.mipmap.spinner_bg);
             stateBg.setImageResource(R.mipmap.spinner_bg);
+            cityBg.setImageResource(R.mipmap.spinner_bg);
         }
 
         /*when back from screen to this screen the countryList still has data so, its not useful to call api again
@@ -162,6 +169,7 @@ public class AddNewAddressFragment extends Fragment {
             details.setText(myAddress.address1);
             country.setText(myAddress.country);
             state.setText(myAddress.province);
+            city.setText(myAddress.city);
         } else {
             myAddress = new AddressModel();
             firstName.setText(sessionManager.getFirstName());
@@ -174,13 +182,19 @@ public class AddNewAddressFragment extends Fragment {
     //click on Country >> open the popUp of countries for selecting one
     @OnClick(R.id.addAddress_view_selectCountry)
     public void countryClick() {
-        createPopUp(activity, "country", countriesArrList, null);
+        createPopUp(activity, "country", countriesArrList, null,null);
     }
 
     //click on State >> open the popUp of states for selecting one
-    @OnClick(R.id.addAddress_view_selectCity)
+    @OnClick(R.id.addAddress_view_selectState)
     public void stateClick() {
-        createPopUp(activity, "state", null, statesArrList);
+        createPopUp(activity, "state", null, statesArrList,null);
+    }
+
+    //click on City >> open the popUp of Cities for selecting one
+    @OnClick(R.id.addAddress_view_selectCity)
+    public void cityClick() {
+        createPopUp(activity, "city", null, null,citiesArrList);
     }
 
     //click done for saving of addressData
@@ -194,6 +208,7 @@ public class AddNewAddressFragment extends Fragment {
         String detailsStr = details.getText().toString();
         String countryStr = country.getText().toString();
         String stateStr = state.getText().toString();
+        String cityStr = city.getText().toString();
 
         if (firstNameStr == null || firstNameStr.isEmpty()) {
             Snackbar.make(loading, getString(R.string.first_name_required), Snackbar.LENGTH_SHORT).show();
@@ -205,9 +220,12 @@ public class AddNewAddressFragment extends Fragment {
             Snackbar.make(loading, getString(R.string.mail_required), Snackbar.LENGTH_SHORT).show();
         } else if (countryStr.equals(getString(R.string.select_country))) {
             Snackbar.make(loading, getString(R.string.country_required), Snackbar.LENGTH_SHORT).show();
-        } else if (stateStr.equals(getString(R.string.select_area))) {
+        } else if (stateStr.equals(getString(R.string.select_state))) {
             Snackbar.make(loading, getString(R.string.state_required), Snackbar.LENGTH_SHORT).show();
-        } else {
+        } else if (cityStr.equals(getString(R.string.select_city))) {
+            Snackbar.make(loading, getString(R.string.city_required), Snackbar.LENGTH_SHORT).show();
+        }
+        else {
             /*
              * in case of all data entered correctly
              * set the data in address object to pass this object in the api Calling
@@ -218,6 +236,7 @@ public class AddNewAddressFragment extends Fragment {
             myAddress.email = mailStr;
             myAddress.country = countryStr;
             myAddress.province = stateStr;
+            myAddress.city = cityStr;
             myAddress.address1 = detailsStr;
             GetAddresses getAddresses = new GetAddresses();
             getAddresses.address = myAddress;
@@ -234,7 +253,7 @@ public class AddNewAddressFragment extends Fragment {
     }
 
     //custom popUp(AlertDialog) of selecting country or selecting state
-    public void createPopUp(final Context context, final String type, final List<CountryModel> countriesArrList, final List<StateModel> statesArrList) {
+    public void createPopUp(final Context context, final String type, final List<CountryModel> countriesArrList, final List<StateModel> statesArrList,final List<CityModel> citiesArrList) {
         //Declaration and initialization the DialogBuilder
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
@@ -248,7 +267,7 @@ public class AddNewAddressFragment extends Fragment {
         popUpRecycler.setLayoutManager(new LinearLayoutManager(context));
 
         //set the adapter of recyclerView
-        popUpRecycler.setAdapter(new PopUpAdapter(context, type, countriesArrList, statesArrList));
+        popUpRecycler.setAdapter(new PopUpAdapter(context, type, countriesArrList, statesArrList,citiesArrList));
 
         //make the dialogBuilder cancelable
         builder.setCancelable(true);
@@ -285,8 +304,10 @@ public class AddNewAddressFragment extends Fragment {
                         state.setText(getString(R.string.select_area));
                         myAddress.countryId = countriesArrList.get(position).id;
                         stateProvincesApi(myAddress.countryId + "");
+                        citiesApi(myAddress.countryId+ "");
                     }
-                } else {
+                }
+                else if(type.equalsIgnoreCase("state")){
                     /*
                     * in case of selectNewState
                      * 1- set the new selected state at stateTextView
@@ -296,6 +317,9 @@ public class AddNewAddressFragment extends Fragment {
                     state.setText(statesArrList.get(position).name);
                 }
 
+                else if(type.equalsIgnoreCase("city")){
+                    city.setText(citiesArrList.get(position).name);
+                }
                 //finally call the function which close the popUp
                 closePopUp();
             }
@@ -312,6 +336,7 @@ public class AddNewAddressFragment extends Fragment {
         dialog.cancel();
     }
 
+    //get Countries Api
     public void countriesApi() {
         AtelierApiConfig.getCallingAPIInterface().countries(Constants.AUTHORIZATION_VALUE,
                 sessionManager.getUserLanguage(), new Callback<GetCountries>() {
@@ -332,6 +357,7 @@ public class AddNewAddressFragment extends Fragment {
                 });
     }
 
+    //get States Api
     public void stateProvincesApi(String countryId) {
         loading.setVisibility(View.VISIBLE);
         AtelierApiConfig.getCallingAPIInterface().stateProvinces(Constants.AUTHORIZATION_VALUE,
@@ -355,6 +381,31 @@ public class AddNewAddressFragment extends Fragment {
                 });
     }
 
+    //get Cities Api
+    public void citiesApi(String countryId) {
+        loading.setVisibility(View.VISIBLE);
+        AtelierApiConfig.getCallingAPIInterface().cities(Constants.AUTHORIZATION_VALUE,
+                sessionManager.getUserLanguage(), countryId, new Callback<GetCities>() {
+                    @Override
+                    public void success(GetCities getCities, Response response) {
+                        loading.setVisibility(View.GONE);
+                        if (getCities != null) {
+                            if (getCities.cities.size() > 0) {
+                                citiesArrList.clear();
+                                citiesArrList.addAll(getCities.cities);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        loading.setVisibility(View.GONE);
+                        GlobalFunctions.showErrorMessage(error, loading);
+                    }
+                });
+    }
+
+    //Add NewAddress Api
     public void addAddressApi(GetAddresses getAddresses) {
         loading.setVisibility(View.VISIBLE);
         AtelierApiConfig.getCallingAPIInterface().addAddress(
@@ -367,7 +418,7 @@ public class AddNewAddressFragment extends Fragment {
                         loading.setVisibility(View.GONE);
                         if (getAddresses != null) {
                             if (getAddresses.addresses.size() > 0) {
-                                Navigator.loadFragment(activity, AddressesFragment.newInstance(activity, getArguments().getString("comingFrom")), R.id.main_frameLayout_Container, false);
+                                Navigator.loadFragment(activity, AddressesFragment.newInstance(activity, getArguments().getString("comingFrom"),null), R.id.main_frameLayout_Container, false);
 
                             }
                         }
@@ -382,6 +433,7 @@ public class AddNewAddressFragment extends Fragment {
         );
     }
 
+    //edit address Api
     public void editAddressApi(GetAddresses getAddresses) {
         loading.setVisibility(View.VISIBLE);
         AtelierApiConfig.getCallingAPIInterface().editAddress(Constants.AUTHORIZATION_VALUE,

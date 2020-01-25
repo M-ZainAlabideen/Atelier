@@ -127,7 +127,7 @@ public class MyAccountFragment extends Fragment {
     }
     @OnClick(R.id.myAccount_View_addresses)
     public void addressesClick(){
-        Navigator.loadFragment(activity, AddressesFragment.newInstance(activity,"myAccount"), R.id.main_frameLayout_Container, true);
+        Navigator.loadFragment(activity, AddressesFragment.newInstance(activity,"myAccount",null), R.id.main_frameLayout_Container, true);
     }
     @OnClick(R.id.myAccount_View_logout)
     public void logoutClick(){

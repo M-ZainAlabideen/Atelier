@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.atelier.R;
+import app.atelier.webservices.responses.cities.CityModel;
 import app.atelier.webservices.responses.countries.CountryModel;
 import app.atelier.webservices.responses.states.StateModel;
 import butterknife.BindView;
@@ -22,13 +23,16 @@ public class PopUpAdapter extends RecyclerView.Adapter<PopUpAdapter.viewHolder> 
     Context context;
     List<CountryModel> countriesArrList;
     List<StateModel> statesArrList;
+    List<CityModel> citiesArrList;
+
     String type;
 
-    public PopUpAdapter(Context context, String type, List<CountryModel> countriesArrList, List<StateModel> statesArrList) {
+    public PopUpAdapter(Context context, String type, List<CountryModel> countriesArrList, List<StateModel> statesArrList,List<CityModel> citiesArrList) {
         this.context = context;
         this.type = type;
         this.countriesArrList = countriesArrList;
         this.statesArrList = statesArrList;
+        this.citiesArrList = citiesArrList;
     }
 
 
@@ -53,16 +57,23 @@ public class PopUpAdapter extends RecyclerView.Adapter<PopUpAdapter.viewHolder> 
     public void onBindViewHolder(@NonNull PopUpAdapter.viewHolder viewHolder, final int position) {
         if (type.equals("country")) {
                 viewHolder.Text.setText(countriesArrList.get(position).name);
-        } else
+        } else  if (type.equals("state")){
             viewHolder.Text.setText(statesArrList.get(position).name);
+    }
+    else
+        {
+            viewHolder.Text.setText(citiesArrList.get(position).name);
+        }
     }
 
     @Override
     public int getItemCount() {
         if (type.equals("country"))
             return countriesArrList.size();
-        else
+        else if (type.equals("state"))
             return statesArrList.size();
+        else
+            return citiesArrList.size();
     }
 
 }

@@ -22,7 +22,10 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -33,18 +36,20 @@ import app.atelier.MainActivity;
 import app.atelier.R;
 import app.atelier.adapters.AddressesAdapter;
 import app.atelier.adapters.PaymentMethodsAdapter;
+import app.atelier.adapters.ShippingMethodsAdapter;
 import app.atelier.classes.Constants;
 import app.atelier.classes.GlobalFunctions;
 import app.atelier.classes.Navigator;
 import app.atelier.classes.SessionManager;
 import app.atelier.webservices.AtelierApiConfig;
 import app.atelier.webservices.responses.addresses.AddressModel;
-import app.atelier.webservices.responses.cart.CartProductModel;
 import app.atelier.webservices.responses.cart.GetCartProducts;
 import app.atelier.webservices.responses.customers.GetCustomers;
 import app.atelier.webservices.responses.orders.GetOrders;
 import app.atelier.webservices.responses.orders.OrderModel;
 import app.atelier.webservices.responses.products.Delivery;
+import app.atelier.webservices.responses.shipping.GetShippingMethods;
+import app.atelier.webservices.responses.shipping.ShippingModel;
 import app.atelier.webservices.responses.stores.GetStores;
 import app.atelier.webservices.responses.stores.PaymentMethodModel;
 import app.atelier.webservices.responses.stores.PaymentModel;
@@ -61,8 +66,12 @@ public class AddressesFragment extends Fragment {
     public static AddressesFragment fragment;
     public static SessionManager sessionManager;
     String selectedAddressId = "";
-    int selectedAddressPosition = 0;
+    int selectedBillingAddressPosition = 0;
+    int selectedShippingAddressPosition = 0;
 
+
+    @BindView(R.id.addresses_cb_theSameAddress)
+    CheckBox theSameAddress;
     @BindView(R.id.addresses_recyclerView_addressesList)
     RecyclerView addressesList;
     @BindView(R.id.addresses_btn_next)
@@ -77,17 +86,21 @@ public class AddressesFragment extends Fragment {
 
     List<PaymentModel> paymentSystems = new ArrayList<>();
     List<PaymentMethodModel> paymentMethods = new ArrayList<>();
-
+    List<ShippingModel> shippingMethods = new ArrayList<>();
     String paymentSystemName;
     String paymentMethodCode;
-    Delivery.ShippingEntity deliveryShipping;
+    String shippingMethodName;
+    ShippingModel shipping;
 
-    public static AddressesFragment newInstance(FragmentActivity activity, String flag) {
+    public static AddressesFragment newInstance(FragmentActivity activity, String flag, Integer selectedBillingAddressPosition) {
         fragment = new AddressesFragment();
         AddressesFragment.activity = activity;
         sessionManager = new SessionManager(activity);
         Bundle b = new Bundle();
         b.putString("flag", flag);
+        if (flag.equals("shipping")) {
+            b.putInt("position", selectedBillingAddressPosition);
+        }
         fragment.setArguments(b);
         return fragment;
     }
@@ -110,14 +123,16 @@ public class AddressesFragment extends Fragment {
 
         if (getArguments().getString("flag").equals("myAccount")) {
             next.setVisibility(View.GONE);
+        } else if (getArguments().getString("flag").equals("shipping")) {
+            theSameAddress.setVisibility(View.GONE);
         }
-
         layoutManager = new LinearLayoutManager(activity);
         addressesAdapter = new AddressesAdapter(activity, addressesArrList, getArguments().getString("flag"),
                 new AddressesAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(int position) {
-                        if (getArguments().getString("flag").equalsIgnoreCase("cart")) {
+                        if (getArguments().getString("flag").equalsIgnoreCase("cart") ||
+                                getArguments().getString("flag").equals("shipping")) {
                             selectAddress(position);
                         }
                     }
@@ -157,8 +172,24 @@ public class AddressesFragment extends Fragment {
         addressesList.setLayoutManager(layoutManager);
         addressesList.setAdapter(addressesAdapter);
 
-            AddressApi();
+        AddressApi();
+        theSameAddress.setOnCheckedChangeListener(checkedListener);
     }
+
+    CompoundButton.OnCheckedChangeListener checkedListener = new CompoundButton.OnCheckedChangeListener() {
+
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            //change the image and checkedState
+            if (!isChecked) {
+                buttonView.setButtonDrawable(R.mipmap.check_unsel);
+                buttonView.setChecked(false);
+            } else {
+                buttonView.setButtonDrawable(R.mipmap.check_sel);
+                buttonView.setChecked(true);
+            }
+        }
+    };
 
     @OnClick(R.id.addresses_txtView_add)
     public void addClick() {
@@ -170,19 +201,21 @@ public class AddressesFragment extends Fragment {
 
     @OnClick(R.id.addresses_btn_next)
     public void nextClick() {
-
-        if (addressesArrList.size() > selectedAddressPosition) {
-
-            if (selectedAddressId.length() > 0) {
-                getPaymentMethods();
-                //test();
-                // Navigator.loadFragment(activity,PaymentMethodsFragment.newInstance(activity),R.id.main_frameLayout_Container,true);
+        if (selectedAddressId.length() > 0) {
+            if (getArguments().getString("flag").equals("shipping")) {
+                getShippingMethods();
             } else {
-                Snackbar.make(loading, getString(R.string.select_address), Snackbar.LENGTH_LONG).show();
+                if (theSameAddress.isChecked()) {
+                    selectedShippingAddressPosition = selectedBillingAddressPosition;
+                    getShippingMethods();
+                } else {
+                    Navigator.loadFragment(activity, AddressesFragment.newInstance(activity, "shipping", selectedBillingAddressPosition), R.id.main_frameLayout_Container, true);
+                }
+
             }
-
+        } else {
+            Snackbar.make(loading, getString(R.string.select_address), Snackbar.LENGTH_LONG).show();
         }
-
     }
 
     private void AddressApi() {
@@ -279,15 +312,17 @@ public class AddressesFragment extends Fragment {
         }
 
         AddressModel addresses = addressesArrList.get(position);
-        selectedAddressPosition = position;
+        if (getArguments().getString("flag").equals("shipping")) {
+            selectedShippingAddressPosition = position;
+            selectedBillingAddressPosition = getArguments().getInt("position");
+        } else {
+            selectedBillingAddressPosition = position;
+        }
         selectedAddressId = addresses.id;
         addresses.isSelected = true;
         addressesArrList.set(position, addresses);
         addressesAdapter.notifyDataSetChanged();
-        //addressesList.getAdapter().notifyItemRangeChanged(0, addressesArrList.size(), addressesArrList);
-
     }
-
 
     public void getPaymentMethods() {
         loading.setVisibility(View.VISIBLE);
@@ -310,7 +345,6 @@ public class AddressesFragment extends Fragment {
                                         paymentMethodCode = paymentMethods.get(0).PaymentMethodCode;
                                         shoppingCartItemsForOrderApi();
                                     } else if (paymentMethods.size() > 1) {
-                                        //createDialogPayment();
                                         CustomPaymentMethodsDialog dialog = new CustomPaymentMethodsDialog(activity, paymentMethods);
                                         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                                         dialog.show();
@@ -344,33 +378,86 @@ public class AddressesFragment extends Fragment {
         );
     }
 
+    public void getShippingMethods() {
+        loading.setVisibility(View.VISIBLE);
+        AtelierApiConfig.getCallingAPIInterface().shipping(
+                Constants.AUTHORIZATION_VALUE,
+                sessionManager.getUserLanguage(),
+                sessionManager.getUserId(),
+                addressesArrList.get(selectedShippingAddressPosition).countryId,
+                addressesArrList.get(selectedShippingAddressPosition).city,
+                new Callback<GetShippingMethods>() {
+                    @Override
+                    public void success(GetShippingMethods getShippingMethods, Response response) {
+                        if (getShippingMethods != null) {
+                            if (getShippingMethods.shipping != null) {
+                                if (getShippingMethods.shipping.size() > 0) {
+                                    shippingMethods.clear();
+                                    shippingMethods.addAll(getShippingMethods.shipping);
+
+
+                                    shipping = shippingMethods.get(0);
+                                    getPaymentMethods();
+
+//
+//                                    CustomShippingMethodsDialog dialog = new CustomShippingMethodsDialog(activity, shippingMethods);
+//                                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//                                    dialog.show();
+//
+//                                    DisplayMetrics displayMetrics = new DisplayMetrics();
+//                                    activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+//                                    int displayWidth = displayMetrics.widthPixels;
+//                                    int displayHeight = displayMetrics.heightPixels;
+//                                    WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+//                                    layoutParams.copyFrom(dialog.getWindow().getAttributes());
+//                                    int dialogWindowWidth = (int) (displayWidth * 0.8f);
+//                                    int dialogWindowHeight = (int) (displayHeight * 0.3f);
+//                                    layoutParams.width = dialogWindowWidth;
+//                                    layoutParams.height = dialogWindowHeight;
+//                                    dialog.getWindow().setAttributes(layoutParams);
+//                                    dialog.getWindow().setGravity(Gravity.CENTER);
+
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        loading.setVisibility(View.GONE);
+                        GlobalFunctions.showErrorMessage(error, loading);
+                    }
+                }
+        );
+    }
+
     public void shoppingCartItemsForOrderApi() {
 
-            loading.setVisibility(View.VISIBLE);
-            AtelierApiConfig.getCallingAPIInterface().shoppingCartItemsForOrder(
-                    Constants.AUTHORIZATION_VALUE,
-                    sessionManager.getUserLanguage(),
-                    sessionManager.getUserId(),
-                    new Callback<GetCartProducts>() {
-                        @Override
-                        public void success(GetCartProducts outResponse, retrofit.client.Response response) {
+        loading.setVisibility(View.VISIBLE);
+        AtelierApiConfig.getCallingAPIInterface().shoppingCartItemsForOrder(
+                Constants.AUTHORIZATION_VALUE,
+                sessionManager.getUserLanguage(),
+                sessionManager.getUserId(),
+                new Callback<GetCartProducts>() {
+                    @Override
+                    public void success(GetCartProducts outResponse, retrofit.client.Response response) {
 
-                            if (outResponse != null) {
-                                if (outResponse.CartProducts.size() > 0) {
-                                    deliveryCostApi();
-                                }
-
+                        if (outResponse != null) {
+                            if (outResponse.CartProducts.size() > 0) {
+                                createOrders();
                             }
 
                         }
 
-                        @Override
-                        public void failure(RetrofitError error) {
-                            loading.setVisibility(View.GONE);
-                            GlobalFunctions.showErrorMessage(error, loading);
-                        }
+                    }
 
-                    });
+                    @Override
+                    public void failure(RetrofitError error) {
+                        loading.setVisibility(View.GONE);
+                        GlobalFunctions.showErrorMessage(error, loading);
+                    }
+
+                });
 
 
     }
@@ -445,64 +532,61 @@ public class AddressesFragment extends Fragment {
     private void prepareOrdersData() {
 
         OrderModel order = new OrderModel();
+        order.customerId = Integer.parseInt(sessionManager.getUserId());
         order.paymentMethodSystemName = paymentSystemName;
         order.paymentMethodCode = paymentMethodCode;
         order.payment_by = 2;
         order.use_reward_points = "false";
-        order.orderShippingExclTax = deliveryShipping.getPrice();
-        order.orderShippingInclTax = deliveryShipping.getPrice();
-        order.shippingMethod = deliveryShipping.getName();
-        order.shippingRateComputationMethodSystemName = deliveryShipping.getSystemName();
+        order.orderShippingExclTax = shipping.Price;
+        order.orderShippingInclTax = shipping.Price;
+        order.shippingMethod = shipping.name;
+        order.shippingRateComputationMethodSystemName = shipping.SystemName;
 
-        order.billingAddressId = (Integer.parseInt(addressesArrList.get(selectedAddressPosition).id));
-        order.shippingAddressId = (Integer.parseInt(addressesArrList.get(selectedAddressPosition).id));
-
-        order.customerId = Integer.parseInt(sessionManager.getUserId());
+        order.billingAddressId = (Integer.parseInt(addressesArrList.get(selectedBillingAddressPosition).id));
+        order.shippingAddressId = (Integer.parseInt(addressesArrList.get(selectedShippingAddressPosition).id));
 
         AddressModel billingAddress = new AddressModel();
 
-        billingAddress.firstName = (addressesArrList.get(selectedAddressPosition).firstName);
+        billingAddress.firstName = (addressesArrList.get(selectedBillingAddressPosition).firstName);
 
-        billingAddress.lastName = (addressesArrList.get(selectedAddressPosition).lastName);
+        billingAddress.lastName = (addressesArrList.get(selectedBillingAddressPosition).lastName);
 
-        billingAddress.email = (addressesArrList.get(selectedAddressPosition).email);
+        billingAddress.email = (addressesArrList.get(selectedBillingAddressPosition).email);
 
-        billingAddress.countryId = (addressesArrList.get(selectedAddressPosition).countryId);
+        billingAddress.countryId = (addressesArrList.get(selectedBillingAddressPosition).countryId);
 
-        billingAddress.stateProvinceId = (addressesArrList.get(selectedAddressPosition).stateProvinceId);
+        billingAddress.stateProvinceId = (addressesArrList.get(selectedBillingAddressPosition).stateProvinceId);
 
-        billingAddress.phoneNumber = (addressesArrList.get(selectedAddressPosition).phoneNumber);
+        billingAddress.phoneNumber = (addressesArrList.get(selectedBillingAddressPosition).phoneNumber);
 
-        billingAddress.id = (addressesArrList.get(selectedAddressPosition).id);
+        billingAddress.city = (addressesArrList.get(selectedBillingAddressPosition).city);
 
-        order.billingAddress = (billingAddress);
-        order.shippingAddress = billingAddress;
+        billingAddress.id = (addressesArrList.get(selectedBillingAddressPosition).id);
+
+        order.billingAddress = billingAddress;
+
+        AddressModel shippingAddress = new AddressModel();
+
+        shippingAddress.firstName = (addressesArrList.get(selectedShippingAddressPosition).firstName);
+
+        shippingAddress.lastName = (addressesArrList.get(selectedShippingAddressPosition).lastName);
+
+        shippingAddress.email = (addressesArrList.get(selectedShippingAddressPosition).email);
+
+        shippingAddress.countryId = (addressesArrList.get(selectedShippingAddressPosition).countryId);
+
+        shippingAddress.stateProvinceId = (addressesArrList.get(selectedShippingAddressPosition).stateProvinceId);
+
+        shippingAddress.phoneNumber = (addressesArrList.get(selectedShippingAddressPosition).phoneNumber);
+
+        shippingAddress.city = (addressesArrList.get(selectedShippingAddressPosition).city);
+
+        shippingAddress.id = (addressesArrList.get(selectedShippingAddressPosition).id);
+
+        order.shippingAddress = shippingAddress;
 
         orders.order = order;
 
-    }
-
-    private void deliveryCostApi() {
-        AtelierApiConfig.getCallingAPIInterface().deliveryCost(
-                Constants.AUTHORIZATION_VALUE, sessionManager.getUserLanguage(),
-                sessionManager.getUserId(), new Callback<Delivery>() {
-                    @Override
-                    public void success(Delivery delivery, Response response) {
-                        if (delivery != null) {
-                            loading.setVisibility(View.GONE);
-                            if (delivery.getShipping().get(0).getPrice() > 0) {
-                                deliveryShipping =  delivery.getShipping().get(0);
-                                createOrders();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-
-                    }
-                }
-        );
     }
 
     private void clearStack() {
@@ -531,10 +615,10 @@ public class AddressesFragment extends Fragment {
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             requestWindowFeature(Window.FEATURE_NO_TITLE);
-            setContentView(R.layout.custom_dialog_payment_methods);
-            methods = (RecyclerView) findViewById(R.id.dialog_payment_methods_rv_methods);
-            confirm = (Button) findViewById(R.id.dialog_payment_methods_btn_confirm);
-            cancel = (Button) findViewById(R.id.dialog_payment_methods_btn_cancel);
+            setContentView(R.layout.custom_dialog_methods);
+            methods = (RecyclerView) findViewById(R.id.dialog_methods_rv_methods);
+            confirm = (Button) findViewById(R.id.dialog_methods_btn_confirm);
+            cancel = (Button) findViewById(R.id.dialog_methods_btn_cancel);
 
             layoutManager = new LinearLayoutManager(activity);
             paymentMethodsAdapter = new PaymentMethodsAdapter(activity, paymentMethodsList);
@@ -566,6 +650,55 @@ public class AddressesFragment extends Fragment {
             methods.setAdapter(paymentMethodsAdapter);
         }
     }
+
+//    class CustomShippingMethodsDialog extends Dialog {
+//
+//        public FragmentActivity activity;
+//        RecyclerView methods;
+//        public Button confirm, cancel;
+//        List<ShippingModel> shippingMethodsList;
+//        ShippingMethodsAdapter shippingMethodsAdapter;
+//        LinearLayoutManager layoutManager;
+//
+//        public CustomShippingMethodsDialog(FragmentActivity activity, List<ShippingModel> shippingMethodsList) {
+//            super(activity);
+//            this.activity = activity;
+//            this.shippingMethodsList = shippingMethodsList;
+//        }
+//
+//        @Override
+//        protected void onCreate(Bundle savedInstanceState) {
+//            super.onCreate(savedInstanceState);
+//            requestWindowFeature(Window.FEATURE_NO_TITLE);
+//            setContentView(R.layout.custom_dialog_methods);
+//            methods = (RecyclerView) findViewById(R.id.dialog_methods_rv_methods);
+//            confirm = (Button) findViewById(R.id.dialog_methods_btn_confirm);
+//            cancel = (Button) findViewById(R.id.dialog_methods_btn_cancel);
+//
+//            layoutManager = new LinearLayoutManager(activity);
+//            shippingMethodsAdapter = new ShippingMethodsAdapter(activity, shippingMethodsList);
+//
+//            confirm.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    shipping = shippingMethods.get(ShippingMethodsAdapter.mSelectedItem);
+//                    dismiss();
+//                    PaymentMethodsAdapter.mSelectedItem = 0;
+//                    getPaymentMethods();
+//                }
+//            });
+//            cancel.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    dismiss();
+//                    ShippingMethodsAdapter.mSelectedItem = 0;
+//                }
+//            });
+//            methods.setLayoutManager(layoutManager);
+//            methods.setAdapter(shippingMethodsAdapter);
+//        }
+//    }
+
 
 }
 

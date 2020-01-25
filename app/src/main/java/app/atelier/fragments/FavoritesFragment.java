@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -76,7 +77,7 @@ public class FavoritesFragment extends Fragment {
         MainActivity.title.setText(getString(R.string.my_favorite));
         MainActivity.appbar.setVisibility(View.VISIBLE);
         MainActivity.bottomAppbar.setVisibility(View.VISIBLE);
-        MainActivity.setupAppbar("favorite",true,true);
+        MainActivity.setupAppbar("favorite", true, true);
 
         productsAdapter = new ProductsAdapter(activity,
                 "favorite",
@@ -85,45 +86,43 @@ public class FavoritesFragment extends Fragment {
                 new ProductsAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(int position) {
-
+                        Navigator.loadFragment(activity, ProductDetailsFragment.newInstance(activity, favoritesArrList.get(position).productId),
+                                R.id.main_frameLayout_Container, true);
                     }
 
                     @Override
                     public void onAddCartClick(int position) {
-                        CartItem_ cartItem_ = new CartItem_();
-                        cartItem_.productId = favoritesArrList.get(position).productId;
-                        cartItem_.customerId = Integer.valueOf(sessionManager.getUserId());
-                        cartItem_.quantity = 1;
-                        cartItem_.shoppingCartType = "1";
-                        CartItem cartItem = new CartItem();
-                        cartItem.shoppingCartItem = cartItem_;
-                        addCartOrFavoriteApi("addToCart", cartItem);
+                        if (favoritesArrList.get(position).product.attributes != null && favoritesArrList.get(position).product.attributes.size() > 0) {
+                            Navigator.loadFragment(activity, ProductDetailsFragment.newInstance(activity, favoritesArrList.get(position).productId), R.id.main_frameLayout_Container, true);
+                        } else {
+                            CartProductsApi(favoritesArrList.get(position).product.vendorId, position);
+                        }
                     }
 
                     @Override
                     public void onAddFavoriteClick(int position, ImageView addFavorite) {
                         if (addFavorite.getDrawable().getConstantState() ==
-                                getResources().getDrawable( R.mipmap.icon_add_fav_sel).getConstantState()){
-                            deleteFavoriteApi(position,addFavorite);
-                        }
-                        else {
+                                getResources().getDrawable(R.mipmap.icon_add_fav_sel).getConstantState()) {
+                            deleteFavoriteApi(position, addFavorite);
+                        } else {
 
                             CartItem_ favoriteItem_ = new CartItem_();
-                        favoriteItem_.productId = favoritesArrList.get(position).productId;
-                        favoriteItem_.customerId = Integer.valueOf(sessionManager.getUserId());
-                        favoriteItem_.quantity = 1;
-                        favoriteItem_.shoppingCartType = "2";
-                        CartItem favoriteItem = new CartItem();
-                        favoriteItem.shoppingCartItem = favoriteItem_;
-                        addCartOrFavoriteApi("addToFavorite", favoriteItem);
+                            favoriteItem_.productId = favoritesArrList.get(position).productId;
+                            favoriteItem_.customerId = Integer.valueOf(sessionManager.getUserId());
+                            favoriteItem_.quantity = 1;
+                            favoriteItem_.shoppingCartType = "2";
+                            CartItem favoriteItem = new CartItem();
+                            favoriteItem.shoppingCartItem = favoriteItem_;
+                            addCartOrFavoriteApi("addToFavorite", favoriteItem);
 
-                    }}
+                        }
+                    }
                 });
         layoutManager = new GridLayoutManager(activity, 2);
         productsList.setLayoutManager(layoutManager);
         productsList.setAdapter(productsAdapter);
 
-                favoritesApi();
+        favoritesApi();
     }
 
 
@@ -151,7 +150,7 @@ public class FavoritesFragment extends Fragment {
                     @Override
                     public void failure(RetrofitError error) {
                         loading.setVisibility(View.GONE);
-                        GlobalFunctions.showErrorMessage(error,loading);
+                        GlobalFunctions.showErrorMessage(error, loading);
                     }
                 }
         );
@@ -197,13 +196,13 @@ public class FavoritesFragment extends Fragment {
                     @Override
                     public void failure(RetrofitError error) {
                         loading.setVisibility(View.GONE);
-                        GlobalFunctions.showErrorMessage(error,loading);
+                        GlobalFunctions.showErrorMessage(error, loading);
                     }
                 }
         );
     }
 
-    private void deleteFavoriteApi( final int position, final ImageView addFavorite){
+    private void deleteFavoriteApi(final int position, final ImageView addFavorite) {
         loading.setVisibility(View.VISIBLE);
         AtelierApiConfig.getCallingAPIInterface().deleteFavoriteItem(
                 Constants.AUTHORIZATION_VALUE,
@@ -258,10 +257,43 @@ public class FavoritesFragment extends Fragment {
                     @Override
                     public void failure(RetrofitError error) {
                         loading.setVisibility(View.GONE);
-                        GlobalFunctions.showErrorMessage(error,loading);
+                        GlobalFunctions.showErrorMessage(error, loading);
                     }
                 }
         );
 
+    }
+
+    public void CartProductsApi(final int selectedVendorId, final int position) {
+        loading.setVisibility(View.VISIBLE);
+        AtelierApiConfig.getCallingAPIInterface().shoppingCartItems(
+                Constants.AUTHORIZATION_VALUE, sessionManager.getUserLanguage()
+                , sessionManager.getUserId(), "1", new Callback<GetCartProducts>() {
+                    @Override
+                    public void success(GetCartProducts getCartProducts, Response response) {
+                        loading.setVisibility(View.GONE);
+                        if ((getCartProducts.CartProducts.size() > 0 && selectedVendorId == getCartProducts.CartProducts.get(0).product.vendorId)
+                                || getCartProducts.CartProducts.size() == 0) {
+                            CartItem_ cartItem_ = new CartItem_();
+                            cartItem_.productId = favoritesArrList.get(position).productId;
+                            cartItem_.customerId = Integer.valueOf(sessionManager.getUserId());
+                            cartItem_.quantity = 1;
+                            cartItem_.shoppingCartType = "1";
+                            CartItem cartItem = new CartItem();
+                            cartItem.shoppingCartItem = cartItem_;
+                            addCartOrFavoriteApi("addToCart", cartItem);
+                        } else {
+                            Snackbar.make(loading, getString(R.string.selectTheSameVendor), Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        loading.setVisibility(View.GONE);
+                        GlobalFunctions.showErrorMessage(error, loading);
+                    }
+                }
+        );
     }
 }

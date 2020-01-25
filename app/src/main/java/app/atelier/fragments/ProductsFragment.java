@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -111,14 +112,7 @@ public class ProductsFragment extends Fragment {
                     Navigator.loadFragment(activity, ProductDetailsFragment.newInstance(activity,productsArrList.get(position).id), R.id.main_frameLayout_Container, true);
                         }
                 else {
-                    CartItem_ cartItem_ = new CartItem_();
-                    cartItem_.productId = productsArrList.get(position).id;
-                    cartItem_.customerId = Integer.valueOf(sessionManager.getUserId());
-                    cartItem_.quantity = 1;
-                    cartItem_.shoppingCartType = "1";
-                    CartItem cartItem = new CartItem();
-                    cartItem.shoppingCartItem = cartItem_;
-                    addCartOrFavoriteApi("addToCart", cartItem, null, cartItem_.productId);
+                   CartProductsApi(productsArrList.get(position).vendorId,position);
                 }
             }
 
@@ -383,5 +377,38 @@ public class ProductsFragment extends Fragment {
                 }
         );
 
+    }
+
+    public void CartProductsApi(final int selectedVendorId, final int position) {
+        loading.setVisibility(View.VISIBLE);
+        AtelierApiConfig.getCallingAPIInterface().shoppingCartItems(
+                Constants.AUTHORIZATION_VALUE, sessionManager.getUserLanguage()
+                , sessionManager.getUserId(), "1", new Callback<GetCartProducts>() {
+                    @Override
+                    public void success(GetCartProducts getCartProducts, Response response) {
+                        loading.setVisibility(View.GONE);
+                        if ((getCartProducts.CartProducts.size() > 0 && selectedVendorId == getCartProducts.CartProducts.get(0).product.vendorId)
+                                || getCartProducts.CartProducts.size() == 0) {
+                            CartItem_ cartItem_ = new CartItem_();
+                            cartItem_.productId = productsArrList.get(position).id;
+                            cartItem_.customerId = Integer.valueOf(sessionManager.getUserId());
+                            cartItem_.quantity = 1;
+                            cartItem_.shoppingCartType = "1";
+                            CartItem cartItem = new CartItem();
+                            cartItem.shoppingCartItem = cartItem_;
+                            addCartOrFavoriteApi("addToCart", cartItem, null, cartItem_.productId);
+                        } else {
+                            Snackbar.make(loading,getString(R.string.selectTheSameVendor),Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        loading.setVisibility(View.GONE);
+                        GlobalFunctions.showErrorMessage(error, loading);
+                    }
+                }
+        );
     }
 }

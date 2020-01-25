@@ -83,7 +83,6 @@ public class MyFcmListenerService extends FirebaseMessagingService {
 
     NotificationUtils notificationUtils;
 
-
     private void sendNotification(String msg) {
         mNotificationManager = (NotificationManager) this
                 .getSystemService(Context.NOTIFICATION_SERVICE);
@@ -137,7 +136,6 @@ public class MyFcmListenerService extends FirebaseMessagingService {
         mNotificationManager.notify(notificationID, mBuilder.build());
 
     }
-
 
     private void handleNotification(String message) {
 

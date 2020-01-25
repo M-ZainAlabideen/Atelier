@@ -2,10 +2,10 @@ package app.atelier.classes;
 
 public class Constants {
 
-//    public static final String BASE_URL1 = "http://atelierq8.com";
-    public static final String BASE_URL1 = "http://demo.atelierq8.com";
+    public static final String BASE_URL1 = "http://atelierq8.com";
+    // public static final String BASE_URL1 = "http://demo.atelierq8.com";
 
-    public static final String BASE_URL = BASE_URL1+"/api/";
+    public static final String BASE_URL = BASE_URL1 + "/api/";
     //http://demo.atelierq8.com/
     public static final String AUTHORIZATION = "Authorization";
     public static final String ACCEPT_LANGUAGE = "Accept-Language";
@@ -38,7 +38,7 @@ public class Constants {
     public final static String TWITTER = "storeinformationsettings.twitterlink";
     public final static String YOUTUBE = "storeinformationsettings.youtubelink";
 
-    public final static String SUCCESS_PAGE= "atelierq8.";
+    public final static String SUCCESS_PAGE = "atelierq8.";
     public final static String ERROR_PAGE = "error.aspx";
 
     public static final int NOTIFICATION_ID = 100;
@@ -47,7 +47,7 @@ public class Constants {
 
     public static final String PUSH_NOTIFICATION = "pushNotification";
 
-    public static String CMS_NOTIFICATION_IMAGE_URL = BASE_URL1+"/images/thumbs/";
+    public static String CMS_NOTIFICATION_IMAGE_URL = BASE_URL1 + "/images/thumbs/";
 
 
 }

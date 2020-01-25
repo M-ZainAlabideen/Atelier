@@ -63,10 +63,9 @@ public class MyFirebaseInstanceIDService extends FirebaseMessagingService {
 
             @Override
             protected void onPostExecute(String msg) {
+                Log.e("registrationId service", "regId -> "+regid +"------------"+ sessionManager.getUserId());
 
-                Log.e("registerationid service", regid);
-
-                    AtelierApiConfig.getCallingAPIInterface().insertToken(Constants.AUTHORIZATION, regid, "2", AppController.getInstance().getIMEI(), sessionManager.getUserId().length()>0 ? sessionManager.getUserId() : "0", new Callback<Response>() {
+                AtelierApiConfig.getCallingAPIInterface().insertToken(Constants.AUTHORIZATION_VALUE, regid, "2", AppController.getInstance().getIMEI(), sessionManager.getUserId().length()>0 ? sessionManager.getUserId() : "0", new Callback<Response>() {
                     @Override
                     public void success(Response s, Response response) {
 
@@ -101,12 +100,6 @@ public class MyFirebaseInstanceIDService extends FirebaseMessagingService {
 
                         }
 
-                        /*Intent intent = new Intent(SplashScreen.this, MainActivity.class);
-                        intent.putExtra(DrwazaConstans.FIRST_TIME_LAUNCH, "0");
-                        intent.putExtra("regid", regid);
-
-                        startActivity(intent);
-                        finish();*/
                     }
 
                     @Override

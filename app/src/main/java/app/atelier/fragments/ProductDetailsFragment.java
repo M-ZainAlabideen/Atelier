@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.request.RequestOptions;
 import com.glide.slider.library.SliderLayout;
@@ -94,6 +95,8 @@ public class ProductDetailsFragment extends Fragment {
     TextView productName;
     @BindView(R.id.productDetails_txt_description)
     WebView productDescription;
+    @BindView(R.id.productDetails_tv_shortDescription)
+    TextView shortDescription;
     @BindView(R.id.productDetails_txt_price)
     TextView productPrice;
     @BindView(R.id.productDetails_txt_oldPrice)
@@ -190,6 +193,7 @@ public class ProductDetailsFragment extends Fragment {
     public static ArrayList<AttributeModel> actualAttributesArrayList = new ArrayList<>();
     public static ArrayList<AttributeModel> fixedAttributesArrayList = new ArrayList<>();
     public static ArrayList<AttributeModel> finalAttributesArrayList = new ArrayList<>();
+    private ArrayList<TextView> titles = new ArrayList<>();
     int maxNum;
     int sizeSelectedPosition = -1;
     int counter;
@@ -259,6 +263,18 @@ public class ProductDetailsFragment extends Fragment {
 
         view3.setVisibility(View.GONE);
 
+
+        titles.add(title1);
+        titles.add(title2);
+        titles.add(title3);
+        titles.add(title4);
+        titles.add(title5);
+        titles.add(title6);
+        titles.add(title7);
+        titles.add(title8);
+        titles.add(title9);
+
+
         DisplayMetrics displayMetrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
@@ -296,14 +312,7 @@ public class ProductDetailsFragment extends Fragment {
                 if (relatedProductsList.get(position).attributes != null && relatedProductsList.get(position).attributes.size() > 0) {
                     Navigator.loadFragment(activity, ProductDetailsFragment.newInstance(activity, relatedProductsList.get(position).id), R.id.main_frameLayout_Container, true);
                 } else {
-                    CartItem_ cartItem_ = new CartItem_();
-                    cartItem_.productId = relatedProductsList.get(position).id;
-                    cartItem_.customerId = Integer.valueOf(sessionManager.getUserId());
-                    cartItem_.quantity = 1;
-                    cartItem_.shoppingCartType = "1";
-                    CartItem cartItem = new CartItem();
-                    cartItem.shoppingCartItem = cartItem_;
-                    addCartOrFavoriteApi("addToCart", cartItem, null);
+                    CartProductsApi(product.vendorId,position,true);
                 }
             }
 
@@ -394,58 +403,7 @@ public class ProductDetailsFragment extends Fragment {
 
     @OnClick(R.id.productDetails_linear_addCart)
     public void addCartClick() {
-        if (radioSize1.isChecked()) {
-            boolean b = false;
-            for (int i = 0; i < fixedAttributesArrayList.get(0).attribute_values.size(); i++) {
-                if (fixedAttributesArrayList.get(0).attribute_values
-                        .get(i).is_pre_selected) {
-                    b = true;
-                    break;
-                }
-            }
-            if (!b) {
-                Snackbar.make(loading, getString(R.string.select_size), Snackbar.LENGTH_SHORT).show();
-                return;
-            }
-        } else if (radioSize2.isChecked()) {
-            if (ShowFixedView1)
-                counter = 1;
-            else
-                counter = 0;
-            for (int i = counter; i < fixedAttributesArrayList.size(); i++) {
-                if (fixedAttributesArrayList.get(i).attribute_values.get(0).name == null
-                        || fixedAttributesArrayList.get(i).attribute_values.get(0).name.matches("")) {
-                    Snackbar.make(loading, getString(R.string.enter_size), Snackbar.LENGTH_SHORT).show();
-                    return;
-                }
-            }
-        }
-        boolean required = true;
-        String s = "";
-        for (AttributeModel a : attributesList) {
-            if (a.is_required) {
-                boolean f = false;
-                for (AttributeValueModel av : a.attribute_values) {
-                    if (av.is_pre_selected) {
-                        f = true;
-                    }
-                }
-                if (!f) {
-                    if (a.localized_names != null) {
-                        s += a.localized_names.get(0).localizedName + ", ";
-                    } else {
-                        s += "" + ", ";
-                    }
-                }
-                required = f;
-            }
-        }
-
-        if (required) {
-            prepareShoppingCartData(true);
-        } else {
-            Snackbar.make(loading, getString(R.string.DataMissing) + "\n" + s.substring(0, s.length() - 2), Snackbar.LENGTH_LONG).show();
-        }
+        CartProductsApi(product.vendorId,null,false);
     }
 
 
@@ -488,7 +446,7 @@ public class ProductDetailsFragment extends Fragment {
             oldPrice.setText(product.formattedOldPrice);
         }
 
-
+        shortDescription.setText(product.getShortDescription());
         String contentStr = product.getFullDescription();
         if (contentStr != null && !contentStr.isEmpty()) {
             String fontName;
@@ -717,30 +675,30 @@ public class ProductDetailsFragment extends Fragment {
 
                 }
 
+
                 if (ShowFixedView2) {
-                    if (!ShowFixedView1)
+                    int lastValue = 0;
+
+                    if (!ShowFixedView1) {
                         counter = 0;
-                    else
+                        lastValue = maxNum;
+                    } else {
                         counter = 1;
+                        lastValue = maxNum -1;
+                    }
                     title1.setText(fixedAttributesArrayList.get(counter).localized_names.get(0).localizedName);
                     title2.setText(fixedAttributesArrayList.get(++counter).localized_names.get(0).localizedName);
                     title3.setText(fixedAttributesArrayList.get(++counter).localized_names.get(0).localizedName);
                     title4.setText(fixedAttributesArrayList.get(++counter).localized_names.get(0).localizedName);
-                    if (withFiveValue) {
-                        title5.setText(fixedAttributesArrayList.get(++counter).localized_names.get(0).localizedName);
+
+
+
+                    for (int i = 4; i < lastValue; i++) {
+                        titles.get(i)
+                                .setText(fixedAttributesArrayList.get(++counter)
+                                        .localized_names.get(0).localizedName);
                     }
-                    if (withSixValue) {
-                        title6.setText(fixedAttributesArrayList.get(++counter).localized_names.get(0).localizedName);
-                    }
-                    if (withSevenValue) {
-                        title7.setText(fixedAttributesArrayList.get(++counter).localized_names.get(0).localizedName);
-                    }
-                    if (withEightValue) {
-                        title8.setText(fixedAttributesArrayList.get(++counter).localized_names.get(0).localizedName);
-                    }
-                    if (withNineValue) {
-                        title9.setText(fixedAttributesArrayList.get(++counter).localized_names.get(0).localizedName);
-                    }
+
 
                     if (!ShowFixedView1)
                         counter = 0;
@@ -1618,4 +1576,93 @@ public class ProductDetailsFragment extends Fragment {
     }
 
 
+    public void CartProductsApi(final int selectedVendorId, final Integer position, final boolean isRelated) {
+        loading.setVisibility(View.VISIBLE);
+        AtelierApiConfig.getCallingAPIInterface().shoppingCartItems(
+                Constants.AUTHORIZATION_VALUE, sessionManager.getUserLanguage()
+                , sessionManager.getUserId(), "1", new Callback<GetCartProducts>() {
+                    @Override
+                    public void success(GetCartProducts getCartProducts, Response response) {
+                        loading.setVisibility(View.GONE);
+                        if ((getCartProducts.CartProducts.size() > 0 && selectedVendorId == getCartProducts.CartProducts.get(0).product.vendorId)
+                                || getCartProducts.CartProducts.size() == 0) {
+                           if(isRelated){
+                            CartItem_ cartItem_ = new CartItem_();
+                            cartItem_.productId = relatedProductsList.get(position).id;
+                            cartItem_.customerId = Integer.valueOf(sessionManager.getUserId());
+                            cartItem_.quantity = 1;
+                            cartItem_.shoppingCartType = "1";
+                            CartItem cartItem = new CartItem();
+                            cartItem.shoppingCartItem = cartItem_;
+                            addCartOrFavoriteApi("addToCart", cartItem, null);
+                        }
+                           else{
+                               if (radioSize1.isChecked()) {
+                                   boolean b = false;
+                                   for (int i = 0; i < fixedAttributesArrayList.get(0).attribute_values.size(); i++) {
+                                       if (fixedAttributesArrayList.get(0).attribute_values
+                                               .get(i).is_pre_selected) {
+                                           b = true;
+                                           break;
+                                       }
+                                   }
+                                   if (!b) {
+                                       Snackbar.make(loading, getString(R.string.select_size), Snackbar.LENGTH_SHORT).show();
+                                       return;
+                                   }
+                               } else if (radioSize2.isChecked()) {
+                                   if (ShowFixedView1)
+                                       counter = 1;
+                                   else
+                                       counter = 0;
+                                   for (int i = counter; i < fixedAttributesArrayList.size(); i++) {
+                                       if (fixedAttributesArrayList.get(i).attribute_values.get(0).name == null
+                                               || fixedAttributesArrayList.get(i).attribute_values.get(0).name.matches("")) {
+                                           Snackbar.make(loading, getString(R.string.enter_size), Snackbar.LENGTH_SHORT).show();
+                                           return;
+                                       }
+                                   }
+                               }
+                               boolean required = true;
+                               String s = "";
+                               for (AttributeModel a : attributesList) {
+                                   if (a.is_required) {
+                                       boolean f = false;
+                                       for (AttributeValueModel av : a.attribute_values) {
+                                           if (av.is_pre_selected) {
+                                               f = true;
+                                           }
+                                       }
+                                       if (!f) {
+                                           if (a.localized_names != null) {
+                                               s += a.localized_names.get(0).localizedName + ", ";
+                                           } else {
+                                               s += "" + ", ";
+                                           }
+                                       }
+                                       required = f;
+                                   }
+                               }
+
+                               if (required) {
+                                   prepareShoppingCartData(true);
+                               } else {
+                                   Snackbar.make(loading, getString(R.string.DataMissing) + "\n" + s.substring(0, s.length() - 2), Snackbar.LENGTH_LONG).show();
+                               }
+                           }
+                        }
+                        else {
+                            Snackbar.make(loading,getString(R.string.selectTheSameVendor),Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        loading.setVisibility(View.GONE);
+                        GlobalFunctions.showErrorMessage(error, loading);
+                    }
+                }
+        );
+    }
 }

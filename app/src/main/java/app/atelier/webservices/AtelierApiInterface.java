@@ -3,6 +3,7 @@ package app.atelier.webservices;
 import java.util.ArrayList;
 
 import app.atelier.classes.Constants;
+import app.atelier.webservices.responses.cities.GetCities;
 import app.atelier.webservices.responses.contact.GetContactUsRequest;
 import app.atelier.webservices.responses.contact.GetContactUsResponse;
 import app.atelier.webservices.responses.addresses.GetAddresses;
@@ -17,6 +18,7 @@ import app.atelier.webservices.responses.products.Delivery;
 import app.atelier.webservices.responses.products.GetProducts;
 import app.atelier.webservices.responses.cart.CartItem;
 import app.atelier.webservices.responses.settings.GetSettings;
+import app.atelier.webservices.responses.shipping.GetShippingMethods;
 import app.atelier.webservices.responses.sliders.GetSlider;
 import app.atelier.webservices.responses.states.GetStates;
 import app.atelier.webservices.responses.stores.GetStores;
@@ -95,7 +97,7 @@ public interface AtelierApiInterface {
 
 
     //*****************************PRODUCTS***********************************
-    @GET("/products?fields=id,localized_names,localized_full_descriptions,images,attributes,price,Is_AddedToWishList,old_price,available_end_date_time_utc,show_timer,prices_percentage,formatted_old_price,formatted_price")
+    @GET("/products?fields=id,localized_names,localized_full_descriptions,images,attributes,price,Is_AddedToWishList,vendor_id,old_price,available_end_date_time_utc,show_timer,prices_percentage,formatted_old_price,formatted_price")
     void products(@Header(Constants.AUTHORIZATION) String Authorization,
                   @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
                   @Query("customer_id") String customerId,
@@ -109,7 +111,7 @@ public interface AtelierApiInterface {
                   Callback<GetProducts> response);
 
 
-    @GET("/products/search?fields=id,localized_names,localized_full_descriptions,images,attributes,price,Is_AddedToWishList,old_price,available_end_date_time_utc,show_timer,prices_percentage,formatted_old_price,formatted_price")
+    @GET("/products/search?fields=id,localized_names,localized_full_descriptions,images,attributes,price,Is_AddedToWishList,vendor_id,old_price,available_end_date_time_utc,show_timer,prices_percentage,formatted_old_price,formatted_price")
     void searchProducts(@Header(Constants.AUTHORIZATION) String Authorization,
                         @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
                         @Query("customer_id") String customerId,
@@ -126,7 +128,7 @@ public interface AtelierApiInterface {
                         Callback<GetProducts> response);
 
 
-    @GET("/products/{id}/related?fields=id,localized_names,localized_full_descriptions,images,attributes,price,Is_AddedToWishList,old_price,available_end_date_time_utc,show_timer,prices_percentage,formatted_old_price,formatted_price")
+    @GET("/products/{id}/related?fields=id,localized_names,localized_full_descriptions,images,attributes,price,Is_AddedToWishList,vendor_id,old_price,available_end_date_time_utc,show_timer,prices_percentage,formatted_old_price,formatted_price")
     void relatedProducts(@Header(Constants.AUTHORIZATION) String Authorization,
                          @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
                          @Query("customer_id") String customerId,
@@ -271,6 +273,11 @@ public interface AtelierApiInterface {
                    @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
                    Callback<GetCountries> getCountries);
 
+    @GET("/cities/{id}?fields=id,name")
+    void cities(@Header(Constants.AUTHORIZATION) String Authorization,
+                @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
+                @Path("id") String countryId,
+                Callback<GetCities> getCities);
 
     //************************PASSWORD*********************************
 
@@ -329,6 +336,14 @@ public interface AtelierApiInterface {
                       @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
                       @Path("id") String id,
                       Callback<Delivery> response);
+
+    @GET("/shippingV2/{customerId}")
+    void shipping(@Header(Constants.AUTHORIZATION) String Authorization,
+                  @Header(Constants.ACCEPT_LANGUAGE) String AcceptLanguage,
+                  @Path("customerId") String customer_id,
+                  @Query("countryId") int countryId,
+                  @Query("city") String city,
+                  Callback<GetShippingMethods> getStateProvince);
 
     @POST("/customers/devicetoken")
     void insertToken(@Header("Authorization") String Authorization,

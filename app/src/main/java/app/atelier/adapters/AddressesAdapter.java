@@ -69,7 +69,7 @@ public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.view
     @Override
     public void onBindViewHolder(@NonNull AddressesAdapter.viewHolder viewHolder, final int position) {
 
-        if (flag.equalsIgnoreCase("cart")) {
+        if (flag.equalsIgnoreCase("cart") || flag.equalsIgnoreCase("shipping")) {
             viewHolder.delete.setVisibility(View.GONE);
             viewHolder.edit.setVisibility(View.GONE);
 
@@ -128,6 +128,10 @@ public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.view
         if (addresses.phoneNumber.length() > 0) {
             content = content + "\n" + context.getString(R.string.phone2) + ": " + addresses.phoneNumber;
         }
+        if (addresses.city != null)
+            if (addresses.city.length() > 0) {
+                content = content + "\n" +context.getString(R.string.city)+": " +addresses.city;
+            }
         if (addresses.province != null)
             if (addresses.province.length() > 0) {
                 content = content + "\n" +context.getString(R.string.state)+": " +addresses.province;

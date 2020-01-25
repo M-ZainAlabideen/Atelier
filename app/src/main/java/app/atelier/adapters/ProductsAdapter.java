@@ -62,7 +62,8 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
         TextView title;
         @BindView(R.id.product_txtView_price)
         TextView price;
-
+        @BindView(R.id.product_imgView_sale)
+        ImageView sale;
 
         public viewHolder(@NonNull View itemView) {
             super(itemView);
@@ -84,14 +85,20 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
         if (sessionManager.getUserLanguage().equals("en")) {
             Typeface enBold = Typeface.createFromAsset(context.getAssets(), "montserrat_medium.ttf");
             viewHolder.title.setTypeface(enBold);
+            viewHolder.sale.setImageResource(R.mipmap.icon_sale_en);
         } else {
             Typeface arBold = Typeface.createFromAsset(context.getAssets(), "droid_arabic_kufi_bold.ttf");
             viewHolder.title.setTypeface(arBold);
         }
 
+
         if(flag.equals("relatedProduct")){
             viewHolder.container.setLayoutParams(new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            if(productsArrList.get(position).oldPrice == 0){
+                viewHolder.sale.setVisibility(View.GONE);
+            }
         }
         if(flag.equals("favorite")){
             viewHolder.addFavorite.setImageResource(R.mipmap.icon_add_fav_sel);
@@ -111,6 +118,10 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
             viewHolder.title.setText(favoritesArrList.get(position).product.getLocalizedName());
             viewHolder.price.setText(String.valueOf(favoritesArrList.get(position).product.price)+
                     " "+sessionManager.getCurrencyCode());
+
+            if(favoritesArrList.get(position).product.oldPrice == 0){
+                viewHolder.sale.setVisibility(View.GONE);
+            }
         }
         else{
             if(productsArrList.get(position).IsAddedToWishList){
@@ -133,6 +144,10 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
             viewHolder.price.setText(String.valueOf(productsArrList.get(position).price)+
                     " "+sessionManager.getCurrencyCode());
 
+
+            if(productsArrList.get(position).oldPrice == 0){
+                viewHolder.sale.setVisibility(View.GONE);
+            }
         }
 
         viewHolder.productImg.setOnClickListener(new View.OnClickListener() {

@@ -129,10 +129,10 @@ public class OrderDetailsFragment extends Fragment {
         detailsList.setLayoutManager(layoutManager);
         detailsList.setAdapter(orderDetailsAdapter);
 
-            if (orderDetailsArrList.size() > 0)
-                loading.setVisibility(View.GONE);
-            else
-                orderByIdApi();
+        if (orderDetailsArrList.size() > 0)
+            loading.setVisibility(View.GONE);
+        else
+            orderByIdApi();
 
     }
 
@@ -146,7 +146,7 @@ public class OrderDetailsFragment extends Fragment {
         if (order.orderStatus.equalsIgnoreCase(Constants.ORDER_COMPLETE_STATUS) &&
                 order.paymentStatus.equalsIgnoreCase(Constants.PAYMENT_STATUS_PAID)) {
 
-            if(GlobalFunctions.isWriteExternalStorageAllowed(activity)) {
+            if (GlobalFunctions.isWriteExternalStorageAllowed(activity)) {
 
                 String filename = Calendar.getInstance().getTimeInMillis() + ".pdf";
                 String outPath = Environment.getExternalStorageDirectory()
@@ -197,8 +197,8 @@ public class OrderDetailsFragment extends Fragment {
                             File file = new File(filePath);
                             Intent target = new Intent(Intent.ACTION_VIEW);
                             Uri uri = FileProvider.getUriForFile
-                                    (activity, "app.atelier.fileprovider",file);
-                            target.setDataAndType(uri,"application/pdf");
+                                    (activity, "app.atelier.fileprovider", file);
+                            target.setDataAndType(uri, "application/pdf");
                             target.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
                             Intent intent = Intent.createChooser(target, "Open File");
@@ -363,6 +363,13 @@ public class OrderDetailsFragment extends Fragment {
             if (order.orderStatus != null) {
                 if (order.orderStatus.length() > 0) {
                     htmlContent = htmlContent + "<br />" + activity.getString(R.string.order_status) + ":&nbsp;" + order.orderStatus;
+                }
+            }
+
+            if (order.orderShippingInclTax != null) {
+                if (order.orderShippingInclTax > 0) {
+                    htmlContent = htmlContent + "<br />" + activity.getString(R.string.shipping_cost)
+                            + ":&nbsp;<b>" + order.orderShippingInclTax + " " + order.customerCurrencyCode + "" + "</b>";
                 }
             }
 

@@ -71,7 +71,7 @@ public class CreateAccountFragment extends Fragment {
     @BindView(R.id.loading)
     ProgressBar loading;
 
-    String regid = "";
+    String regId = "";
 
     public static CreateAccountFragment newInstance(FragmentActivity activity, String comingFrom) {
         fragment = new CreateAccountFragment();
@@ -96,7 +96,7 @@ public class CreateAccountFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         MainActivity.appbar.setVisibility(View.GONE);
         MainActivity.bottomAppbar.setVisibility(View.GONE);
-        FixControl.setupUI(container,activity);
+        FixControl.setupUI(container, activity);
         agree.setOnCheckedChangeListener(checkedListener);
 
     }
@@ -136,10 +136,9 @@ public class CreateAccountFragment extends Fragment {
             Snackbar.make(loading, activity.getResources().getString(R.string.required_fields), Snackbar.LENGTH_LONG).show();
         } else if (!agree.isChecked()) {
             Snackbar.make(loading, activity.getResources().getString(R.string.agree_required), Snackbar.LENGTH_LONG).show();
-        } else if(!FixControl.isValidEmail(mailStr)){
-            Snackbar.make(loading,getString(R.string.enter_email), Snackbar.LENGTH_SHORT).show();
-        }
-        else {
+        } else if (!FixControl.isValidEmail(mailStr)) {
+            Snackbar.make(loading, getString(R.string.enter_email), Snackbar.LENGTH_SHORT).show();
+        } else {
             CustomerModel customer = new CustomerModel();
             customer.userName = userNameStr;
             customer.phone = phoneStr;
@@ -176,27 +175,7 @@ public class CreateAccountFragment extends Fragment {
                             sessionManager.setPhone(customer.phone);
                             sessionManager.setEmail(customer.email);
                             sessionManager.LoginSession();
-
-                            FirebaseInstanceId.getInstance().getInstanceId()
-                                    .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                                            if (!task.isSuccessful()) {
-                                                Log.w("login", "getInstanceId failed", task.getException());
-                                                return;
-                                            }
-
-                                            // Get new Instance ID token
-                                            regid = task.getResult().getToken();
-
-                                            Log.e("registerationid Splash ", "regid -> "+regid);
-
-                                            registerInBackground();
-
-
-                                        }
-                                    });
-
+                            initializeFirebaseToken();
                             MainActivity.accountOrLogin.setText(activity.getResources().getString(R.string.account));
                             if (getArguments().getString("comingFrom").equals("cart")) {
                                 backToCart();
@@ -222,9 +201,31 @@ public class CreateAccountFragment extends Fragment {
         }
     }
 
+    public void initializeFirebaseToken() {
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("splash", "getInstanceId failed", task.getException());
+                            return;
+                        }
+
+                        // Get new Instance ID token
+                        regId = task.getResult().getToken();
+
+                        Log.e("registrationId Main ", "regId -> " + regId + "------------" + sessionManager.getUserId());
+
+                        registerInBackground();
+
+
+                    }
+                });
+    }
+
     private void registerInBackground() {
 
-        AtelierApiConfig.getCallingAPIInterface().insertToken(Constants.AUTHORIZATION, regid, "2", AppController.getInstance().getIMEI(), sessionManager.getUserId().length() > 0 ? sessionManager.getUserId() : null, new Callback<Response>() {
+        AtelierApiConfig.getCallingAPIInterface().insertToken(Constants.AUTHORIZATION_VALUE, regId, "2", AppController.getInstance().getIMEI(), sessionManager.getUserId().length() > 0 ? sessionManager.getUserId() : null, new Callback<Response>() {
             @Override
             public void success(retrofit.client.Response s, retrofit.client.Response response) {
 
@@ -248,7 +249,7 @@ public class CreateAccountFragment extends Fragment {
                     String outResponse = out.toString();
                     Log.d("outResponse", "" + outResponse);
 
-                    sessionManager.setRegId(regid);
+                    sessionManager.setRegId(regId);
 
 
                 } catch (Exception ex) {

@@ -150,7 +150,14 @@
     <string name="no_brands">No Brands Found</string>
     <string name="enter_email">Enter Your Email Address</string>
     <string name="deliveryCost">Delivery Cost</string>
-    <string name="inch">Inch</string>
+    <string name="inch">Inches</string>
     <string name="size_inch">Size In Inch</string>
+    <string name="select_city">Select City</string>
+    <string name="select_state">Select State</string>
+    <string name="city_required">Select The City</string>
+    <string name="city">City</string>
+    <string name="sameAddress">Shipping For The Same Address</string>
+    <string name="selectTheSameVendor">Please Select From The Same Vendor</string>
+    <string name="shipping_cost">Shipping Cost</string>
 
 </resources>

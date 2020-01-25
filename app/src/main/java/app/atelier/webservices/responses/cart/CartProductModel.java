@@ -24,7 +24,6 @@ public class CartProductModel {
     @Expose
      public List<OrderAttributeModel> productAttributes;
 
-
     @SerializedName("customer_entered_price")
     @Expose
      public Double customerEnteredPrice;

@@ -20,7 +20,6 @@ public class SessionManager {
     private static final String LAST_NAME = "lastName";
     private static final String PHONE = "phone";
     private static final String EMAIL = "email";
-    private static final String PASSWORD = "password";
     private static final String AS_GUEST = "continue_as_guest";
     private static final String LANGUAGE_CODE = "language_code";
     private static final String CURRENCY_CODE = "currency_name";

@@ -112,12 +112,8 @@ public class HomeFragment extends Fragment {
         slider.setAdapter(sliderAdapter);
         sliderCircle.setViewPager(slider);
 
-
-
         int Height = FixControl.getImageHeight(activity, R.mipmap.placeholder_slider);
-        Log.d("fapa2", "==" + Height);
         imageView5.getLayoutParams().height = Height;
-
 
         if (sliderArrayList.size() <= 0) {
             sliderApi();

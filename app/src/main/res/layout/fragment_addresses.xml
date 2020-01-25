@@ -36,11 +36,12 @@
                     android:id="@+id/addresses_recyclerView_addressesList"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
+                    android:layout_marginTop="8dp"
                     android:paddingBottom="60dp"
                     app:layout_constraintBottom_toTopOf="@+id/addresses_btn_next"
                     app:layout_constraintEnd_toEndOf="@+id/addresses_txtView_add"
                     app:layout_constraintStart_toStartOf="@+id/addresses_txtView_add"
-                    app:layout_constraintTop_toBottomOf="@+id/addresses_txtView_add">
+                    app:layout_constraintTop_toBottomOf="@+id/addresses_cb_theSameAddress">
 
                 </android.support.v7.widget.RecyclerView>
 
@@ -78,6 +79,22 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <CheckBox
+                    android:id="@+id/addresses_cb_theSameAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:button="@mipmap/check_unsel"
+                    android:paddingBottom="15dp"
+                    android:paddingTop="15dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:fontFamily="@font/droid_arabic_kufi"
+                    android:text="@string/sameAddress"
+                    app:layout_constraintEnd_toEndOf="@+id/addresses_txtView_add"
+                    app:layout_constraintStart_toStartOf="@+id/addresses_txtView_add"
+                    app:layout_constraintTop_toBottomOf="@+id/addresses_txtView_add" />
 
             </android.support.constraint.ConstraintLayout>
 

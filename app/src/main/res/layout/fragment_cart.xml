@@ -113,17 +113,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/Cart_tv_delivery"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="36dp"
-                android:fontFamily="@font/droid_arabic_kufi"
-                android:text="@string/deliveryCost"
-                android:textColor="@color/darkGray"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/Cart_tv_total" />
-
-            <TextView
+                android:visibility="gone"
                 android:id="@+id/Cart_tv_subtotal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -147,20 +137,8 @@
                 app:layout_constraintEnd_toEndOf="@+id/Cart_btn_checkout"
                 app:layout_constraintTop_toTopOf="@+id/Cart_tv_discount" />
 
-
             <TextView
-                android:id="@+id/Cart_tv_deliveryValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/droid_arabic_kufi_bold"
-                android:text="@string/test_price"
-                android:textColor="@color/colorPrimary"
-                android:textSize="15sp"
-                app:layout_constraintBottom_toBottomOf="@+id/Cart_tv_delivery"
-                app:layout_constraintEnd_toEndOf="@+id/Cart_btn_checkout"
-                app:layout_constraintTop_toTopOf="@+id/Cart_tv_delivery" />
-
-            <TextView
+                android:visibility="gone"
                 android:id="@+id/Cart_tv_subtotalValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -182,7 +160,7 @@
                 android:textColor="@color/darkGray"
                 android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/Cart_tv_delivery" />
+                app:layout_constraintTop_toBottomOf="@+id/Cart_tv_total" />
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
     <ProgressBar

@@ -151,7 +151,14 @@
     <string name="no_brands">لا يوجد ماركات لعرضها</string>
     <string name="enter_email">قم بإدخال البريد الإلكتروني</string>
     <string name="deliveryCost">خدمة التوصيل</string>
-    <string name="inch">بوصة</string>
+    <string name="inch">Inches</string>
     <string name="size_inch">المقاس بالبوصة</string>
+    <string name="select_city">اختر المدينة</string>
+    <string name="select_state">اختر المحافظة</string>
+    <string name="city_required">قم بإختيار المدينة</string>
+    <string name="city">المدينة</string>
+    <string name="sameAddress">التوصيل لنفس العنوان</string>
+    <string name="selectTheSameVendor">من فضلك قم بالإختيار من نفس البائع</string>
+    <string name="shipping_cost">تكلفة الشحن</string>
 
 </resources>

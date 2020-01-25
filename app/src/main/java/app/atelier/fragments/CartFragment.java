@@ -62,20 +62,17 @@ public class CartFragment extends Fragment {
     @BindView(R.id.Cart_tv_discount)
     TextView discount;
 
-    @BindView(R.id.Cart_tv_delivery)
-    TextView delivery;
-
     @BindView(R.id.Cart_tv_total)
     TextView total;
+
+    @BindView(R.id.Cart_tv_subtotal)
+    TextView subtotal;
 
     @BindView(R.id.Cart_tv_subtotalValue)
     TextView subtotalValue;
 
     @BindView(R.id.Cart_tv_discountValue)
     TextView discountValue;
-
-    @BindView(R.id.Cart_tv_deliveryValue)
-    TextView deliveryValue;
 
     @BindView(R.id.Cart_tv_totalValue)
     TextView totalValue;
@@ -132,14 +129,12 @@ public class CartFragment extends Fragment {
             totalValue.setTypeface(enBold);
             subtotalValue.setTypeface(enBold);
             discountValue.setTypeface(enBold);
-            deliveryValue.setTypeface(enBold);
             checkout.setTypeface(enBold);
         } else {
             Typeface arBold = Typeface.createFromAsset(activity.getAssets(), "droid_arabic_kufi_bold.ttf");
             totalValue.setTypeface(arBold);
             subtotalValue.setTypeface(arBold);
             discountValue.setTypeface(arBold);
-            deliveryValue.setTypeface(arBold);
             checkout.setTypeface(arBold);
         }
 
@@ -147,7 +142,6 @@ public class CartFragment extends Fragment {
         cartAdapter = new CartAdapter(activity, cartArrList, new CartAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                //Navigator.loadFragment(activity, ProductDetailsFragment.newInstance(activity,cartArrList.get(position)), R.id.main_frameLayout_Container, true);
             }
 
             @Override
@@ -172,7 +166,7 @@ public class CartFragment extends Fragment {
             }
 
             @Override
-            public void onMinusClick(int position) {
+            public void onMinusClick(final int position) {
                 if (cartArrList != null) {
                     if (cartArrList.size() > 0) {
                         if (cartArrList.get(position).quantity > 1) {
@@ -180,9 +174,7 @@ public class CartFragment extends Fragment {
                             updateCartProductAPi(position, false);
 
                         } else {
-
-                            deleteCartProductApi(position);
-
+                            showDeleteAlertMessage(position);
                         }
                     }
                 }
@@ -190,22 +182,7 @@ public class CartFragment extends Fragment {
 
             @Override
             public void onDeleteItemClick(final int position) {
-                new AlertDialog.Builder(activity)
-                        .setTitle(activity.getString(R.string.app_name))
-                        .setMessage(activity.getString(R.string.sure_for_delete))
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                deleteCartProductApi(position);
-                            }
-                        })
-                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .setIcon(R.mipmap.logo)
-                        .show();
+                showDeleteAlertMessage(position);
             }
         });
 
@@ -226,6 +203,26 @@ public class CartFragment extends Fragment {
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(cartList);
 
     }
+
+    private void showDeleteAlertMessage(final int position){
+        new AlertDialog.Builder(activity)
+                .setTitle(activity.getString(R.string.app_name))
+                .setMessage(activity.getString(R.string.sure_for_delete))
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        deleteCartProductApi(position);
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setIcon(R.mipmap.logo)
+                .show();
+    }
+
     @OnClick(R.id.Cart_btn_applyCoupon)
     public void applyCouponClick() {
         if (isApplied) {
@@ -287,7 +284,7 @@ public class CartFragment extends Fragment {
                                                     "add", null);
                                             Navigator.loadFragment(activity, fragment, R.id.main_frameLayout_Container, true);
                                         } else {
-                                            Fragment fragment = AddressesFragment.newInstance(activity, "cart");
+                                            Fragment fragment = AddressesFragment.newInstance(activity, "cart",null);
                                             Navigator.loadFragment(activity, fragment, R.id.main_frameLayout_Container, true);
                                         }
                                     }
@@ -464,20 +461,6 @@ public class CartFragment extends Fragment {
         );
 
     }
-    private void setTotalPrice() {
-        double total = 0;
-        for (CartProductModel item : cartArrList) {
-            total = total + item.sub_total;
-        }
-        totalValue.setText(total + " " + sessionManager.getCurrencyCode());
-        deliveryValue.setText("+ "+deliveryCost + " " + sessionManager.getCurrencyCode());
-        subtotalValue.setText(total + deliveryCost + " " + sessionManager.getCurrencyCode());
-
-        if (OrderTotalDiscount > -1) {
-            discountValue.setText("-" + OrderTotalDiscount + " " + sessionManager.getCurrencyCode());
-            subtotalValue.setText(total + deliveryCost - OrderTotalDiscount + " " + sessionManager.getCurrencyCode());
-        }
-    }
     public void CartProductsApi(final boolean isCoupon) {
         loading.setVisibility(View.VISIBLE);
         AtelierApiConfig.getCallingAPIInterface().shoppingCartItems(
@@ -492,16 +475,19 @@ public class CartFragment extends Fragment {
                                     cartArrList.clear();
                                     cartArrList.addAll(getCartProducts.CartProducts);
                                     cartAdapter.notifyDataSetChanged();
-                                    deliveryCostApi();
+                                    bottomContainer.setVisibility(View.VISIBLE);
                                 }
                             }
                         }
-                        if (getCartProducts.couponOrderTotal != null) {
-                            if (getCartProducts.couponOrderTotal.OrderTotalDiscount != null) {
+                        if (getCartProducts.couponOrderTotal != null && getCartProducts.couponOrderTotal.OrderTotalDiscount != null
+                        && getCartProducts.couponOrderTotal.discountInfo != null && getCartProducts.couponOrderTotal.discountInfo.size() >0) {
                                 OrderTotalDiscount = Double.parseDouble(getCartProducts.couponOrderTotal.OrderTotalDiscount);
-                                couponValue = getCartProducts.couponOrderTotal.discountInfo.get(0).CouponCode;
+                                    couponValue = getCartProducts.couponOrderTotal.discountInfo.get(0).CouponCode;
+
                                 discount.setVisibility(View.VISIBLE);
                                 discountValue.setVisibility(View.VISIBLE);
+                                subtotalValue.setVisibility(View.VISIBLE);
+                                subtotal.setVisibility(View.VISIBLE);
                                 isApplied = true;
                                 applyCoupon.setBackgroundResource(R.color.black);
                                 applyCoupon.setText(getString(R.string.remove));
@@ -511,9 +497,11 @@ public class CartFragment extends Fragment {
                                 applyCoupon.setText(getString(R.string.apply_coupon));
                                 discount.setVisibility(View.GONE);
                                 discountValue.setVisibility(View.GONE);
+                                subtotalValue.setVisibility(View.GONE);
+                                subtotal.setVisibility(View.GONE);
                                 OrderTotalDiscount = -1;
                             }
-                        }
+
                         setTotalPrice();
                         couponField.setText("");
                     }
@@ -526,30 +514,17 @@ public class CartFragment extends Fragment {
                 }
         );
     }
-    private void deliveryCostApi() {
-        loading.setVisibility(View.VISIBLE);
-        AtelierApiConfig.getCallingAPIInterface().deliveryCost(
-                Constants.AUTHORIZATION_VALUE, sessionManager.getUserLanguage(),
-                sessionManager.getUserId(), new Callback<Delivery>() {
-                    @Override
-                    public void success(Delivery delivery, Response response) {
-                        if (delivery != null) {
-                            loading.setVisibility(View.GONE);
-                            if (delivery.getShipping().size()>=1) {
-                                if (delivery.getShipping().get(0).getPrice() > 0) {
-                                    deliveryCost = delivery.getShipping().get(0).getPrice();
-                                    setTotalPrice();
-                                    bottomContainer.setVisibility(View.VISIBLE);
-                                }
-                            }
-                        }
-                    }
 
-                    @Override
-                    public void failure(RetrofitError error) {
+    private void setTotalPrice() {
+        double total = 0;
+        for (CartProductModel item : cartArrList) {
+            total = total + item.sub_total;
+        }
+        totalValue.setText(total + " " + sessionManager.getCurrencyCode());
 
-                    }
-                }
-        );
+        if (OrderTotalDiscount > -1) {
+            discountValue.setText("-" + OrderTotalDiscount + " " + sessionManager.getCurrencyCode());
+            subtotalValue.setText(total + deliveryCost - OrderTotalDiscount + " " + sessionManager.getCurrencyCode());
+        }
     }
 }
